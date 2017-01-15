@@ -17,14 +17,9 @@ export default class dali extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
+
         <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          THIS IS A TEST!
+          THIS IS A TEST! are you going to work pleaseeeee
         </Text>
       </View>
     );
