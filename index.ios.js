@@ -19,7 +19,7 @@ export default class dali extends Component {
       <View style={styles.container}>
 
         <Text style={styles.instructions}>
-          THIS IS A TEST! are you going to work pleaseeeee
+          Wireless loading! 2.0
         </Text>
       </View>
     );
