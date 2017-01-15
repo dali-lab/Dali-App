@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import codePush from "react-native-code-push";
 import {
   AppRegistry,
   StyleSheet,
@@ -49,5 +50,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
+
+dali = codePush(dali);
 
 AppRegistry.registerComponent('dali', () => dali);

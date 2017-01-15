@@ -1,7 +1,7 @@
-dependencies: /Users/benjamincooper/GitHub/Dali/ios/dali/AppDelegate.m \
-  /Users/benjamincooper/GitHub/Dali/ios/dali/AppDelegate.h \
-  /Users/benjamincooper/GitHub/Dali/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTBundleURLProvider.h \
-  /Users/benjamincooper/GitHub/Dali/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTRootView.h \
+dependencies: \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native-code-push/ios/CodePush/CodePushTelemetryManager.m \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native-code-push/ios/CodePush/CodePush.h \
+  ../../react-native/React/Modules/RCTEventEmitter.h \
   /Users/benjamincooper/GitHub/Dali/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTBridge.h \
   /Users/benjamincooper/GitHub/Dali/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTBridgeDelegate.h \
   /Users/benjamincooper/GitHub/Dali/ios/build/Build/Products/Debug-iphonesimulator/include/React/RCTJavaScriptLoader.h \
