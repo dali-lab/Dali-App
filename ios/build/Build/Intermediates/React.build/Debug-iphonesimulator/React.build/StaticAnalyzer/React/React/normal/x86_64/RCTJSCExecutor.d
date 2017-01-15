@@ -1,0 +1,24 @@
+dependencies: \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Executors/RCTJSCExecutor.mm \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Executors/RCTJSCExecutor.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTJavaScriptExecutor.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTBridgeModule.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTDefines.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTInvalidating.h \
+  /Users/benjamincooper/GitHub/Dali/ios/build/Build/Products/Debug-iphonesimulator/include/cxxreact/JSBundleType.h \
+  /Users/benjamincooper/GitHub/Dali/ios/build/Build/Products/Debug-iphonesimulator/include/jschelpers/JavaScriptCore.h \
+  /Users/benjamincooper/GitHub/Dali/ios/build/Build/Products/Debug-iphonesimulator/include/jschelpers/JSCWrapper.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Modules/JSCSamplingProfiler.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTAssert.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTBridge+Private.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTBridge.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTBridgeDelegate.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTJavaScriptLoader.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTFrameUpdate.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Modules/RCTDevMenu.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Executors/RCTJSCErrorHandling.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Profiler/RCTJSCProfiler.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTLog.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTPerformanceLogger.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Profiler/RCTProfile.h \
+  /Users/benjamincooper/GitHub/Dali/node_modules/react-native/React/Base/RCTUtils.h
