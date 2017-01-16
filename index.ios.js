@@ -19,7 +19,7 @@ export default class dali extends Component {
       <View style={styles.container}>
 
         <Text style={styles.instructions}>
-          Wireless loading! 2.0
+          YAYAYYA IT WORKSSSS WOW!!!!
         </Text>
       </View>
     );
