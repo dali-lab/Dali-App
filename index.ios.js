@@ -5,7 +5,6 @@
  */
 
 import React, { Component } from 'react';
-import codePush from "react-native-code-push";
 import {
   AppRegistry,
   StyleSheet,
@@ -17,9 +16,15 @@ export default class dali extends Component {
   render() {
     return (
       <View style={styles.container}>
-
+        <Text style={styles.welcome}>
+          Welcome to React Native!
+        </Text>
         <Text style={styles.instructions}>
-          Wireless loading! 2.0
+          To get started, edit index.ios.js
+        </Text>
+        <Text style={styles.instructions}>
+          Press Cmd+R to reload,{'\n'}
+          Cmd+D or shake for dev menu
         </Text>
       </View>
     );
@@ -44,7 +49,5 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
-
-dali = codePush(dali);
 
 AppRegistry.registerComponent('dali', () => dali);
