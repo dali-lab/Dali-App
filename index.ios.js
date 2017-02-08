@@ -12,7 +12,7 @@ import {
   View,
   DeviceEventEmitter
 } from 'react-native';
-var Beacons = require('react-native-ibeacon');
+import Beacons from 'react-native-ibeacon';
 
 // Define a region which can be identifier + uuid,
 // identifier + uuid + major or identifier + uuid + major + minor
@@ -51,7 +51,7 @@ export default class dali extends Component {
 
     if (inRange) {
       beaconNumText = <Text style={styles.instructions}>
-        In fact, there are {this.state.beacons.length} beacons nearby
+        In fact, there {this.state.beacons.length > 1 ? "are" : "is"} {this.state.beacons.length} beacon{this.state.beacons.length > 1 ? "s" : ""} nearby
       </Text>
     }
 
