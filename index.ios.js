@@ -79,7 +79,7 @@ export default class dali extends Component {
           {inRange > 0 ? "There is a beacon nearby!" : "There are no beacons :("}
         </Text>
         <Text style={styles.instructions}>
-          Using codePush!
+          Using codePush! Hi this is ben!!!
         </Text>
         {beaconNumText}
         {detailText}
