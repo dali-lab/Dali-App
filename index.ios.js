@@ -10,9 +10,11 @@ import {
   StyleSheet,
   Text,
   View,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  TouchableHighlight
 } from 'react-native';
 import Beacons from 'react-native-ibeacon';
+import codePush from "react-native-code-push";
 
 // Define a region which can be identifier + uuid,
 // identifier + uuid + major or identifier + uuid + major + minor
@@ -65,11 +67,21 @@ export default class dali extends Component {
 
     return (
       <View style={styles.container}>
+        <View style={styles.container}>
         <Text style={styles.welcome}>
           {inRange > 0 ? "There is a beacon nearby!" : "There are no beacons :("}
         </Text>
+        <Text style={styles.instructions}>
+          Using codePush!
+        </Text>
         {beaconNumText}
         {detailText}
+        </View>
+        <View style={styles.bottomBar}>
+          <TouchableHighlight style={styles.updateButton}>
+            <Text style={styles.updateButtonText}>Update</Text>
+          </TouchableHighlight>
+        </View>
       </View>
     );
   }
@@ -98,6 +110,27 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginTop: 15,
   },
+  bottomBar: {
+    backgroundColor: '#adadad',
+    height: 50,
+    marginBottom: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    alignSelf: "stretch",
+    alignItems: "center",
+    padding: 15
+  },
+  updateButton: {
+    alignSelf: "stretch",
+  },
+  updateButtonText: {
+    textAlign: "center",
+    color: "#0087ff"
+  }
 });
+
+let codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME };
+dali = codePush(codePushOptions)(dali);
+
 
 AppRegistry.registerComponent('dali', () => dali);
