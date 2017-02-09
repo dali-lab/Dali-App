@@ -18,7 +18,7 @@ import Beacons from 'react-native-ibeacon';
 // identifier + uuid + major or identifier + uuid + major + minor
 // (minor and major properties are numbers)
 var region = {
-    identifier: 'RadBeacon Dots',
+    identifier: 'DALI lab',
     uuid: 'F2363048-F649-4537-AB7E-4DADB9966544'
 };
 
