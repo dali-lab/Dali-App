@@ -48,10 +48,18 @@ export default class dali extends Component {
   render() {
     let inRange = this.state.beacons != null && this.state.beacons.length;
     var beaconNumText = null;
+    var detailText = null;
 
     if (inRange) {
       beaconNumText = <Text style={styles.instructions}>
         In fact, there {this.state.beacons.length > 1 ? "are" : "is"} {this.state.beacons.length} beacon{this.state.beacons.length > 1 ? "s" : ""} nearby
+      </Text>
+      let beacon = this.state.beacons[0];
+      detailText = <Text style={styles.detail}>
+        Major: {beacon.major} Minor: {beacon.minor}{"\n"}
+        RSSI: {beacon.rssi}{"\n"}
+        Proximity: {beacon.proximity}{"\n"}
+        Accuracy: {beacon.accuracy}
       </Text>
     }
 
@@ -61,6 +69,7 @@ export default class dali extends Component {
           {inRange > 0 ? "There is a beacon nearby!" : "There are no beacons :("}
         </Text>
         {beaconNumText}
+        {detailText}
       </View>
     );
   }
@@ -82,6 +91,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
+  },
+  detail: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+    marginTop: 15,
   },
 });
 
