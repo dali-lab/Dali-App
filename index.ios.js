@@ -47,6 +47,13 @@ export default class dali extends Component {
     });
   }
 
+  update() {
+    codePush.sync({
+      updateDialog: true,
+      installMode: codePush.InstallMode.IMMEDIATE
+    });
+  }
+
   render() {
     let inRange = this.state.beacons != null && this.state.beacons.length;
     var beaconNumText = null;
@@ -78,7 +85,7 @@ export default class dali extends Component {
         {detailText}
         </View>
         <View style={styles.bottomBar}>
-          <TouchableHighlight style={styles.updateButton}>
+          <TouchableHighlight style={styles.updateButton} onPress={this.update}>
             <Text style={styles.updateButtonText}>Update</Text>
           </TouchableHighlight>
         </View>
