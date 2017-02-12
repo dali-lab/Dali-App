@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import Beacons from 'react-native-ibeacon';
 import codePush from "react-native-code-push";
+// import PushNotification from 'react-native-push-notification';
 
 // Define a region which can be identifier + uuid,
 // identifier + uuid + major or identifier + uuid + major + minor
@@ -24,31 +25,84 @@ var region = {
     uuid: 'F2363048-F649-4537-AB7E-4DADB9966544'
 };
 
-
 Beacons.requestAlwaysAuthorization();
 Beacons.startMonitoringForRegion(region);
 
-// Beacons.startRangingBeaconsInRegion(region);
-// Beacons.startUpdatingLocation();
+// PushNotification.configure({
+//   // (optional) Called when Token is generated (iOS and Android)
+//     onRegister: function(token) {
+//         console.log( 'TOKEN:', token );
+//     },
+
+//     // (required) Called when a remote or local notification is opened or received
+//     onNotification: function(notification) {
+//         console.log( 'NOTIFICATION:', notification );
+//     },
+
+//     // IOS ONLY (optional): default: all - Permissions to register.
+//     permissions: {
+//         alert: true,
+//         badge: true,
+//         sound: false
+//     },
+
+//     // Should the initial notification be popped automatically
+//     // default: true
+//     popInitialNotification: true,
+
+//     /**
+//       * (optional) default: true
+//       * - Specified if permissions (ios) and token (android and ios) will requested or not,
+//       * - if not, you must call PushNotificationsHandler.requestPermissions() later
+//       */
+//     requestPermissions: true,
+// });
 
 export default class dali extends Component {
   constructor(props) {
     super(props);
-    this.state = {beacons: null}
-  }
+    this.state = {inDALI: null}
 
-  componentDidMount() {
 
-    // var subscription = DeviceEventEmitter.addListener('beaconsDidRange',
-    //   (data) => {
-    //     this.setState({
-    //       beacons: data.beacons,
-    //     });
-    // });
 
-    DeviceEventEmitter.addListener('regionDidEnter', 
-      (region) => {
-        
+    var sub1 = DeviceEventEmitter.addListener('regionDidEnter', 
+      (enterRegion) => {
+        console.log("Enter region: " + JSON.stringify(region));
+        this.setState({
+          inDALI: true,
+        })
+
+        // PushNotification.localNotification({
+        //   title: "Entered DALI",
+        //   message: "You just entered the DALI lab!"
+        // });
+
+        Beacons.startRangingBeaconsInRegion(region);
+    });
+
+    var sub2 = DeviceEventEmitter.addListener('regionDidExit', 
+      (exitRegion) => {
+        console.log("Exit region: " + JSON.stringify(region));
+        this.setState({
+          inDALI: false,
+        })
+
+        // PushNotification.localNotification({
+        //   title: "Exited DALI",
+        //   message: "You just exited the DALI lab! :( Sorry to see you go"
+        // });
+
+        Beacons.stopUpdatingLocation();
+    });
+
+    var sub3 = DeviceEventEmitter.addListener('beaconsDidRange', (data) => {
+      console.log(data);
+    });
+
+    Beacons.getAuthorizationStatus(function(authorization) {
+      // authorization is a string which is either "authorizedAlways",
+      // "authorizedWhenInUse", "denied", "notDetermined" or "restricted"
+      console.log("Authorization: " + authorization);
     });
   }
 
@@ -63,6 +117,7 @@ export default class dali extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.container}>
+          <Text>{this.state.inDALI != null ? (this.state.inDALI ? "In DALI" : "Not in DALI") : "Loading..."}</Text>
         </View>
         <View style={styles.bottomBar}>
           <TouchableHighlight style={styles.updateButton} onPress={this.update}>
@@ -80,22 +135,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-  detail: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-    marginTop: 15,
   },
   bottomBar: {
     backgroundColor: '#adadad',
