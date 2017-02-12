@@ -25,11 +25,11 @@ var region = {
 };
 
 
-Beacons.requestWhenInUseAuthorization();
+Beacons.requestAlwaysAuthorization();
 Beacons.startMonitoringForRegion(region);
 
-Beacons.startRangingBeaconsInRegion(region);
-Beacons.startUpdatingLocation();
+// Beacons.startRangingBeaconsInRegion(region);
+// Beacons.startUpdatingLocation();
 
 export default class dali extends Component {
   constructor(props) {
@@ -39,11 +39,16 @@ export default class dali extends Component {
 
   componentDidMount() {
 
-    var subscription = DeviceEventEmitter.addListener('beaconsDidRange',
-      (data) => {
-        this.setState({
-          beacons: data.beacons,
-        })
+    // var subscription = DeviceEventEmitter.addListener('beaconsDidRange',
+    //   (data) => {
+    //     this.setState({
+    //       beacons: data.beacons,
+    //     });
+    // });
+
+    DeviceEventEmitter.addListener('regionDidEnter', 
+      (region) => {
+        
     });
   }
 
@@ -55,34 +60,9 @@ export default class dali extends Component {
   }
 
   render() {
-    let inRange = this.state.beacons != null && this.state.beacons.length;
-    var beaconNumText = null;
-    var detailText = null;
-
-    if (inRange) {
-      beaconNumText = <Text style={styles.instructions}>
-        In fact, there {this.state.beacons.length > 1 ? "are" : "is"} {this.state.beacons.length} beacon{this.state.beacons.length > 1 ? "s" : ""} nearby
-      </Text>
-      let beacon = this.state.beacons[0];
-      detailText = <Text style={styles.detail}>
-        Major: {beacon.major} Minor: {beacon.minor}{"\n"}
-        RSSI: {beacon.rssi}{"\n"}
-        Proximity: {beacon.proximity}{"\n"}
-        Accuracy: {beacon.accuracy}
-      </Text>
-    }
-
     return (
       <View style={styles.container}>
         <View style={styles.container}>
-        <Text style={styles.welcome}>
-          {inRange > 0 ? "There is a beacon nearby!" : "There are no beacons :("}
-        </Text>
-        <Text style={styles.instructions}>
-          Using codePush! Hi this is ben!!!
-        </Text>
-        {beaconNumText}
-        {detailText}
         </View>
         <View style={styles.bottomBar}>
           <TouchableHighlight style={styles.updateButton} onPress={this.update}>

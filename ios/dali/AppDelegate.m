@@ -18,6 +18,11 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   NSURL *jsCodeLocation;
+  
+  if([launchOptions objectForKey:@"UIApplicationLaunchOptionsLocationKey"])
+  {
+    NSLog(@"No UIApplicationLaunchOptionsLocationKey");
+  }
 
 #if DEBUG
   // For Debug build load from development server. Start the server from the repository root:
