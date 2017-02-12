@@ -27,6 +27,8 @@ var region = {
 
 Beacons.requestAlwaysAuthorization();
 Beacons.startMonitoringForRegion(region);
+Beacons.startRangingBeaconsInRegion(region);
+Beacons.startUpdatingLocation();
 
 // PushNotification.configure({
 //   // (optional) Called when Token is generated (iOS and Android)
