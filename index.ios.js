@@ -25,8 +25,9 @@ var region = {
     uuid: 'F2363048-F649-4537-AB7E-4DADB9966544'
 };
 
-Beacons.requestAlwaysAuthorization();
+Beacons.requestWhenInUseAuthorization();
 Beacons.startMonitoringForRegion(region);
+
 Beacons.startRangingBeaconsInRegion(region);
 Beacons.startUpdatingLocation();
 
@@ -63,10 +64,13 @@ Beacons.startUpdatingLocation();
 export default class dali extends Component {
   constructor(props) {
     super(props);
-    this.state = {inDALI: null}
+    this.state = {
+      inDALI: null,
+      beacons: null
+    }
+  }
 
-
-
+  componentDidMount() {
     var sub1 = DeviceEventEmitter.addListener('regionDidEnter', 
       (enterRegion) => {
         console.log("Enter region: " + JSON.stringify(region));
@@ -98,7 +102,9 @@ export default class dali extends Component {
     });
 
     var sub3 = DeviceEventEmitter.addListener('beaconsDidRange', (data) => {
-      console.log(data);
+      this.setState({
+        beacons: data.beacons,
+      });
     });
 
     Beacons.getAuthorizationStatus(function(authorization) {
@@ -116,10 +122,34 @@ export default class dali extends Component {
   }
 
   render() {
+    let inRange = this.state.beacons != null && this.state.beacons.length;
+    var beaconNumText = null;
+    var detailText = null;
+
+    if (inRange) {
+      beaconNumText = <Text style={styles.instructions}>
+        In fact, there {this.state.beacons.length > 1 ? "are" : "is"} {this.state.beacons.length} beacon{this.state.beacons.length > 1 ? "s" : ""} nearby
+      </Text>
+      let beacon = this.state.beacons[0];
+      detailText = <Text style={styles.detail}>
+        Major: {beacon.major} Minor: {beacon.minor}{"\n"}
+        RSSI: {beacon.rssi}{"\n"}
+        Proximity: {beacon.proximity}{"\n"}
+        Accuracy: {beacon.accuracy}
+      </Text>
+    }
+
+
     return (
       <View style={styles.container}>
         <View style={styles.container}>
           <Text>{this.state.inDALI != null ? (this.state.inDALI ? "In DALI" : "Not in DALI") : "Loading..."}</Text>
+
+          <Text style={styles.welcome}>
+            {inRange > 0 ? "There is a beacon nearby!" : "There are no beacons :("}
+          </Text>
+          {beaconNumText}
+          {detailText}
         </View>
         <View style={styles.bottomBar}>
           <TouchableHighlight style={styles.updateButton} onPress={this.update}>
@@ -137,6 +167,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+  detail: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+    marginTop: 15,
   },
   bottomBar: {
     backgroundColor: '#adadad',
