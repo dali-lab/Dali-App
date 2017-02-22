@@ -11,7 +11,8 @@ import {
   Text,
   View,
   DeviceEventEmitter,
-  TouchableHighlight
+  TouchableHighlight,
+  ListView,
 } from 'react-native';
 import Beacons from 'react-native-ibeacon';
 import codePush from "react-native-code-push";
@@ -64,9 +65,15 @@ Beacons.startUpdatingLocation();
 export default class dali extends Component {
   constructor(props) {
     super(props);
+    var dataSource = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => true,
+      sectionHeaderHasChanged: (s1, s2) => s1 !== s2
+    });
+
     this.state = {
       inDALI: null,
-      beacons: null
+      beacons: null,
+      dataSource: dataSource
     }
   }
 
@@ -102,8 +109,13 @@ export default class dali extends Component {
     });
 
     var sub3 = DeviceEventEmitter.addListener('beaconsDidRange', (data) => {
+      var newDataSource = this.state.dataSource.cloneWithRows(data.beacons);
+
+      console.log("Got beacons...");
+      console.log(data.beacons);
       this.setState({
         beacons: data.beacons,
+        dataSource: newDataSource
       });
     });
 
@@ -121,35 +133,46 @@ export default class dali extends Component {
     });
   }
 
+  renderRow(beacon, section, row) {
+
+    return (
+      <View>
+        <Text style={styles.detail}>
+          Major: {beacon.major} Minor: {beacon.minor}{"\n"}
+          RSSI: {beacon.rssi}{"\n"}
+          Proximity: {beacon.proximity}{"\n"}
+          Accuracy: {beacon.accuracy}
+        </Text>
+      </View>
+    );
+  }
+
   render() {
     let inRange = this.state.beacons != null && this.state.beacons.length;
     var beaconNumText = null;
-    var detailText = null;
 
     if (inRange) {
       beaconNumText = <Text style={styles.instructions}>
         In fact, there {this.state.beacons.length > 1 ? "are" : "is"} {this.state.beacons.length} beacon{this.state.beacons.length > 1 ? "s" : ""} nearby
-      </Text>
-      let beacon = this.state.beacons[0];
-      detailText = <Text style={styles.detail}>
-        Major: {beacon.major} Minor: {beacon.minor}{"\n"}
-        RSSI: {beacon.rssi}{"\n"}
-        Proximity: {beacon.proximity}{"\n"}
-        Accuracy: {beacon.accuracy}
       </Text>
     }
 
 
     return (
       <View style={styles.container}>
-        <View style={styles.container}>
+        <View style={styles.textContainer}>
           <Text>{this.state.inDALI != null ? (this.state.inDALI ? "In DALI" : "Not in DALI") : "Loading..."}</Text>
 
           <Text style={styles.welcome}>
             {inRange > 0 ? "There is a beacon nearby!" : "There are no beacons :("}
           </Text>
           {beaconNumText}
-          {detailText}
+        </View>
+        <View style={styles.internalView}>
+          <ListView
+            dataSource = {this.state.dataSource}
+            automaticallyAdjustContentInsets = {false}
+            renderRow = {this.renderRow}/>
         </View>
         <View style={styles.bottomBar}>
           <TouchableHighlight style={styles.updateButton} onPress={this.update}>
@@ -167,6 +190,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  textContainer: {
+    paddingTop: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  internalView: {
+    flex: 1,
   },
   welcome: {
     fontSize: 20,
