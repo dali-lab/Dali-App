@@ -13,7 +13,7 @@ import {
   DeviceEventEmitter,
   TouchableHighlight
 } from 'react-native';
-import Beacons from 'react-native-ibeacon';
+import Beacons from 'react-native-beacons-manager';
 import codePush from "react-native-code-push";
 
 // Define a region which can be identifier + uuid,
