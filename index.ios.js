@@ -14,7 +14,7 @@ import {
   TouchableHighlight,
   ListView,
 } from 'react-native';
-import Beacons from 'react-native-ibeacon';
+import Beacons from 'react-native-beacons-manager';
 import codePush from "react-native-code-push";
 // import PushNotification from 'react-native-push-notification';
 

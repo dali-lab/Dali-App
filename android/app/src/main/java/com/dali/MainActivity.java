@@ -1,6 +1,7 @@
 package com.dali;
 
 import com.facebook.react.ReactActivity;
+import com.mmazzarolo.beaconsandroid.BeaconsAndroidPackage;
 
 public class MainActivity extends ReactActivity {
 
