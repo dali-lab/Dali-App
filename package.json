@@ -11,7 +11,8 @@
     "react": "15.4.2",
     "react-native": "^0.41.2",
     "react-native-beacons-manager": "^1.0.1",
-    "react-native-code-push": "^1.17.0-beta"
+    "react-native-code-push": "^1.17.0-beta",
+    "react-native-google-signin": "^0.8.1"
   },
   "devDependencies": {
     "babel-jest": "18.0.0",
