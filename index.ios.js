@@ -77,20 +77,75 @@ export default class dali extends Component {
     }).done();
   }
 
+  update() {
+    codePush.sync({
+      updateDialog: true,
+      installMode: codePush.InstallMode.IMMEDIATE
+    });
+  }
+
+	onLogin(user) {
+		console.log(user);
+		this.setState({
+			user: user,
+		});
+	}
+
+	onLogout() {
+		this.setState({
+			user: null,
+		});
+	}
+
 	render() {
+    var internalView = null;
     if (!this.state.configured) {
-      return <View/>;
+      internalView = <View/>;
     }else if (this.state.user == null){
-      return (
-        <Login/>
-      );
+      internalView = <Login onLogin={this.onLogin.bind(this)}/>;
     }else{
-      return (
-        <Login/>
-      );
+      internalView = <Main onLogout={this.onLogout.bind(this)}/>;
     }
+
+    return (
+      <View style={styles.container}>
+				<View style={{flex:1, flexDirection: 'row'}}>
+        {internalView}
+				</View>
+        <View style={styles.bottomBar}>
+          <TouchableHighlight style={styles.updateButton} onPress={this.update}>
+            <Text style={styles.updateButtonText}>Update</Text>
+          </TouchableHighlight>
+        </View>
+      </View>
+    )
 	}
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	bottomBar: {
+		backgroundColor: '#adadad',
+		height: 50,
+		marginBottom: 0,
+		marginLeft: 0,
+		marginRight: 0,
+		alignSelf: "stretch",
+		alignItems: "center",
+		padding: 15
+	},
+	updateButton: {
+		alignSelf: "stretch",
+	},
+	updateButtonText: {
+		textAlign: "center",
+		color: "#0087ff"
+	}
+});
 
 let codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME };
 dali = codePush(codePushOptions)(dali);

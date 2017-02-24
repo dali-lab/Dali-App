@@ -7,9 +7,14 @@ import {
 // Define a region which can be identifier + uuid,
 // identifier + uuid + major or identifier + uuid + major + minor
 // (minor and major properties are numbers)
-var region = {
+var labRegion = {
 	identifier: 'DALI lab',
 	uuid: 'F2363048-F649-4537-AB7E-4DADB9966544'
+};
+
+var checkInRegion = {
+	identifier: 'Check In',
+	uuid: 'C371F9F9-572D-4D59-956C-5C3DF4BE50B7'
 };
 
 class BeaconController {
@@ -30,11 +35,13 @@ class BeaconController {
 
 	constructor() {
 		Beacons.requestWhenInUseAuthorization();
-		Beacons.startMonitoringForRegion(region);
+		Beacons.startMonitoringForRegion(labRegion);
+		Beacons.startMonitoringForRegion(checkInRegion);
 		this.authorization = null;
 		this.inRange = false
 		this.enterExitListeners = [];
 		this.beaconRangeListeners = [];
+		this.checkInListeners = [];
 		BeaconController.current = this;
 
 		Beacons.getAuthorizationStatus(function(authorization) {
@@ -51,7 +58,7 @@ class BeaconController {
 	 * Enable beacon ranging
 	 */
 	startRanging() {
-		Beacons.startRangingBeaconsInRegion(region);
+		Beacons.startMonitoringForRegion(labRegion);
 		Beacons.startUpdatingLocation();
 
 		this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange);
@@ -65,14 +72,24 @@ class BeaconController {
 	}
 
 	didExitRegion(exitRegion) {
+		if (exitRegion.identifier == checkInRegion.identifier) {
+			return
+		}
+
 		this.inRange = false
 		Beacons.stopUpdatingLocation();
 		didUpdateLocation();
 	}
 
 	didEnterRegion(enterRegion) {
+		if (enterRegion.identifier == checkInRegion.identifier) {
+			BeaconController.performCallbacks(this.checkInListeners);
+			return
+		}
+
 		this.inRange = true
-		Beacons.startRangingBeaconsInRegion(enterRegion);
+
+		Beacons.startRangingBeaconsInRegion(labRegion);
 		if (this.rangingListener == null) {
 			this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange);
 		}
@@ -81,9 +98,13 @@ class BeaconController {
 
 	beaconsDidRange(data) {
 		this.data = data;
-		this.beacons = data.beacons;
+		this.beacons = [];
 
-		BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons)
+		data.beacons.filter((beacon) => {
+			return beacon.uuid == labRegion.uuid;
+		});
+
+		BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
 		didUpdateLocation();
 	}
 
@@ -102,6 +123,16 @@ class BeaconController {
 	 */
 	addEnterExitListener(listener) {
 		this.enterExitListeners.push(listener);
+	}
+
+	/**
+	 * Adds the given function to the listeners for checking in
+	 * 	listener: () => {
+	 *		//...
+	 *  }
+	 */
+	addCheckInListener(listener) {
+		this.checkInListeners.push(listener);
 	}
 
 	/**
@@ -126,6 +157,10 @@ class BeaconController {
 
 	removeBeaconDidRangeListener(listener) {
 		return BeaconController.removeCallback(listener, this.enterExitListeners);
+	}
+
+	removeCheckInListener(listener) {
+		return BeaconController.removeCallback(listener, this.checkInListeners);
 	}
 
 	static removeCallback(callback, list) {

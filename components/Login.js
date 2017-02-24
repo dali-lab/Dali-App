@@ -10,24 +10,34 @@ import {
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 
 class Login extends Component {
-  constructor(props, context) {
-    super(props, context);
+  propTypes: {
+		onLogin: ReactNative.PropTypes.func,
+  }
+
+  constructor(props) {
+    super(props);
   }
 
   render() {
     return (
       <View style={styles.container}>
         <GoogleSigninButton
-          style={{width: 212, height: 48, backgroundColor: "white"}}
+          style={{width: 212, height: 60, backgroundColor: "white"}}
           size={GoogleSigninButton.Size.Standard}
           color={GoogleSigninButton.Color.Light}
-          onPress={this.signIn}/>
+          onPress={this.signIn.bind(this)}/>
       </View>
     )
   }
 
   signIn() {
-
+    GoogleSignin.signIn()
+    .then((user) => {
+  		this.props.onLogin(user);
+    })
+    .catch((err) => {
+    })
+    .done();
   }
 }
 
@@ -35,7 +45,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
 		justifyContent: 'center',
-    alignItems: "center"
+    alignItems: 'center',
+    backgroundColor: "white"
   }
 });
 
