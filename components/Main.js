@@ -27,6 +27,7 @@ class Main extends Component {
 			dataSource: dataSource
 		};
 	}
+	
   update() {
     codePush.sync({
       updateDialog: true,

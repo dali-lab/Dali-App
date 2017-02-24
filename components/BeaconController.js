@@ -1,5 +1,8 @@
 
 import Beacons from 'react-native-beacons-manager';
+import {
+	DeviceEventEmitter,
+} from 'react-native';
 
 // Define a region which can be identifier + uuid,
 // identifier + uuid + major or identifier + uuid + major + minor

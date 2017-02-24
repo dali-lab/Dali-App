@@ -55,10 +55,40 @@ var Login = require('./components/Login');
 var beaconController = new BeaconController();
 
 export default class dali extends Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this.state = {
+      user: null,
+      configured: false
+    };
+  }
+
+  componentWillMount() {
+    GoogleSignin.configure({
+      iosClientId: "668475965898-ro6r9f7r2jbvkevlj618nkmjb2nv0jut.apps.googleusercontent.com"
+    }).then(() => {
+      return GoogleSignin.currentUserAsync()
+    }).then((user) => {
+      this.setState({
+        user: user,
+        configured: true
+      });
+    }).done();
+  }
+
 	render() {
-		return (
-			<Login/>
-		);
+    if (!this.state.configured) {
+      return <View/>;
+    }else if (this.state.user == null){
+      return (
+        <Login/>
+      );
+    }else{
+      return (
+        <Login/>
+      );
+    }
 	}
 }
 

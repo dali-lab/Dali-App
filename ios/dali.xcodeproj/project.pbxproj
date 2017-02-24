@@ -25,6 +25,7 @@
 		260194F0D82348A387623BFF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FFE88F972A044E6A4FEABAA /* SystemConfiguration.framework */; };
 		2A4B864DCA854B358BF25A4B /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20135D497CC642AA9E276B95 /* AddressBook.framework */; };
 		32D489D54703478398FDBC8A /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D29B9663FF7489E9A947ABF /* libRNGoogleSignin.a */; };
+		523585AE1E60C5C5008B9FD9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */; };
 		5271C2DB1E4D15AC004AFE2F /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2C01E4D158D004AFE2F /* libCodePush.a */; };
 		5271C2DD1E4D15B7004AFE2F /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2DC1E4D15B7004AFE2F /* libz.tbd */; };
 		52BF8A731E60C3C2000465F8 /* GoogleSdk in Resources */ = {isa = PBXBuildFile; fileRef = 52BF8A721E60C3C2000465F8 /* GoogleSdk */; };
@@ -258,6 +259,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = dali/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		20135D497CC642AA9E276B95 /* AddressBook.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5259642C1E51173B009C970E /* dali.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = dali.entitlements; path = dali/dali.entitlements; sourceTree = "<group>"; };
 		5271C2BB1E4D158D004AFE2F /* CodePush.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CodePush.xcodeproj; path = "../node_modules/react-native-code-push/ios/CodePush.xcodeproj"; sourceTree = "<group>"; };
 		5271C2DC1E4D15B7004AFE2F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -380,6 +382,7 @@
 		13B07FAE1A68108700A75B9A /* dali */ = {
 			isa = PBXGroup;
 			children = (
+				523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */,
 				5259642C1E51173B009C970E /* dali.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -843,6 +846,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				523585AE1E60C5C5008B9FD9 /* GoogleService-Info.plist in Resources */,
 				52BF8A731E60C3C2000465F8 /* GoogleSdk in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
