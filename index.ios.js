@@ -52,7 +52,8 @@ var Login = require('./components/Login');
 //		 requestPermissions: true,
 // });
 
-var beaconController = new BeaconController();
+let beaconController = new BeaconController();
+let serverCommunicator = new ServerCommunicator(beaconController);
 
 export default class dali extends Component {
   constructor(props, context) {
