@@ -9,11 +9,6 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>dali-tvOS.xcscheme_^#shared#^_</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>2</integer>
-		</dict>
 		<key>dali.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
@@ -28,16 +23,6 @@
 			<true/>
 		</dict>
 		<key>13B07F861A680F5B00A75B9A</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>2D02E47A1E0B4A5D006451C7</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>2D02E48F1E0B4A5D006451C7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
