@@ -22,9 +22,9 @@ class Login extends Component {
     return (
       <View style={styles.container}>
         <GoogleSigninButton
-          style={{width: 212, height: 60, backgroundColor: "white"}}
-          size={GoogleSigninButton.Size.Standard}
-          color={GoogleSigninButton.Color.Light}
+          style={{width: 312, height: 48, backgroundColor: "white"}}
+          size={GoogleSigninButton.Size.Wide}
+          color={GoogleSigninButton.Color.Dark}
           onPress={this.signIn.bind(this)}/>
       </View>
     )
