@@ -20,17 +20,7 @@ var checkInRegion = {
 class BeaconController {
 	static current = null;
 	static inDALI() {
-		return BeaconController.current.inDALI();
-	}
-
-	inDALI() {
-		if (!this.inRange) {
-			return false;
-		}
-
-		// If we are in range, we will do more interesting checking of the beacon data
-		// For now we shall assume that we are in DALI
-		return true;
+		return BeaconController.current.inDALI;
 	}
 
 	constructor() {
@@ -38,7 +28,7 @@ class BeaconController {
 		Beacons.startMonitoringForRegion(labRegion);
 		Beacons.startMonitoringForRegion(checkInRegion);
 		this.authorization = null;
-		this.inRange = false
+		this.inDALI = false;
 		this.enterExitListeners = [];
 		this.beaconRangeListeners = [];
 		this.checkInListeners = [];
@@ -80,8 +70,8 @@ class BeaconController {
 			return
 		}
 
-		this.inRange = false
-		this.didUpdateLocation();
+		this.inDALI = false;
+		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
 	}
 
 	didEnterRegion(enterRegion) {
@@ -92,8 +82,8 @@ class BeaconController {
 			return
 		}
 
-		this.inRange = true
-		this.didUpdateLocation();
+		this.inDALI = true;
+		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
 	}
 
 	beaconsDidRange(data) {
@@ -107,17 +97,6 @@ class BeaconController {
 
 		BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
 		this.didUpdateLocation();
-	}
-
-	didUpdateLocation() {
-		var inDALI = this.inDALI();
-		var previousValue = this.previousInDALI;
-		if (inDALI != previousValue) {
-			// Thus the value has changed!
-			console.log("Enter/exit DALI");
-			BeaconController.performCallbacks(this.enterExitListeners, inDALI);
-		}
-		this.previousInDALI = inDALI
 	}
 
 	/**
@@ -176,10 +155,9 @@ class BeaconController {
 	}
 
 	static performCallbacks(callbacks) {
-		console.log(arguments);
 		var args = Array.prototype.slice.call(arguments, 1);;
 		callbacks.forEach(function(callback) {
-				callback(args);
+				callback.apply(null, args);
 		});
 	}
 }

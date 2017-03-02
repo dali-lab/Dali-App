@@ -38,7 +38,7 @@
   jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle"];
 #else
   // Run on device with code coming from dev server on PC (change the IP to your PCs IP)
-  jsCodeLocation = [NSURL URLWithString:@"http://172.20.10.3:8081/index.ios.bundle"];
+  jsCodeLocation = [NSURL URLWithString:@"http://10.31.228.39:8081/index.ios.bundle"];
 #endif
 #else
   // For production load from pre-bundled file on disk. To re-generate the static bundle, run

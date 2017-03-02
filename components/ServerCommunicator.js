@@ -21,10 +21,9 @@ class ServerCommunicator {
   }
 
   checkIn=(entering) => {
-    if (!entering[0]) {
+    if (!entering) {
       this.awaitingUser = false;
     }else{
-      // TODO: send POST to server for check in
       const user = GoogleSignin.currentUser();
       if (user != null) {
         console.log("TODO: Post checkin for " + user.email);
@@ -44,19 +43,23 @@ class ServerCommunicator {
   }
 
   postCheckin(user) {
-    this.post("https://posttestserver.com/post.php?dir=DALI", {"username": user.email}).then((response) => {
+    this.post(env.checkInURL, {"username": user.email}).then((response) => {
       console.log(response);
     });
   }
 
   loggedIn(user) {
-    this.user = user
+    this.user = user;
     if (this.awaitingUser) {
-      checkIn(true);
+      this.checkIn(true);
+    }
+    if (this.beaconController.inDALI) {
+      this.enterExitDALI();
     }
   }
 
   post(path, params, method) {
+    console.log("Posting to: " + path);
     return fetch(path, {
       method: method || 'POST',
       headers: {
@@ -67,8 +70,26 @@ class ServerCommunicator {
     });
   }
 
-  enterExitDALI=() => {
-    // TODO: send POST to server for enter and exit DALI
+  enterExitDALI=(inDALI) => {
+    const user = GoogleSignin.currentUser()
+
+    const complete = (user, inDALI) => {
+      this.post(env.daliEnterURL, {user: {email: user.email, id: user.id, familyName: user.familyName, givenName: user.givenName, name: user.name}, inDALI: inDALI})
+      .then((response) => {
+      });
+    }
+
+    if (user == null) {
+      GoogleSignin.currentUserAsync().then((user) => {
+        if (user == null) {
+          return
+        }else{
+          complete(user, inDALI);
+        }
+      })
+    }else{
+      complete(user, inDALI);
+    }
   }
 }
 
