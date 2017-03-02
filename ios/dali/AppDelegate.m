@@ -13,12 +13,16 @@
 #import <React/RCTRootView.h>
 #import <CodePush/CodePush.h>
 #import <RNGoogleSignin/RNGoogleSignin.h>
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
+
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   NSURL *jsCodeLocation;
+  [Fabric with:@[[Crashlytics class]]];
   
   if([launchOptions objectForKey:@"UIApplicationLaunchOptionsLocationKey"])
   {

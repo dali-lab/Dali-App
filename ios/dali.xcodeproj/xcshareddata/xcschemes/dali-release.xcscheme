@@ -131,6 +131,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      customArchiveName = "dali"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

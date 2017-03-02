@@ -26,9 +26,10 @@
 		2A4B864DCA854B358BF25A4B /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20135D497CC642AA9E276B95 /* AddressBook.framework */; };
 		32D489D54703478398FDBC8A /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D29B9663FF7489E9A947ABF /* libRNGoogleSignin.a */; };
 		523585AE1E60C5C5008B9FD9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */; };
+		526AF3BB1E67E87B00BA1EFE /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3B91E67E87B00BA1EFE /* Fabric.framework */; };
+		526AF3BC1E67E87B00BA1EFE /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */; };
 		5271C2DB1E4D15AC004AFE2F /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2C01E4D158D004AFE2F /* libCodePush.a */; };
 		5271C2DD1E4D15B7004AFE2F /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2DC1E4D15B7004AFE2F /* libz.tbd */; };
-		52BF8A731E60C3C2000465F8 /* GoogleSdk in Resources */ = {isa = PBXBuildFile; fileRef = 52BF8A721E60C3C2000465F8 /* GoogleSdk */; };
 		52BF8A7B1E60C3C9000465F8 /* GoogleAppUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */; };
 		52BF8A7C1E60C3C9000465F8 /* GoogleAuthUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A751E60C3C9000465F8 /* GoogleAuthUtilities.framework */; };
 		52BF8A7D1E60C3C9000465F8 /* GoogleNetworkingUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A761E60C3C9000465F8 /* GoogleNetworkingUtilities.framework */; };
@@ -261,6 +262,8 @@
 		20135D497CC642AA9E276B95 /* AddressBook.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5259642C1E51173B009C970E /* dali.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = dali.entitlements; path = dali/dali.entitlements; sourceTree = "<group>"; };
+		526AF3B91E67E87B00BA1EFE /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
+		526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		5271C2BB1E4D158D004AFE2F /* CodePush.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CodePush.xcodeproj; path = "../node_modules/react-native-code-push/ios/CodePush.xcodeproj"; sourceTree = "<group>"; };
 		5271C2DC1E4D15B7004AFE2F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		52BF8A721E60C3C2000465F8 /* GoogleSdk */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GoogleSdk; sourceTree = "<group>"; };
@@ -292,6 +295,8 @@
 				52EE3C5D1E4BC7D50089140E /* CoreLocation.framework in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
+				526AF3BB1E67E87B00BA1EFE /* Fabric.framework in Frameworks */,
+				526AF3BC1E67E87B00BA1EFE /* Crashlytics.framework in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
 				00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */,
@@ -474,6 +479,8 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				526AF3B91E67E87B00BA1EFE /* Fabric.framework */,
+				526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */,
 				52BF8A721E60C3C2000465F8 /* GoogleSdk */,
 				5271C2BB1E4D158D004AFE2F /* CodePush.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
@@ -533,6 +540,7 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				526AF3B81E67E82700BA1EFE /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -847,7 +855,6 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				523585AE1E60C5C5008B9FD9 /* GoogleService-Info.plist in Resources */,
-				52BF8A731E60C3C2000465F8 /* GoogleSdk in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -868,6 +875,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/packager/react-native-xcode.sh";
+		};
+		526AF3B81E67E82700BA1EFE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./Fabric.framework/run 46ee2b2494200fc37080231a2cfd401866e5ae25 22bf5c454bec8c3bf4d7dcb6ce678e6bddc19983aa1c043f920da08ef84e068c";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -907,6 +927,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/GoogleSdk",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = dali/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -936,6 +957,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/GoogleSdk",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = dali/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
