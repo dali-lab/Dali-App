@@ -44,7 +44,9 @@ class ServerCommunicator {
   }
 
   postCheckin(user) {
-    this.post("https://posttestserver.com/post.php?dir=DALI", {"username": user.email})
+    this.post("https://posttestserver.com/post.php?dir=DALI", {"username": user.email}).then((response) => {
+      console.log(response);
+    });
   }
 
   loggedIn(user) {
@@ -55,16 +57,13 @@ class ServerCommunicator {
   }
 
   post(path, params, method) {
-    console.log("Posting to " + path);
-    fetch(path, {
+    return fetch(path, {
       method: method || 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(params)
-    }).then((response) => {
-      console.log(response);
     });
   }
 
