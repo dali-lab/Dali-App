@@ -19,6 +19,7 @@ import codePush from "react-native-code-push";
 import {GoogleSignin} from 'react-native-google-signin';
 let BeaconController = require('./components/BeaconController').default;
 let ServerCommunicator = require('./components/ServerCommunicator').default;
+let env = require('./components/Environment');
 var Main = require('./components/Main');
 var Login = require('./components/Login');
 
@@ -68,7 +69,7 @@ export default class dali extends Component {
 
   componentWillMount() {
     GoogleSignin.configure({
-      iosClientId: "668475965898-ro6r9f7r2jbvkevlj618nkmjb2nv0jut.apps.googleusercontent.com"
+      iosClientId: env.googleIOSClient
     }).then(() => {
       return GoogleSignin.currentUserAsync()
     }).then((user) => {
