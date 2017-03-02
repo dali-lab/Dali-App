@@ -18,6 +18,7 @@ import {
 import codePush from "react-native-code-push";
 import {GoogleSignin} from 'react-native-google-signin';
 let BeaconController = require('./components/BeaconController').default;
+let ServerCommunicator = require('./components/ServerCommunicator').default;
 var Main = require('./components/Main');
 var Login = require('./components/Login');
 
@@ -71,6 +72,7 @@ export default class dali extends Component {
     }).then(() => {
       return GoogleSignin.currentUserAsync()
     }).then((user) => {
+			serverCommunicator.loggedIn(user);
       this.setState({
         user: user,
         configured: true
@@ -87,12 +89,14 @@ export default class dali extends Component {
 
 	onLogin(user) {
 		console.log(user);
+		serverCommunicator.loggedIn(user);
 		this.setState({
 			user: user,
 		});
 	}
 
 	onLogout() {
+		serverCommunicator.user = null;
 		this.setState({
 			user: null,
 		});
@@ -105,7 +109,7 @@ export default class dali extends Component {
     }else if (this.state.user == null){
       internalView = <Login onLogin={this.onLogin.bind(this)}/>;
     }else{
-      internalView = <Main onLogout={this.onLogout.bind(this)}/>;
+      internalView = <Main onLogout={this.onLogout.bind(this)} user={this.state.user}/>;
     }
 
     return (

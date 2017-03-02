@@ -7,14 +7,17 @@ import {
 	DeviceEventEmitter,
 	TouchableHighlight,
 	ListView,
+	Image,
 } from 'react-native';
 let BeaconController = require('./BeaconController');
+let ServerCommunicator = require('./ServerCommunicator').default;
 import {GoogleSignin} from 'react-native-google-signin';
 
 
 class Main extends Component {
 	propTypes: {
 		onLogout: ReactNative.PropTypes.func,
+		user: ReactNative.PropTypes.object.isRequired,
 	}
 
 	logout() {
@@ -30,6 +33,9 @@ class Main extends Component {
   render() {
 		return (
 			<View style={styles.container}>
+				<Image
+				style={{width: 100, height: 100}}
+				source={{uri: this.props.user.photo}}/>
 				<TouchableHighlight
 					style={styles.button}
 					onPress={this.logout.bind(this)}>
@@ -53,6 +59,9 @@ const styles = StyleSheet.create({
 	},
 	buttonText: {
 		color: "#0087ff"
+	},
+	checkIn: {
+		marginTop: 20,
 	}
 });
 
