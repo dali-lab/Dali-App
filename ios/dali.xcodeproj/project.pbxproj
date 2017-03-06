@@ -31,6 +31,7 @@
 		526AF3BC1E67E87B00BA1EFE /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */; };
 		5271C2DB1E4D15AC004AFE2F /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2C01E4D158D004AFE2F /* libCodePush.a */; };
 		5271C2DD1E4D15B7004AFE2F /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2DC1E4D15B7004AFE2F /* libz.tbd */; };
+		528564311E68B82900C22D43 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5285641D1E68B7ED00C22D43 /* libRCTPushNotification.a */; };
 		52BF8A7B1E60C3C9000465F8 /* GoogleAppUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */; };
 		52BF8A7C1E60C3C9000465F8 /* GoogleAuthUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A751E60C3C9000465F8 /* GoogleAuthUtilities.framework */; };
 		52BF8A7D1E60C3C9000465F8 /* GoogleNetworkingUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A761E60C3C9000465F8 /* GoogleNetworkingUtilities.framework */; };
@@ -198,6 +199,20 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = CodePush;
 		};
+		5285641C1E68B7ED00C22D43 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTPushNotification;
+		};
+		5285641E1E68B7ED00C22D43 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D05745F1DE6004600184BB4;
+			remoteInfo = "RCTPushNotification-tvOS";
+		};
 		52BF8A431E60C380000465F8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 02D7BB3CCA1F4650983C398D /* RNiBeacon.xcodeproj */;
@@ -267,6 +282,7 @@
 		526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		5271C2BB1E4D158D004AFE2F /* CodePush.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CodePush.xcodeproj; path = "../node_modules/react-native-code-push/ios/CodePush.xcodeproj"; sourceTree = "<group>"; };
 		5271C2DC1E4D15B7004AFE2F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		52BF8A721E60C3C2000465F8 /* GoogleSdk */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GoogleSdk; sourceTree = "<group>"; };
 		52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppUtilities.framework; path = GoogleSdk/GoogleAppUtilities.framework; sourceTree = "<group>"; };
 		52BF8A751E60C3C9000465F8 /* GoogleAuthUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAuthUtilities.framework; path = GoogleSdk/GoogleAuthUtilities.framework; sourceTree = "<group>"; };
@@ -291,6 +307,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				528564311E68B82900C22D43 /* libRCTPushNotification.a in Frameworks */,
 				5271C2DD1E4D15B7004AFE2F /* libz.tbd in Frameworks */,
 				5271C2DB1E4D15AC004AFE2F /* libCodePush.a in Frameworks */,
 				52EE3C5D1E4BC7D50089140E /* CoreLocation.framework in Frameworks */,
@@ -424,6 +441,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5285640D1E68B7ED00C22D43 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5285641D1E68B7ED00C22D43 /* libRCTPushNotification.a */,
+				5285641F1E68B7ED00C22D43 /* libRCTPushNotification-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		52BF8A261E60C380000465F8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -480,6 +506,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */,
 				526AF3B91E67E87B00BA1EFE /* Fabric.framework */,
 				526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */,
 				52BF8A721E60C3C2000465F8 /* GoogleSdk */,
@@ -613,6 +640,10 @@
 				{
 					ProductGroup = 00C302D41ABCB9D200DB3ED1 /* Products */;
 					ProjectRef = 00C302D31ABCB9D200DB3ED1 /* RCTNetwork.xcodeproj */;
+				},
+				{
+					ProductGroup = 5285640D1E68B7ED00C22D43 /* Products */;
+					ProjectRef = 5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */;
 				},
 				{
 					ProductGroup = 139105B71AF99BAD00B5F7CC /* Products */;
@@ -805,6 +836,20 @@
 			remoteRef = 5271C2BF1E4D158D004AFE2F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		5285641D1E68B7ED00C22D43 /* libRCTPushNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTPushNotification.a;
+			remoteRef = 5285641C1E68B7ED00C22D43 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		5285641F1E68B7ED00C22D43 /* libRCTPushNotification-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRCTPushNotification-tvOS.a";
+			remoteRef = 5285641E1E68B7ED00C22D43 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		52BF8A441E60C380000465F8 /* libRNiBeacon.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -931,6 +976,7 @@
 					"$(PROJECT_DIR)/GoogleSdk",
 					"$(PROJECT_DIR)",
 				);
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS";
 				INFOPLIST_FILE = dali/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -961,6 +1007,7 @@
 					"$(PROJECT_DIR)/GoogleSdk",
 					"$(PROJECT_DIR)",
 				);
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS";
 				INFOPLIST_FILE = dali/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (

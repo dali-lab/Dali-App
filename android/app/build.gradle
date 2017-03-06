@@ -127,6 +127,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-push-notification')
     compile project(':react-native-google-signin')
     compile project(':react-native-code-push')
     compile project(':react-native-beacons-manager')

@@ -28,14 +28,18 @@ class ServerCommunicator {
       if (user != null) {
         console.log("TODO: Post checkin for " + user.email);
 
-        this.postCheckin(user);
+        this.postCheckin(user).then((response) => {
+          this.beaconController.checkInComplete();
+        });
       }else{
         // We didnt get a user... I am going to try to wait for sign in
         GoogleSignin.currentUserAsync().then((user) => {
           if (user == null) {
             this.awaitingUser = true;
           }else{
-            this.postCheckin(user);
+            this.postCheckin(user).then((response) => {
+              this.beaconController.checkInComplete();
+            });
           }
         })
       }
@@ -43,9 +47,7 @@ class ServerCommunicator {
   }
 
   postCheckin(user) {
-    this.post(env.checkInURL, {"username": user.email}).then((response) => {
-      console.log(response);
-    });
+    return this.post(env.checkInURL, {"username": user.email});
   }
 
   loggedIn(user) {

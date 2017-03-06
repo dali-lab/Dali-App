@@ -1,5 +1,6 @@
 
 import Beacons from 'react-native-beacons-manager';
+import PushNotification from 'react-native-push-notification';
 import {
 	DeviceEventEmitter,
 } from 'react-native';
@@ -43,6 +44,51 @@ class BeaconController {
 
 		this.enterListener = DeviceEventEmitter.addListener('regionDidEnter', this.didEnterRegion.bind(this));
 		this.exitListener = DeviceEventEmitter.addListener('regionDidExit', this.didExitRegion.bind(this));
+		this.setUpNotifications()
+	}
+
+	setUpNotifications() {
+		PushNotification.configure({
+
+			// (optional) Called when Token is generated (iOS and Android)
+			onRegister: function(token) {
+				console.log( 'TOKEN:', token );
+			},
+
+			// (required) Called when a remote or local notification is opened or received
+			onNotification: function(notification) {
+				/*Remote notification in this form:
+				 * {
+				 *  foreground: false, // BOOLEAN: If the notification was received in foreground or not
+				 *  userInteraction: false, // BOOLEAN: If the notification was opened by the user from the notification area or not
+				 *  message: 'My Notification Message', // STRING: The notification message
+				 *  data: {}, // OBJECT: The push data
+				 * }
+				 */
+				console.log( 'NOTIFICATION:', notification );
+			},
+
+			// ANDROID ONLY: GCM Sender ID (optional - not required for local notifications, but is need to receive remote push notifications)
+			senderID: "YOUR GCM SENDER ID",
+
+			// IOS ONLY (optional): default: all - Permissions to register.
+			permissions: {
+				alert: true,
+				badge: true,
+				sound: true
+			},
+
+			// Should the initial notification be popped automatically
+			// default: true
+			popInitialNotification: true,
+
+			/**
+			  * (optional) default: true
+			  * - Specified if permissions (ios) and token (android and ios) will requested or not,
+			  * - if not, you must call PushNotificationsHandler.requestPermissions() later
+			  */
+			requestPermissions: true,
+		});
 	}
 
 	/**
@@ -70,8 +116,20 @@ class BeaconController {
 			return
 		}
 
+		PushNotification.localNotification({
+			title: "Exited DALI",
+			message: "See you next time!"
+		});
+
 		this.inDALI = false;
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
+	}
+
+	checkInComplete() {
+		PushNotification.localNotification({
+			title:"Checked In",
+			message: "Just checked you into this event. Have fun!"
+		});
 	}
 
 	didEnterRegion(enterRegion) {
@@ -81,6 +139,11 @@ class BeaconController {
 			BeaconController.performCallbacks(this.checkInListeners, true);
 			return
 		}
+
+		PushNotification.localNotification({
+			title: "Entered DALI",
+			message: "Welcome back to DALI lab!"
+		});
 
 		this.inDALI = true;
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
