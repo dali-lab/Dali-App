@@ -7,7 +7,11 @@ import {
 	TouchableHighlight,
 	ListView,
 	Image,
+  Navigator,
+  Switch
 } from 'react-native';
+const StorageController = require('./StorageController').default;
+
 
 class Settings extends Component {
   propTypes: {
@@ -16,15 +20,155 @@ class Settings extends Component {
     user: ReactNative.PropTypes.object.isRequired,
   }
 
-  render() {
+  constructor(props) {
+    super(props)
+
+    const dataSource = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2,
+      sectionHeaderHasChanged: (s1, s2) => s1 !== s2
+    });
+
+    var notificationsRows = [
+      {
+        title: "Event Check-in",
+        detail: "Allow notifications when you are checked in to a DALI event.",
+        switchChanged: (value) => {
+          this.setState({
+            checkInNotif: value,
+            dataSource: dataSource.cloneWithRowsAndSections({ user: [signOutRow], notifications: notificationsRows}),
+          })
+          StorageController.saveCheckInNotifPreference(value);
+        },
+        stateName: "checkInNotif"
+      },{
+        title: "Lab Access",
+        detail: "Allow notifications when you enter or leave the lab.",
+        switchChanged: (value) => {
+          this.setState({
+            labAccessNotif: value,
+            dataSource: dataSource.cloneWithRowsAndSections({ user: [signOutRow], notifications: notificationsRows}),
+          })
+
+          StorageController.saveLabAccessPreference(value);
+        },
+        stateName: "labAccessNotif"
+      }
+    ]
+
+    var signOutRow = {
+      title: "Sign Out",
+      action: props.onLogout
+    }
+
+    this.state = {
+      dataSource: dataSource.cloneWithRowsAndSections({ user: [signOutRow], notifications: notificationsRows}),
+      checkInNotif: true,
+      labAccessNotif: true
+    }
+
+    StorageController.getLabAccessPreference().then((value) => {
+      if (value == null) {
+        this.setState({
+          labAccessNotif: true
+        })
+        StorageController.saveLabAccessPreference(true)
+        return
+      }
+
+      this.setState({
+        labAccessNotif: value
+      })
+    });
+    StorageController.getCheckinNotifPreference().then((value) => {
+      if (value == null) {
+        this.setState({
+          checkInNotif: true
+        })
+        StorageController.saveCheckInNotifPreference(true)
+        return
+      }
+
+      this.setState({
+        checkInNotif: value
+      })
+    })
+  }
+
+  renderRow(data, section, row) {
+    if (section == 'user') {
+      return (
+        <TouchableHighlight onPress={this.props.onLogout}>
+          <View>
+            <View style={styles.userRow}>
+              <Text style={styles.userRowTitle}>{data.title}</Text>
+              <Image source={require('./Assets/disclosureIndicator.png')} style={styles.disclosureIndicator}/>
+            </View>
+            <View style={styles.seperator}/>
+          </View>
+        </TouchableHighlight>
+      )
+    }
+
     return (
       <View>
-        <TouchableHighlight onPress={this.props.dismiss} style={styles.dismissButton}>
-          <Text>
-            Dismiss
-          </Text>
-        </TouchableHighlight>
+      <View style={styles.notificationRow}>
+        <View style={styles.notificationRowTextContainer}>
+          <Text style={styles.notificationRowTitle}>{data.title}</Text>
+          <Text style={styles.notificationRowDetail}>{data.detail}</Text>
+        </View>
+        <Switch
+          value={this.state[data.stateName]}
+          onValueChange={data.switchChanged}
+          style={styles.notificationRowSwitch}/>
       </View>
+      <View style={row == 0 ? styles.seperatorSmall : styles.seperator}/>
+      </View>
+    )
+  }
+
+  renderSectionHeader(data, sectionName) {
+    if (sectionName == "user") {
+      return <View/>
+    }
+
+    return (
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionHeaderText}>NOTIFICATIONS</Text>
+      </View>
+    )
+  }
+
+  render() {
+    return (
+      <Navigator
+        navigationBar={
+             <Navigator.NavigationBar
+               routeMapper={{
+                 LeftButton: (route, navigator, index, navState) =>
+                  { return (null); },
+                 RightButton: (route, navigator, index, navState) =>
+                   { return (
+                      <TouchableHighlight
+                        style={styles.navBarDoneButton}
+                        onPress={this.props.dismiss}>
+                        <Text style={styles.navBarDoneText}>Done</Text>
+                      </TouchableHighlight>
+                    );},
+                 Title: (route, navigator, index, navState) =>
+                   { return (<Text style={styles.navBarTitleText}>Settings</Text>); },
+               }}
+               style={{backgroundColor: 'rgb(33, 122, 136)'}}
+             />
+          }
+        renderScene={(route, navigator) =>
+          <ListView
+            style={styles.listView}
+            dataSource={this.state.dataSource}
+            renderSectionHeader={this.renderSectionHeader.bind(this)}
+            renderRow={this.renderRow.bind(this)}/>
+        }
+        style={{paddingTop: 65}}
+      />
     )
   }
 }
@@ -32,6 +176,96 @@ class Settings extends Component {
 const styles = StyleSheet.create({
   dismissButton: {
     marginTop: 30
+  },
+  navBarTitleText: {
+    color: 'white',
+    fontFamily: 'Avenir Next',
+    fontSize: 18,
+    fontWeight: '500',
+    marginTop: 10
+  },
+  navBarDoneText: {
+    color: 'rgb(89, 229, 205)',
+    fontFamily: 'Avenir Next',
+    fontSize: 18,
+    fontWeight: '500',
+  },
+  navBarDoneButton: {
+    marginTop: 10,
+    marginRight: 10
+  },
+  listView: {
+    flex: 1,
+    backgroundColor: 'rgb(238, 238, 238)'
+  },
+  seperator: {
+    height: 1,
+    backgroundColor: 'rgb(200, 200, 200)',
+    flex: 1
+  },
+  seperatorSmall: {
+    height: 1,
+    marginLeft: 20,
+    backgroundColor: 'rgb(200, 200, 200)',
+    flex: 1
+  },
+  sectionHeader: {
+    flex: 1,
+    height: 50,
+    flexDirection: 'row',
+    backgroundColor: 'rgb(238, 238, 238)'
+  },
+  sectionHeaderText: {
+    alignSelf: 'flex-end',
+    marginBottom: 10,
+    marginLeft: 10,
+    fontSize: 10,
+    fontFamily: 'Avenir Next',
+    fontWeight: '600',
+    color: 'grey'
+  },
+  notificationRow: {
+    padding: 10,
+    backgroundColor: 'white',
+    paddingLeft: 20,
+    flexDirection: 'row'
+  },
+  notificationRowTextContainer: {
+    width: 290
+  },
+  notificationRowTitle: {
+    fontSize: 18,
+    fontFamily: 'Avenir Next',
+    marginBottom: 8
+  },
+  notificationRowDetail: {
+    fontSize: 13,
+    fontFamily: 'Avenir Next',
+    fontWeight: '400',
+    color: 'grey'
+  },
+  notificationRowSwitch: {
+    marginRight: 10
+  },
+  userRow: {
+    padding: 10,
+    backgroundColor: 'white',
+    paddingLeft: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  disclosureIndicator: {
+    alignSelf: 'flex-end',
+    resizeMode: 'contain',
+    height: 15,
+    width: 15,
+    marginBottom: 4
+  },
+  userRowTitle: {
+    fontSize: 16,
+    flex: 1,
+    fontFamily: 'Avenir Next',
   }
 });
 

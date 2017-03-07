@@ -4,6 +4,7 @@ import PushNotification from 'react-native-push-notification';
 import {
 	DeviceEventEmitter,
 } from 'react-native';
+const StorageController = require('./StorageController').default
 
 // Define a region which can be identifier + uuid,
 // identifier + uuid + major or identifier + uuid + major + minor
@@ -115,10 +116,13 @@ class BeaconController {
 			BeaconController.performCallbacks(this.checkInListeners, false)
 			return
 		}
-
-		PushNotification.localNotification({
-			title: "Exited DALI",
-			message: "See you next time!"
+		StorageController.getLabAccessPreference().then((value) => {
+			if (value) {
+				PushNotification.localNotification({
+					title: "Exited DALI",
+					message: "See you next time!"
+				});
+			}
 		});
 
 		this.inDALI = false;
@@ -126,10 +130,14 @@ class BeaconController {
 	}
 
 	checkInComplete() {
-		PushNotification.localNotification({
-			title:"Checked In",
-			message: "Just checked you into this event. Have fun!"
-		});
+		StorageController.getCheckinNotifPreference().then((value) => {
+			if (value) {
+				PushNotification.localNotification({
+					title:"Checked In",
+					message: "Just checked you into this event. Have fun!"
+				});
+			}
+		})
 	}
 
 	didEnterRegion(enterRegion) {
@@ -140,10 +148,14 @@ class BeaconController {
 			return
 		}
 
-		PushNotification.localNotification({
-			title: "Entered DALI",
-			message: "Welcome back to DALI lab!"
-		});
+		StorageController.getLabAccessPreference().then((value) => {
+			if (value) {
+				PushNotification.localNotification({
+					title: "Entered DALI",
+					message: "Welcome back to DALI lab!"
+				});
+			}
+		})
 
 		this.inDALI = true;
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);

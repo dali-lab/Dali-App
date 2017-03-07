@@ -131,7 +131,11 @@ class Main extends Component {
 							renderRow={this.renderEventRow.bind(this)}/>
 					</View>
 				</View>
-				
+				<TouchableHighlight
+					style={styles.settingsButton}
+					onPress={this.settingsButtonPressed.bind(this)}>
+					<Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage}/>
+				</TouchableHighlight>
 			</LinearGradient>
 		)
 	}

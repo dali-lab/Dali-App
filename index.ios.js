@@ -13,6 +13,7 @@ import {
 	DeviceEventEmitter,
 	TouchableHighlight,
 	ListView,
+	StatusBar
 } from 'react-native';
 
 import codePush from "react-native-code-push";
@@ -115,6 +116,8 @@ export default class dali extends Component {
 
     return (
       <View style={styles.container}>
+				<StatusBar
+					barStyle="light-content"/>
 				<View style={{flex:1, flexDirection: 'row'}}>
         {internalView}
 				</View>

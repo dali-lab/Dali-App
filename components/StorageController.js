@@ -4,13 +4,49 @@ import {
   AsyncStorage
 } from 'react-native';
 
+const prefix = "@DaliLabApp";
+
 class StorageController {
   static saveColor(color) {
-    return AsyncStorage.setItem('@DaliLabApp:selectedColor', color);
+    return AsyncStorage.setItem(prefix + ':selectedColor', color);
   }
 
   static getColor() {
-    return AsyncStorage.getItem('@DaliLabApp:selectedColor');
+    return AsyncStorage.getItem(prefix + ':selectedColor');
+  }
+
+  static saveCheckInNotifPreference(value) {
+    return AsyncStorage.setItem(prefix + ':checkInNotifPref', value.toString());
+  }
+
+  static getCheckinNotifPreference() {
+    return new Promise((success, failure) => {
+      AsyncStorage.getItem(prefix + ':checkInNotifPref').then((result) => {
+        if (result == null) {
+          this.saveCheckInNotifPreference(true);
+          success(true);
+          return;
+        }
+        success(result == 'true');
+      });
+    });
+  }
+
+  static saveLabAccessPreference(value) {
+    return AsyncStorage.setItem(prefix + ':labAccessNotifPref', value.toString());
+  }
+
+  static getLabAccessPreference() {
+    return new Promise((success, failure) => {
+      AsyncStorage.getItem(prefix + ':labAccessNotifPref').then((result) => {
+        if (result == null) {
+          this.saveLabAccessPreference(true);
+          success(true);
+          return;
+        }
+        success(result == 'true');
+      });
+    });
   }
 }
 
