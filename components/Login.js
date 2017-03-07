@@ -8,7 +8,9 @@ import {
   Text,
   View,
   Image,
-  TouchableHighlight
+  TouchableHighlight,
+  Animated,
+  Easing
 } from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 
@@ -19,28 +21,70 @@ class Login extends Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      animateDone: false,
+      slidingAnimationValue: new Animated.ValueXY({ x: 0, y: 75 }),
+      fadeAnim: new Animated.Value(0)
+    }
+  }
+
+  componentDidMount() {
+    const animationConfig = {
+      duration: 1500, // milliseconds
+      delay: 1000, // milliseconds
+      easing: Easing.inOut(Easing.ease),
+    };
+
+    const value = this.state.slidingAnimationValue;
+    const slidingInAnimation = Animated.timing(value, {
+      ...animationConfig, // ES6 spread operator
+      toValue: {
+        x: 0,
+        y: 0,
+      },
+    }).start(() => {
+      this.setState({
+        animateDone: true
+      });
+      Animated.timing(          // Uses easing functions
+         this.state.fadeAnim,    // The value to drive
+         {toValue: 1}            // Configuration
+       ).start();
+    });
   }
 
   render() {
+    const slidingAnimationStyle = this.state
+     .slidingAnimationValue
+     .getTranslateTransform();
+
     return (
 
         <View style={styles.container}>
-          <LinearGradient colors={['#2f97aa', '#95c9d2', '#FFFFFF']} style={styles.container}>
-            <View>
-              <View style={styles.innerContainer}>
-                <Image source={require('./Assets/DALI_whiteLogo.png')} style={styles.daliImage}/>
-                <TouchableHighlight
-                  style={[styles.buttonShadow, styles.button]}
-                  onPress={this.signIn.bind(this)}>
-                  <View style={styles.button}>
-                    <Image source={require('./Assets/googleG.png')} style={styles.googleG}/>
-                    <Text style={styles.googleText}>SIGN IN WITH GOOGLE</Text>
-                  </View>
-                </TouchableHighlight>
-              <View style={{height: 70}}/>
+          <Image source={require("./Assets/lowPolyBackground.png")} style={styles.container}>
+            <LinearGradient colors={['#2f97aa', 'rgba(250,250,250,0.4)']} style={styles.container}>
+              <View>
+                <View style={styles.innerContainer}>
+                  <Animated.Image
+                    style={[styles.daliImage, {transform: slidingAnimationStyle}]}
+                    source={require('./Assets/DALI_whiteLogo.png')}/>
+                  {this.state.animateDone ?
+                    <Animated.View style={{opacity: this.state.fadeAnim}}>
+                      <TouchableHighlight
+                        style={[styles.buttonShadow, styles.button]}
+                        onPress={this.signIn.bind(this)}>
+                        <View style={styles.button}>
+                          <Image source={require('./Assets/googleG.png')} style={styles.googleG}/>
+                          <Text style={styles.googleText}>SIGN IN WITH GOOGLE</Text>
+                        </View>
+                      </TouchableHighlight>
+                    </Animated.View> : <View style={{height: 48}}/>}
+                <View style={{height: 70}}/>
+                </View>
               </View>
-            </View>
-          </LinearGradient>
+            </LinearGradient>
+          </Image>
         </View>
     )
   }
@@ -96,7 +140,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4
   },
   daliImage: {
-    width: 260,
+    width: 240,
     resizeMode: 'contain',
     height: 100,
     marginBottom: 30

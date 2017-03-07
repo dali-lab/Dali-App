@@ -8,13 +8,15 @@ import {
 	TouchableHighlight,
 	ListView,
 	Image,
-	Modal
+	Modal,
+	Dimensions
 } from 'react-native';
 let ServerCommunicator = require('./ServerCommunicator').default;
 import LinearGradient from 'react-native-linear-gradient';
 import {GoogleSignin} from 'react-native-google-signin';
 let Settings = require('./Settings');
 
+var window = Dimensions.get('window')
 
 class Main extends Component {
 	propTypes: {
@@ -151,18 +153,18 @@ const styles = StyleSheet.create({
 	separatorThick: {
 		backgroundColor: 'white',
 		height: 2,
-		width: 290
+		width: window.width - 83
 	},
 	separatorThin: {
 		backgroundColor: 'white',
 		height: 0.3,
-		width: 290
+		width: window.width - 83
 	},
 	internalView: {
 		flex: 1
 	},
 	topView: {
-		height: 300,
+		height: window.height/2 - 60,
 		alignItems: 'center'
 	},
 	titleText: {
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
 	row: {
 		paddingTop: 10,
 		backgroundColor: 'rgba(0, 0, 0, 0)',
-		width: 290,
+		width: window.width - 83,
 		marginBottom: 5,
 		marginTop: 5,
 		flexDirection: 'row'
@@ -220,7 +222,6 @@ const styles = StyleSheet.create({
 		resizeMode: 'contain'
 	},
 	daliImage: {
-		width: 135,
 		height: 50,
 		marginTop: 60,
 		marginBottom: 35,

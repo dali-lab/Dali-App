@@ -45,7 +45,6 @@ class BeaconController {
 
 		this.enterListener = DeviceEventEmitter.addListener('regionDidEnter', this.didEnterRegion.bind(this));
 		this.exitListener = DeviceEventEmitter.addListener('regionDidExit', this.didExitRegion.bind(this));
-		this.setUpNotifications()
 	}
 
 	setUpNotifications() {
@@ -92,6 +91,10 @@ class BeaconController {
 		});
 	}
 
+	requestPushPermissions() {
+		this.setUpNotifications()
+	}
+
 	/**
 	 * Enable beacon ranging
 	 */
@@ -123,7 +126,7 @@ class BeaconController {
 					message: "See you next time!"
 				});
 			}
-		});
+		})
 
 		this.inDALI = false;
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);

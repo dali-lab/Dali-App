@@ -53,6 +53,7 @@ class ServerCommunicator {
 
   loggedIn(user) {
     this.user = user;
+    this.beaconController.requestPushPermissions()
     if (this.awaitingUser) {
       this.checkIn(true);
     }

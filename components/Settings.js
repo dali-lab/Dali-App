@@ -11,6 +11,7 @@ import {
   Switch
 } from 'react-native';
 const StorageController = require('./StorageController').default;
+import codePush from "react-native-code-push";
 
 
 class Settings extends Component {
@@ -28,40 +29,10 @@ class Settings extends Component {
       sectionHeaderHasChanged: (s1, s2) => s1 !== s2
     });
 
-    var notificationsRows = [
-      {
-        title: "Event Check-in",
-        detail: "Allow notifications when you are checked in to a DALI event.",
-        switchChanged: (value) => {
-          this.setState({
-            checkInNotif: value,
-            dataSource: dataSource.cloneWithRowsAndSections({ user: [signOutRow], notifications: notificationsRows}),
-          })
-          StorageController.saveCheckInNotifPreference(value);
-        },
-        stateName: "checkInNotif"
-      },{
-        title: "Lab Access",
-        detail: "Allow notifications when you enter or leave the lab.",
-        switchChanged: (value) => {
-          this.setState({
-            labAccessNotif: value,
-            dataSource: dataSource.cloneWithRowsAndSections({ user: [signOutRow], notifications: notificationsRows}),
-          })
 
-          StorageController.saveLabAccessPreference(value);
-        },
-        stateName: "labAccessNotif"
-      }
-    ]
-
-    var signOutRow = {
-      title: "Sign Out",
-      action: props.onLogout
-    }
 
     this.state = {
-      dataSource: dataSource.cloneWithRowsAndSections({ user: [signOutRow], notifications: notificationsRows}),
+      dataSource: dataSource.cloneWithRowsAndSections(this.getData(props)),
       checkInNotif: true,
       labAccessNotif: true
     }
@@ -94,10 +65,55 @@ class Settings extends Component {
     })
   }
 
+	getData() {
+		var notificationsRows = [
+			{
+				title: "Event Check-in",
+				detail: "Allow notifications when you are checked in to a DALI event.",
+				switchChanged: (value) => {
+					this.setState({
+						checkInNotif: value,
+						dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
+					})
+					StorageController.saveCheckInNotifPreference(value);
+				},
+				stateName: "checkInNotif"
+			},{
+				title: "Lab Access",
+				detail: "Allow notifications when you enter or leave the lab.",
+				switchChanged: (value) => {
+					this.setState({
+						labAccessNotif: value,
+						dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
+					})
+
+					StorageController.saveLabAccessPreference(value);
+				},
+				stateName: "labAccessNotif"
+			}
+		]
+
+		var signOutRow = {
+			title: "Sign Out",
+			action: this.props.onLogout
+		}
+		var update = {
+			title: "Update",
+			action: () => {
+				codePush.sync({
+					updateDialog: true,
+					installMode: codePush.InstallMode.IMMEDIATE
+				});
+			}
+		}
+
+		return { user: [signOutRow, update], notifications: notificationsRows}
+	}
+
   renderRow(data, section, row) {
     if (section == 'user') {
       return (
-        <TouchableHighlight onPress={this.props.onLogout}>
+        <TouchableHighlight onPress={data.action}>
           <View>
             <View style={styles.userRow}>
               <Text style={styles.userRowTitle}>{data.title}</Text>
@@ -226,22 +242,25 @@ const styles = StyleSheet.create({
   },
   notificationRow: {
     padding: 10,
+		paddingBottom: 18,
     backgroundColor: 'white',
     paddingLeft: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
+		flex: 1
   },
   notificationRowTextContainer: {
-    width: 290
+    flex: 1
   },
   notificationRowTitle: {
     fontSize: 18,
     fontFamily: 'Avenir Next',
-    marginBottom: 8
+    marginBottom: 11
   },
   notificationRowDetail: {
     fontSize: 13,
     fontFamily: 'Avenir Next',
     fontWeight: '400',
+		marginRight: 53,
     color: 'grey'
   },
   notificationRowSwitch: {

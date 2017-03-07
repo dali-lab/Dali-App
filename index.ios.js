@@ -57,6 +57,9 @@ var Login = require('./components/Login');
 
 let beaconController = new BeaconController();
 let serverCommunicator = new ServerCommunicator(beaconController);
+GoogleSignin.configure({
+	iosClientId: env.googleIOSClient
+})
 
 export default class dali extends Component {
   constructor(props, context) {
@@ -69,24 +72,13 @@ export default class dali extends Component {
   }
 
   componentWillMount() {
-    GoogleSignin.configure({
-      iosClientId: env.googleIOSClient
-    }).then(() => {
-      return GoogleSignin.currentUserAsync()
-    }).then((user) => {
+    GoogleSignin.currentUserAsync().then((user) => {
 			serverCommunicator.loggedIn(user);
       this.setState({
         user: user,
         configured: true
       });
     }).done();
-  }
-
-  update() {
-    codePush.sync({
-      updateDialog: true,
-      installMode: codePush.InstallMode.IMMEDIATE
-    });
   }
 
 	onLogin(user) {
@@ -98,16 +90,18 @@ export default class dali extends Component {
 	}
 
 	onLogout() {
-		serverCommunicator.user = null;
-		this.setState({
-			user: null,
-		});
+		GoogleSignin.signOut().then(() => {
+			serverCommunicator.user = null;
+			this.setState({
+				user: null,
+			});
+		})
 	}
 
 	render() {
     var internalView = null;
     if (!this.state.configured) {
-      internalView = <View/>;
+      internalView = <Login onLogin={this.onLogin.bind(this)}/>;
     }else if (this.state.user == null){
       internalView = <Login onLogin={this.onLogin.bind(this)}/>;
     }else{
