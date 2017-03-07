@@ -118,11 +118,6 @@ export default class dali extends Component {
 				<View style={{flex:1, flexDirection: 'row'}}>
         {internalView}
 				</View>
-        <View style={styles.bottomBar}>
-          <TouchableHighlight style={styles.updateButton} onPress={this.update}>
-            <Text style={styles.updateButtonText}>Update</Text>
-          </TouchableHighlight>
-        </View>
       </View>
     )
 	}
@@ -133,23 +128,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-	},
-	bottomBar: {
-		backgroundColor: '#adadad',
-		height: 50,
-		marginBottom: 0,
-		marginLeft: 0,
-		marginRight: 0,
-		alignSelf: "stretch",
-		alignItems: "center",
-		padding: 15
-	},
-	updateButton: {
-		alignSelf: "stretch",
-	},
-	updateButtonText: {
-		textAlign: "center",
-		color: "#0087ff"
 	}
 });
 

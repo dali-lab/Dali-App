@@ -8,32 +8,42 @@ import {
 	TouchableHighlight,
 	ListView,
 	Image,
+	Modal
 } from 'react-native';
-let StorageController = require('./StorageController').default;
-var ColorPicker = require('./ColorPicker');
+let ServerCommunicator = require('./ServerCommunicator').default;
+import LinearGradient from 'react-native-linear-gradient';
 import {GoogleSignin} from 'react-native-google-signin';
+let Settings = require('./Settings');
 
 
 class Main extends Component {
+	propTypes: {
+		onLogout: ReactNative.PropTypes.func,
+		user: ReactNative.PropTypes.object.isRequired,
+	}
+
 	constructor() {
 		super()
 
 		this.state = {
-			selectedColor: null,
-			pickerOpen: false
+			officeHoursDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+			eventsDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+			settingsVisible: false
 		}
 
-		StorageController.getColor().then((color, error) => {
-			if (error) console.log(error);
+		ServerCommunicator.current.getLabHours().then((labHours) => {
 			this.setState({
-				selectedColor: color
+				officeHoursDataSource: this.state.officeHoursDataSource.cloneWithRows(labHours)
 			})
-		});
-	}
+		})
 
-	propTypes: {
-		onLogout: ReactNative.PropTypes.func,
-		user: ReactNative.PropTypes.object.isRequired,
+		ServerCommunicator.current.getUpcomingEvents().then((events) => {
+			this.setState({
+				eventsDataSource: this.state.eventsDataSource.cloneWithRows(events)
+			})
+		}).catch((error) => {
+			console.log("Haven't yet inputted a events url")
+		})
 	}
 
 	logout() {
@@ -46,39 +56,83 @@ class Main extends Component {
 		});
 	}
 
-  render() {
-		const colorPick = <View style={{height: 250}} ><ColorPicker colorSelected={(color) => {
-			this.setState({
-				selectedColor: color
-			});
-			StorageController.saveColor(color).then((error) => {
-				if (error) console.log(error);
-			});
-		}}/></View>
 
+	renderOfficeHoursRow(hour) {
 		return (
-			<View style={styles.container}>
-				<View style={{padding: 10, borderRadius: 100, backgroundColor: this.state.selectedColor || "white"}}>
-					<Image
-					style={{width: 100, height: 100, borderRadius: 50}}
-					source={{uri: this.props.user.photo}}/>
+			<View style={styles.row}>
+				<Text style={styles.leftRowText}>{hour.start - 12}-{hour.end - 12}pm</Text>
+				<View style={styles.rightRowView}>
+					<Text style={styles.rowTitle}>{hour.name}</Text>
+					<Text style={styles.detailText}>{hour.skills.join(", ")}</Text>
 				</View>
-				<TouchableHighlight
-					style={styles.button}
-					onPress={this.logout.bind(this)}>
-					<Text style={styles.buttonText}>Logout</Text>
-				</TouchableHighlight>
-				<TouchableHighlight
-					style={styles.button}
-					onPress={() => {
-						this.setState({
-							pickerOpen: !this.state.pickerOpen
-						});
-					}}>
-					<Text style={styles.buttonText}>{this.state.pickerOpen ? "Finish Color Picking" : "Choose Color"}</Text>
-				</TouchableHighlight>
-				{this.state.pickerOpen ? colorPick : null}
 			</View>
+		)
+	}
+
+	renderEventRow(event) {
+		return (
+			<View style={styles.row}>
+				<Text style={styles.leftRowText}>{event.day}</Text>
+				<View style={styles.rightRowView}>
+					<Text style={styles.rowTitle}>{hour.name}</Text>
+				</View>
+			</View>
+		)
+	}
+
+	settingsButtonPressed() {
+		this.setState({
+			settingsVisible: true
+		})
+	}
+
+	hideSettings() {
+		this.setState({
+			settingsVisible: false
+		})
+	}
+
+  render() {
+		return (
+			<LinearGradient colors={['#2696a9', 'rgb(146, 201, 210)']} style={styles.container}>
+			<Modal
+          animationType={"slide"}
+          transparent={false}
+          visible={this.state.settingsVisible}
+          onRequestClose={() => {
+						this.setState({
+							settingsVisible: false
+						})
+					}}>
+					<Settings
+						user={this.props.user}
+						onLogout={this.props.onLogout}
+						dismiss={this.hideSettings.bind(this)}/>
+				</Modal>
+				<Image source={require('./Assets/DALI_whiteLogo.png')} style={styles.daliImage}/>
+				<View style={styles.internalView}>
+					<View style={styles.topView}>
+						<View style={styles.separatorThick}/>
+						<Text style={styles.titleText}>TA office hours tonight!</Text>
+						<View style={styles.separatorThin}/>
+						<ListView
+							style={styles.listView}
+							dataSource={this.state.officeHoursDataSource}
+							renderRow={this.renderOfficeHoursRow.bind(this)}/>
+					</View>
+					<View style={styles.bottomView}>
+						<View style={styles.separatorThick}/>
+						<Text style={styles.titleText}>Upcoming Events</Text>
+						<View style={styles.separatorThin}/>
+						<ListView
+							underlayColor="rgba(0,0,0,0)"
+							style={styles.listView}
+							dataSource={this.state.eventsDataSource}
+							renderRow={this.renderEventRow.bind(this)}/>
+					</View>
+				</View>
+				
+			</LinearGradient>
 		)
 	}
 }
@@ -87,18 +141,86 @@ class Main extends Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "white",
 		alignItems: 'center',
-		justifyContent: 'center'
+		justifyContent: 'center',
 	},
-	button: {
+	separatorThick: {
+		backgroundColor: 'white',
+		height: 2,
+		width: 290
+	},
+	separatorThin: {
+		backgroundColor: 'white',
+		height: 0.3,
+		width: 290
+	},
+	internalView: {
+		flex: 1
+	},
+	topView: {
+		height: 300,
+		alignItems: 'center'
+	},
+	titleText: {
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontWeight: '600',
+		fontSize: 19,
+		marginTop: 14,
+		marginBottom: 14,
+		backgroundColor: 'rgba(0,0,0,0)'
+	},
+	bottomView: {
+		alignItems: 'center'
+	},
+	listView: {
+		flex: 1,
+	},
+	leftRowText: {
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontWeight: '700',
+		fontSize: 12,
+		width: 80
+	},
+	rightRowView: {
 
 	},
-	buttonText: {
-		color: "#0087ff"
+	rowTitle: {
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontWeight: '600',
+		fontSize: 15
 	},
-	checkIn: {
-		marginTop: 20,
+	detailText: {
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontStyle: 'italic',
+		fontSize: 11,
+		fontWeight: '500'
+	},
+	row: {
+		paddingTop: 10,
+		backgroundColor: 'rgba(0, 0, 0, 0)',
+		width: 290,
+		marginBottom: 5,
+		marginTop: 5,
+		flexDirection: 'row'
+	},
+	settingsButton: {
+		marginBottom: 25,
+	},
+	settingsButtonImage: {
+		width: 30,
+		height: 30,
+		resizeMode: 'contain'
+	},
+	daliImage: {
+		width: 135,
+		height: 50,
+		marginTop: 60,
+		marginBottom: 35,
+		resizeMode: 'contain'
 	}
 });
 

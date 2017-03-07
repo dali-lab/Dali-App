@@ -1,5 +1,6 @@
 let BeaconController = require('./BeaconController').default;
 let env = require('./Environment');
+let StorageController = require('./StorageController');
 import {GoogleSignin} from 'react-native-google-signin';
 
 
@@ -72,26 +73,44 @@ class ServerCommunicator {
     });
   }
 
-  enterExitDALI=(inDALI) => {
-    const user = GoogleSignin.currentUser()
+  getLabHours() {
+    return new Promise(function(resolve, reject) {
+      fetch(env.labHoursUrl).then((response) => response.json())
+      .then((responseJson) => {
+        resolve(responseJson);
+      })
+      .catch((error) => {
+        // Likely can't connect. We'll use a static local version
+        resolve(require('./officeHours.json'))
+      });
+    });
+  }
 
+  getUpcomingEvents() {
+    return fetch(env.eventsUrl).then((response) => response.json());
+  }
+
+  enterExitDALI=(inDALI) => {
+    const user = GoogleSignin.currentUser();
     const complete = (user, inDALI) => {
-      this.post(env.daliEnterURL, {user: {email: user.email, id: user.id, familyName: user.familyName, givenName: user.givenName, name: user.name}, inDALI: inDALI})
+      this.post(env.daliEnterURL, {user: {email: user.email, id: user.id, familyName: user.familyName, givenName: user.givenName, name: user.name}, inDALI: inDALI, color: color})
       .then((response) => {
       });
     }
 
-    if (user == null) {
-      GoogleSignin.currentUserAsync().then((user) => {
-        if (user == null) {
-          return
-        }else{
-          complete(user, inDALI);
-        }
-      })
-    }else{
-      complete(user, inDALI);
-    }
+    const color = StorageController.getColor().then((color) => {
+      if (user == null) {
+        GoogleSignin.currentUserAsync().then((user) => {
+          if (user == null) {
+            return
+          }else{
+            complete(user, inDALI);
+          }
+        })
+      }else{
+        complete(user, inDALI);
+      }
+    });
   }
 }
 
