@@ -40,8 +40,8 @@ class StorageController {
     return new Promise((success, failure) => {
       AsyncStorage.getItem(prefix + ':labAccessNotifPref').then((result) => {
         if (result == null) {
-          this.saveLabAccessPreference(true);
-          success(true);
+          this.saveLabAccessPreference(false);
+          success(false);
           return;
         }
         success(result == 'true');

@@ -1,6 +1,6 @@
 let BeaconController = require('./BeaconController').default;
 let env = require('./Environment');
-let StorageController = require('./StorageController');
+let StorageController = require('./StorageController').default;
 import {GoogleSignin} from 'react-native-google-signin';
 
 
@@ -40,6 +40,8 @@ class ServerCommunicator {
           }else{
             this.postCheckin(user).then((response) => {
               this.beaconController.checkInComplete();
+            }).catch((response) => {
+              // Failed to connect. Ignore...
             });
           }
         })
@@ -96,6 +98,8 @@ class ServerCommunicator {
     const complete = (user, inDALI) => {
       this.post(env.daliEnterURL, {user: {email: user.email, id: user.id, familyName: user.familyName, givenName: user.givenName, name: user.name}, inDALI: inDALI, color: color})
       .then((response) => {
+      }).catch((error) => {
+        // Failed to connect. Ignoring...
       });
     }
 

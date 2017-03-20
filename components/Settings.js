@@ -80,7 +80,7 @@ class Settings extends Component {
 				stateName: "checkInNotif"
 			},{
 				title: "Lab Access",
-				detail: "Allow notifications when you enter or leave the lab.",
+				detail: "Notify me when I enter or exit the lab",
 				switchChanged: (value) => {
 					this.setState({
 						labAccessNotif: value,
@@ -165,6 +165,7 @@ class Settings extends Component {
                  RightButton: (route, navigator, index, navState) =>
                    { return (
                       <TouchableHighlight
+												underlayColor="rgba(0,0,0,0)"
                         style={styles.navBarDoneButton}
                         onPress={this.props.dismiss}>
                         <Text style={styles.navBarDoneText}>Done</Text>

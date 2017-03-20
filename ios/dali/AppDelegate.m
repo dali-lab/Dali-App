@@ -23,7 +23,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   NSURL *jsCodeLocation;
-  [Fabric with:@[[Crashlytics class]]];
   
   if([launchOptions objectForKey:@"UIApplicationLaunchOptionsLocationKey"])
   {
@@ -45,6 +44,8 @@
   // For production load from pre-bundled file on disk. To re-generate the static bundle, run
   //
   // $ curl http://localhost:8081/index.ios.bundle -o main.jsbundle
+  
+  [Fabric with:@[[Crashlytics class]]];
   jsCodeLocation = [CodePush bundleURL];
 #endif
 

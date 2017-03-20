@@ -10,7 +10,8 @@ import {
   Image,
   TouchableHighlight,
   Animated,
-  Easing
+  Easing,
+  Alert
 } from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 
@@ -92,7 +93,12 @@ class Login extends Component {
   signIn() {
     GoogleSignin.signIn()
     .then((user) => {
-  		this.props.onLogin(user);
+      if (user.email.includes('@dali.dartmouth.edu')) {
+        this.props.onLogin(user);
+      }else{
+        Alert.alert('Invalid Account', 'You must use a DALI lab account!');
+        GoogleSignin.signOut();
+      }
     })
     .catch((err) => {
     })

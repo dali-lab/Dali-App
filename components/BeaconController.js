@@ -35,6 +35,7 @@ class BeaconController {
 		this.beaconRangeListeners = [];
 		this.checkInListeners = [];
 		BeaconController.current = this;
+		this.startRanging();
 
 		Beacons.getAuthorizationStatus(function(authorization) {
 			// authorization is a string which is either "authorizedAlways",
@@ -99,8 +100,8 @@ class BeaconController {
 	 * Enable beacon ranging
 	 */
 	startRanging() {
-		Beacons.startMonitoringForRegion(labRegion);
 		Beacons.startUpdatingLocation();
+		Beacons.startRangingBeaconsInRegion(labRegion);
 
 		this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange.bind(this));
 	}
@@ -110,6 +111,7 @@ class BeaconController {
 	 */
 	stopRanging() {
 		Beacons.stopUpdatingLocation();
+		this.rangingListener.remove();
 	}
 
 	didExitRegion(exitRegion) {
@@ -167,14 +169,23 @@ class BeaconController {
 	beaconsDidRange(data) {
 		console.log("Ranged beacons: " + data);
 		this.data = data;
-		this.beacons = [];
+		this.beacons = data.beacons;
 
-		data.beacons.filter((beacon) => {
+		this.beacons.filter((beacon) => {
 			return beacon.uuid == labRegion.uuid;
 		});
 
-		BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
-		this.didUpdateLocation();
+		this.inDALI = this.beacons.length > 0;
+
+		checkInBeacons = data.beacons;
+		checkInBeacons.filter((beacon) => {
+			return beacon.uuid == checkInRegion.uuid;
+		});
+
+		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
+
+		BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons, checkInBeacons);
+		this.stopRanging();
 	}
 
 	/**
