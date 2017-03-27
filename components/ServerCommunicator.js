@@ -78,20 +78,34 @@ class ServerCommunicator {
 
   getLabHours() {
     return new Promise(function(resolve, reject) {
-      fetch(env.labHoursUrl).then((response) => response.json())
-      .then((responseJson) => {
-        resolve(responseJson);
-      })
-      .catch((error) => {
-        // Likely can't connect. We'll use a static local version
-        resolve([])
-      });
+      fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.taCalendarId + "/events", {
+        method: "GET",
+        headers: {
+          'Authorization': "Bearer " + GoogleSignin.currentUser().accessToken
+        }
+      }).then((response) => response.json())
+        .then((responseJson) => {
+
+          let now = new Date();
+          var taHours = responseJson.items.filter((hour) => {
+            hour.startDate = new Date(hour.start.dateTime);
+            hour.endDate = new Date(hour.end.dateTime);
+            hour.name = hour.summary;
+            hour.skills = hour.description;
+
+            return hour.startDate > now.setHours(0,0,0) && hour.startDate < now.setHours(23, 59, 59);
+          });
+
+          resolve(taHours);
+        }).catch((error) => {
+          reject(error);
+        });
     });
   }
 
   getUpcomingEvents() {
     return new Promise((success, failure) => {
-      fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.calendarId + "/events", {
+      fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.eventsCalendarId + "/events", {
         method: "GET",
         headers: {
           'Authorization': "Bearer " + GoogleSignin.currentUser().accessToken
@@ -99,17 +113,19 @@ class ServerCommunicator {
       }).then((response) => response.json())
         .then((responseJson) => {
           let now = new Date();
+          let weekFromNow = new Date();
+          weekFromNow.setDate(now.getDate() + 7);
           var events = responseJson.items.filter((event) => {
             event.startDate = new Date(event.start.dateTime);
             event.endDate = new Date(event.end.dateTime);
 
-            return event.startDate > now.setHours(0,0,0)
+            return event.startDate > now.setHours(0,0,0) && event.startDate < weekFromNow.setHours(23, 59, 59)
           })
 
           success(events);
         }).catch((error) => {
           failure(error);
-        })
+        });
     });
   }
 

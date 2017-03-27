@@ -21,13 +21,19 @@ var window = Dimensions.get('window')
 
 
 function formatEvent(start, end) {
-	let weekDays = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun']
+	let weekDays = ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat']
 
 	function formatTime(time) {
-		return ((start.getHours() + 1) % 13).toString() + (start.getMinutes() == 0 ? '' : ':' + start.getMinutes().toString())
+		var hours = time.getHours()
+
+		if (hours > 12) {
+			hours -= 12
+		}
+
+		return hours.toString() + (time.getMinutes() == 0 ? '' : ':' + time.getMinutes().toString())
 	}
 
-	return weekDays[start.getDay()] + ' ' + formatTime(start) + '-' + formatTime(end) + ' ' + ((start.getHours() + 1) >= 12 ? "PM" : "AM")
+	return weekDays[start.getDay()] + ' ' + formatTime(start) + ' - ' + formatTime(end) + ' ' + ((start.getHours() + 1) >= 12 ? "PM" : "AM")
 }
 
 class Main extends Component {
@@ -83,17 +89,16 @@ class Main extends Component {
 	renderOfficeHoursRow(hour) {
 		return (
 			<View style={styles.row}>
-				<Text style={styles.leftRowText}>{hour.start - 12}-{hour.end - 12}pm</Text>
+				<Text style={[styles.leftRowText, {width: 60}]}>{hour.startDate.getHours() - 12} - {hour.endDate.getHours() - 12}pm</Text>
 				<View style={styles.rightRowView}>
 					<Text style={styles.rowTitle}>{hour.name}</Text>
-					<Text style={styles.detailText}>{hour.skills.join(", ")}</Text>
+					<Text style={styles.detailText}>{hour.skills}</Text>
 				</View>
 			</View>
 		)
 	}
 
 	renderEventRow(event) {
-		console.log(event);
 		return (
 			<View style={styles.row}>
 				<Text style={styles.leftRowText}>{event.summary}</Text>
@@ -137,9 +142,9 @@ class Main extends Component {
 				<Image source={require('./Assets/DALI_whiteLogo.png')} style={styles.daliImage}/>
 				<Text style={styles.locationText}>{this.state.inDALI ? "You are in DALI now" : (this.state.inDALI != null ? "You are not in DALI now" : "Loading location...")}</Text>
 				<View style={styles.internalView}>
-					<View style={styles.topView}>
+					<View style={[styles.topView, {height: (this.state.labHours != null && this.state.labHours.length > 0 ? window.height/2 - 130 : window.height/2 - 170)}]}>
 						<View style={styles.separatorThick}/>
-						<Text style={styles.titleText}>{this.state.labHours == null ? "Loading TA office hours..." : (this.state.labHours.length > 0 ? "TA office hours tonight!" : "No TA office hours defined")}</Text>
+						<Text style={styles.titleText}>{this.state.labHours == null ? "Loading TA office hours..." : (this.state.labHours.length > 0 ? "TA office hours tonight!" : "No TA office hours tonight")}</Text>
 						<View style={styles.separatorThin}/>
 						<ListView
 							enableEmptySections={true}
@@ -220,12 +225,12 @@ const styles = StyleSheet.create({
 		color: 'white',
 		fontFamily: 'Avenir Next',
 		fontWeight: '700',
-		fontSize: 12,
-		marginRight: 10,
-		width: 100
+		fontSize: 14,
+		marginRight: 20,
+		width: 110
 	},
 	rightRowView: {
-
+		flex: 1
 	},
 	rowTitle: {
 		color: 'white',
