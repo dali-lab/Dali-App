@@ -117,18 +117,30 @@ class BeaconController {
 	didExitRegion(exitRegion) {
 		console.log("Exited region");
 		console.log(exitRegion);
+
 		if (exitRegion.region == checkInRegion.identifier) {
+			// If we have exited the check-in-region, so we don't want to be notified about the lab
+			// We will instead deal with the check in listeners
 			BeaconController.performCallbacks(this.checkInListeners, false)
 			return
 		}
-		StorageController.getLabAccessPreference().then((value) => {
+
+		// I will only send enter and exit notifications if the user is signed in
+		GoogleSignin.currentUserAsync().then((user) => {
+			if (user != null) {
+				// Plus I have to chek their preferences
+				return StorageController.getLabAccessPreference()
+			}
+		}).then((value) => {
+			// Only if they are logged in and they want to receive these notifications...
 			if (value) {
+				// Send a notification
 				PushNotification.localNotification({
 					title: "Exited DALI",
 					message: "See you next time!"
 				});
 			}
-		})
+		});
 
 		this.inDALI = false;
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
@@ -148,42 +160,57 @@ class BeaconController {
 	didEnterRegion(enterRegion) {
 		console.log("Entered region");
 		console.log(enterRegion);
+
+		// Check for check-in
 		if (enterRegion.region == checkInRegion.identifier) {
 			BeaconController.performCallbacks(this.checkInListeners, true);
 			return
 		}
 
-		StorageController.getLabAccessPreference().then((value) => {
+		// Check Preferences
+		GoogleSignin.currentUserAsync().then((user) => {
+			if (user != null) {
+				// Plus I have to chek their preferences
+				return StorageController.getLabAccessPreference()
+			}
+		}).then((value) => {
+			// If both are valid, we send
 			if (value) {
 				PushNotification.localNotification({
 					title: "Entered DALI",
 					message: "Welcome back to DALI lab!"
 				});
 			}
-		})
+		});
 
 		this.inDALI = true;
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
 	}
 
+	/**
+	 * Called from listener
+	 */
 	beaconsDidRange(data) {
 		console.log("Ranged beacons: " + data);
 		this.data = data;
 		this.beacons = data.beacons;
 
+		// Removes all beacons that are not in the lab region
 		this.beacons.filter((beacon) => {
 			return beacon.uuid == labRegion.uuid;
 		});
 
+		// Keeping track of wheter I'm in DALI or not
 		this.inDALI = this.beacons.length > 0;
 
+		// Doing the same thing but for check-in beacons
 		checkInBeacons = data.beacons;
 		checkInBeacons.filter((beacon) => {
 			return beacon.uuid == checkInRegion.uuid;
 		});
 
+		// Provide the world with knowledge of our range
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
-
 		BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons, checkInBeacons);
 		this.stopRanging();
 	}
@@ -225,28 +252,39 @@ class BeaconController {
 		return BeaconController.removeCallback(listener, this.enterExitListeners);
 	}
 
+	// Same as previous
 	removeBeaconDidRangeListener(listener) {
 		return BeaconController.removeCallback(listener, this.enterExitListeners);
 	}
 
+	// Same as previous
 	removeCheckInListener(listener) {
 		return BeaconController.removeCallback(listener, this.checkInListeners);
 	}
 
+	// Removes the given callback from the given list of callbacks
+	// Takes a callback and a list of callbacks
+	// returns Boolean indicating wheter it found one to remove
 	static removeCallback(callback, list) {
+		// Get te index
 		let index = list.indexOf(callback);
 		if (index == -1) {
+			// Doesn't exist
 			return false;
 		}else{
+			// Does... Remove
 			list.splice(index, 1);
 			return true;
 		}
 	}
 
+	// Performs all the callbacks given to it with the remaining arguments in the call
 	static performCallbacks(callbacks) {
+		// This is my method of getting all the arguments except for the list of callbacks
 		var args = Array.prototype.slice.call(arguments, 1);;
 		callbacks.forEach(function(callback) {
-				callback.apply(null, args);
+			// To use the arguments I have to use the apply method of the function
+			callback.apply(null, args);
 		});
 	}
 }

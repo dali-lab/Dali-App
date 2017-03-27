@@ -57,9 +57,7 @@ var Login = require('./components/Login');
 
 let beaconController = new BeaconController();
 let serverCommunicator = new ServerCommunicator(beaconController);
-GoogleSignin.configure({
-	iosClientId: env.googleIOSClient
-})
+GoogleSignin.configure(env.googleConfig)
 
 export default class dali extends Component {
   constructor(props, context) {
