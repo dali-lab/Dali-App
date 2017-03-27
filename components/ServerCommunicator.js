@@ -84,13 +84,33 @@ class ServerCommunicator {
       })
       .catch((error) => {
         // Likely can't connect. We'll use a static local version
-        resolve(require('./officeHours.json'))
+        resolve([])
       });
     });
   }
 
   getUpcomingEvents() {
-    return fetch(env.eventsUrl).then((response) => response.json());
+    return new Promise((success, failure) => {
+      fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.calendarId + "/events", {
+        method: "GET",
+        headers: {
+          'Authorization': "Bearer " + GoogleSignin.currentUser().accessToken
+        }
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          let now = new Date();
+          var events = responseJson.items.filter((event) => {
+            event.startDate = new Date(event.start.dateTime);
+            event.endDate = new Date(event.end.dateTime);
+
+            return event.startDate > now.setHours(0,0,0)
+          })
+
+          success(events);
+        }).catch((error) => {
+          failure(error);
+        })
+    });
   }
 
   enterExitDALI=(inDALI) => {

@@ -19,6 +19,17 @@ let Settings = require('./Settings');
 
 var window = Dimensions.get('window')
 
+
+function formatEvent(start, end) {
+	let weekDays = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun']
+
+	function formatTime(time) {
+		return ((start.getHours() + 1) % 13).toString() + (start.getMinutes() == 0 ? '' : ':' + start.getMinutes().toString())
+	}
+
+	return weekDays[start.getDay()] + ' ' + formatTime(start) + '-' + formatTime(end) + ' ' + ((start.getHours() + 1) >= 12 ? "PM" : "AM")
+}
+
 class Main extends Component {
 	propTypes: {
 		onLogout: ReactNative.PropTypes.func,
@@ -32,11 +43,13 @@ class Main extends Component {
 			officeHoursDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
 			eventsDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
 			settingsVisible: false,
+			labHours: null,
 			inDALI: null,
 		}
 
 		ServerCommunicator.current.getLabHours().then((labHours) => {
 			this.setState({
+				labHours: labHours,
 				officeHoursDataSource: this.state.officeHoursDataSource.cloneWithRows(labHours)
 			})
 		})
@@ -46,7 +59,7 @@ class Main extends Component {
 				eventsDataSource: this.state.eventsDataSource.cloneWithRows(events)
 			})
 		}).catch((error) => {
-			console.log("Haven't yet inputted a events url")
+			console.log(error)
 		})
 
 		BeaconController.current.addEnterExitListener((inDALI) => {
@@ -80,11 +93,13 @@ class Main extends Component {
 	}
 
 	renderEventRow(event) {
+		console.log(event);
 		return (
 			<View style={styles.row}>
-				<Text style={styles.leftRowText}>{event.day}</Text>
+				<Text style={styles.leftRowText}>{event.summary}</Text>
 				<View style={styles.rightRowView}>
-					<Text style={styles.rowTitle}>{hour.name}</Text>
+					<Text style={styles.rowTitle}>{formatEvent(event.startDate, event.endDate)}</Text>
+					<Text style={styles.detailText}>{event.location}</Text>
 				</View>
 			</View>
 		)
@@ -124,9 +139,10 @@ class Main extends Component {
 				<View style={styles.internalView}>
 					<View style={styles.topView}>
 						<View style={styles.separatorThick}/>
-						<Text style={styles.titleText}>TA office hours tonight!</Text>
+						<Text style={styles.titleText}>{this.state.labHours == null ? "Loading TA office hours..." : (this.state.labHours.length > 0 ? "TA office hours tonight!" : "No TA office hours defined")}</Text>
 						<View style={styles.separatorThin}/>
 						<ListView
+							enableEmptySections={true}
 							style={styles.listView}
 							dataSource={this.state.officeHoursDataSource}
 							renderRow={this.renderOfficeHoursRow.bind(this)}/>
@@ -136,6 +152,7 @@ class Main extends Component {
 						<Text style={styles.titleText}>Upcoming Events</Text>
 						<View style={styles.separatorThin}/>
 						<ListView
+							enableEmptySections={true}
 							style={styles.listView}
 							dataSource={this.state.eventsDataSource}
 							renderRow={this.renderEventRow.bind(this)}/>
@@ -181,7 +198,7 @@ const styles = StyleSheet.create({
 		flex: 1
 	},
 	topView: {
-		height: window.height/2 - 60,
+		height: window.height/2 - 150,
 		alignItems: 'center'
 	},
 	titleText: {
@@ -204,7 +221,8 @@ const styles = StyleSheet.create({
 		fontFamily: 'Avenir Next',
 		fontWeight: '700',
 		fontSize: 12,
-		width: 80
+		marginRight: 10,
+		width: 100
 	},
 	rightRowView: {
 
