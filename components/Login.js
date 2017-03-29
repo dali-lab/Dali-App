@@ -11,7 +11,8 @@ import {
   TouchableHighlight,
   Animated,
   Easing,
-  Alert
+  Alert,
+  AlertIOS
 } from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 
@@ -96,15 +97,24 @@ class Login extends Component {
       if (user.email.includes('@dali.dartmouth.edu')) {
         this.props.onLogin(user);
       }else{
-        Alert.alert('Invalid Account', 'You must use a DALI lab account!');
-        GoogleSignin.signOut();
+        this.invalidAccount();
       }
     })
     .catch((err) => {
+      console.log(err);
     })
     .done();
   }
+
+  invalidAccount() {
+    console.log("Invalid account");
+    setTimeout(() => {
+      Alert.alert('Invalid Account', 'You must use a DALI lab account!');
+    }, 600);
+    GoogleSignin.signOut();
+  }
 }
+
 
 const styles = StyleSheet.create({
   container: {

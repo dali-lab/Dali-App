@@ -81,7 +81,7 @@ class Main extends Component {
 		  this.props.onLogout();
 		})
 		.catch((err) => {
-
+			console.log(err);
 		});
 	}
 

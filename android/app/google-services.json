@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "668475965898",
+    "project_id": "firebase-dali-app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668475965898:android:6656b1797f553e7f",
+        "android_client_info": {
+          "package_name": "com.JohnKotz.DALI.DaliLabApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "668475965898-9pirjes5s93i0k40h46tq3oe2deuno9a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.JohnKotz.DALI.DaliLabApp",
+            "certificate_hash": "459c654bdc1e8ceba9bda6c56a3c31b1838cebe3"
+          }
+        },
+        {
+          "client_id": "668475965898-pf7bqn8nkqeshgg450982lrsf5feur65.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBErSTJc4LSMY0h9IqCUsM_GW9WDeeSdgI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -19,30 +19,48 @@ var checkInRegion = {
 	uuid: 'C371F9F9-572D-4D59-956C-5C3DF4BE50B7'
 };
 
+console.log(Beacons);
+
 class BeaconController {
 	static current = null;
+	static ios = false;
 	static inDALI() {
 		return BeaconController.current.inDALI;
 	}
 
-	constructor() {
-		Beacons.requestAlwaysAuthorization();
-		Beacons.startMonitoringForRegion(labRegion);
-		Beacons.startMonitoringForRegion(checkInRegion);
+	constructor(ios) {
 		this.authorization = null;
+		if (ios) {
+			BeaconController.ios = ios
+			Beacons.requestAlwaysAuthorization();
+
+			Beacons.getAuthorizationStatus(function(authorization) {
+				// authorization is a string which is either "authorizedAlways",
+				// "authorizedWhenInUse", "denied", "notDetermined" or "restricted"
+				this.authorization = authorization;
+				console.log("Got authorization: " + authorization);
+			});
+			Beacons.startMonitoringForRegion(labRegion);
+			Beacons.startMonitoringForRegion(checkInRegion);
+			this.startRanging();
+		}else{
+			let newLab = labRegion
+			newLab.major = 20
+			newLab.minor = 0
+
+			let newCheckIn = checkInRegion
+			newCheckIn.major = 0
+			newCheckIn.minor = 0
+
+			Beacons.startMonitoringForRegion(newLab);
+			Beacons.startMonitoringForRegion(newCheckIn);
+			this.startRanging();
+		}
 		this.inDALI = false;
 		this.enterExitListeners = [];
 		this.beaconRangeListeners = [];
 		this.checkInListeners = [];
 		BeaconController.current = this;
-		this.startRanging();
-
-		Beacons.getAuthorizationStatus(function(authorization) {
-			// authorization is a string which is either "authorizedAlways",
-			// "authorizedWhenInUse", "denied", "notDetermined" or "restricted"
-			this.authorization = authorization;
-			console.log("Got authorization: " + authorization);
-		});
 
 		this.enterListener = DeviceEventEmitter.addListener('regionDidEnter', this.didEnterRegion.bind(this));
 		this.exitListener = DeviceEventEmitter.addListener('regionDidExit', this.didExitRegion.bind(this));
@@ -100,8 +118,12 @@ class BeaconController {
 	 * Enable beacon ranging
 	 */
 	startRanging() {
-		Beacons.startUpdatingLocation();
-		Beacons.startRangingBeaconsInRegion(labRegion);
+		if (BeaconController.ios) {
+			Beacons.startUpdatingLocation();
+			Beacons.startRangingBeaconsInRegion(labRegion);
+		}else{
+			Beacons.startRangingBeaconsInRegion(labRegion.identifier, labRegion.uuid);
+		}
 
 		this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange.bind(this));
 	}
@@ -110,7 +132,9 @@ class BeaconController {
 	 * Stop ranging
 	 */
 	stopRanging() {
-		Beacons.stopUpdatingLocation();
+		if (BeaconController.ios) {
+			Beacons.stopUpdatingLocation();
+		}
 		this.rangingListener.remove();
 	}
 

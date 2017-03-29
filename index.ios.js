@@ -55,7 +55,7 @@ var Login = require('./components/Login');
 //		 requestPermissions: true,
 // });
 
-let beaconController = new BeaconController();
+let beaconController = new BeaconController(true);
 let serverCommunicator = new ServerCommunicator(beaconController);
 GoogleSignin.configure(env.googleConfig)
 
