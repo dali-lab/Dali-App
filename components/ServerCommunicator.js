@@ -86,6 +86,12 @@ class ServerCommunicator {
       }).then((response) => response.json())
         .then((responseJson) => {
 
+          if (responseJson.items == null) {
+            console.log(responseJson);
+            failure("No data!");
+          }
+
+          console.log("Before TA...")
           let now = new Date();
           var taHours = responseJson.items.filter((hour) => {
             hour.startDate = new Date(hour.start.dateTime);
@@ -95,6 +101,7 @@ class ServerCommunicator {
 
             return hour.startDate > now.setHours(0,0,0) && hour.startDate < now.setHours(23, 59, 59);
           });
+          console.log("After TA")
 
           resolve(taHours);
         }).catch((error) => {
@@ -115,12 +122,19 @@ class ServerCommunicator {
           let now = new Date();
           let weekFromNow = new Date();
           weekFromNow.setDate(now.getDate() + 7);
+
+          if (responseJson.items == null) {
+            failure();
+          }
+
+          console.log("Before events...")
           var events = responseJson.items.filter((event) => {
             event.startDate = new Date(event.start.dateTime);
             event.endDate = new Date(event.end.dateTime);
 
             return event.startDate > now.setHours(0,0,0) && event.startDate < weekFromNow.setHours(23, 59, 59)
-          })
+          });
+          console.log("After events")
 
           success(events);
         }).catch((error) => {
