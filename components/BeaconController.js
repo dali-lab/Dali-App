@@ -5,6 +5,7 @@ import {
 	DeviceEventEmitter,
 } from 'react-native';
 const StorageController = require('./StorageController').default
+import {GoogleSignin} from 'react-native-google-signin';
 
 // Define a region which can be identifier + uuid,
 // identifier + uuid + major or identifier + uuid + major + minor
@@ -16,10 +17,9 @@ var labRegion = {
 
 var checkInRegion = {
 	identifier: 'Check In',
-	uuid: 'C371F9F9-572D-4D59-956C-5C3DF4BE50B7'
+	uuid: 'C371F9F9-572D-4D59-956C-5C3DF4BE50B8'
 };
 
-console.log(Beacons);
 
 class BeaconController {
 	static current = null;
@@ -45,12 +45,12 @@ class BeaconController {
 			this.startRanging();
 		}else{
 			let newLab = labRegion
-			newLab.major = 20
-			newLab.minor = 0
+			newLab.major = 1
+			newLab.minor = 1
 
 			let newCheckIn = checkInRegion
-			newCheckIn.major = 0
-			newCheckIn.minor = 0
+			newCheckIn.major = 1
+			newCheckIn.minor = 1
 
 			Beacons.startMonitoringForRegion(newLab);
 			Beacons.startMonitoringForRegion(newCheckIn);
@@ -142,7 +142,7 @@ class BeaconController {
 		console.log("Exited region");
 		console.log(exitRegion);
 
-		if (exitRegion.region == checkInRegion.identifier) {
+		if (exitRegion.region == checkInRegion.identifier || exitRegion.identifier == checkInRegion.identifier) {
 			// If we have exited the check-in-region, so we don't want to be notified about the lab
 			// We will instead deal with the check in listeners
 			BeaconController.performCallbacks(this.checkInListeners, false)
@@ -186,7 +186,7 @@ class BeaconController {
 		console.log(enterRegion);
 
 		// Check for check-in
-		if (enterRegion.region == checkInRegion.identifier) {
+		if (enterRegion.region == checkInRegion.identifier || enterRegion.identifier == checkInRegion.identifier) {
 			BeaconController.performCallbacks(this.checkInListeners, true);
 			return
 		}

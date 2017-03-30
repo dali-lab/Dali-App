@@ -68,6 +68,7 @@ class Main extends Component {
 			console.log(error)
 		})
 
+		BeaconController.current.startRanging()
 		BeaconController.current.addEnterExitListener((inDALI) => {
 			this.setState({
 				inDALI: inDALI

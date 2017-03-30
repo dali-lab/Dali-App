@@ -12,7 +12,7 @@ import {
   Animated,
   Easing,
   Alert,
-  AlertIOS
+  AlertIOS,
 } from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 

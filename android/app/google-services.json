@@ -13,14 +13,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "668475965898-9pirjes5s93i0k40h46tq3oe2deuno9a.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.JohnKotz.DALI.DaliLabApp",
-            "certificate_hash": "459c654bdc1e8ceba9bda6c56a3c31b1838cebe3"
-          }
-        },
-        {
           "client_id": "668475965898-pf7bqn8nkqeshgg450982lrsf5feur65.apps.googleusercontent.com",
           "client_type": 3
         }

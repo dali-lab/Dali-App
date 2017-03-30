@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 const StorageController = require('./StorageController').default;
 import codePush from "react-native-code-push";
+import {GoogleSignin} from 'react-native-google-signin'
 
 
 class Settings extends Component {
@@ -95,7 +96,8 @@ class Settings extends Component {
 
 		var signOutRow = {
 			title: "Sign Out",
-			action: this.props.onLogout
+			action: this.props.onLogout,
+			image: GoogleSignin.currentUser().photo
 		}
 		var update = {
 			title: "Update",
@@ -116,6 +118,7 @@ class Settings extends Component {
         <TouchableHighlight onPress={data.action}>
           <View>
             <View style={styles.userRow}>
+							<Image source={{uri: data.image}} style={styles.userProfileImage}/>
               <Text style={styles.userRowTitle}>{data.title}</Text>
               <Image source={require('./Assets/disclosureIndicator.png')} style={styles.disclosureIndicator}/>
             </View>
@@ -191,6 +194,14 @@ class Settings extends Component {
 }
 
 const styles = StyleSheet.create({
+	userProfileImage: {
+		width: 25,
+		height: 25,
+    alignSelf: 'flex-start',
+    resizeMode: 'contain',
+		marginRight: 8,
+		borderRadius: 70
+	},
   dismissButton: {
     marginTop: 30
   },
@@ -270,7 +281,7 @@ const styles = StyleSheet.create({
   userRow: {
     padding: 10,
     backgroundColor: 'white',
-    paddingLeft: 20,
+    paddingLeft: 15,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
@@ -280,10 +291,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     height: 15,
     width: 15,
-    marginBottom: 4
+    marginBottom: 4,
   },
   userRowTitle: {
     fontSize: 16,
+		paddingLeft: 2,
     flex: 1,
     fontFamily: 'Avenir Next',
   }

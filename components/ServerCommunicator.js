@@ -1,6 +1,8 @@
 let BeaconController = require('./BeaconController').default;
 let env = require('./Environment');
 let StorageController = require('./StorageController').default;
+import {Platform, NativeModules} from 'react-native';
+const { RNGoogleSignin } = NativeModules;
 import {GoogleSignin} from 'react-native-google-signin';
 
 
@@ -77,11 +79,24 @@ class ServerCommunicator {
   }
 
   getLabHours() {
+    this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
+
+    if (this.accessToken == undefined) {
+      return GoogleSignin.currentUserAsync().then((user) => {
+        return RNGoogleSignin.getAccessToken(user)
+      }).then((token) => {
+        this.accessToken = token
+        return this.getLabHours()
+      })
+    }
+
+    let accessToken = this.accessToken
+
     return new Promise(function(resolve, reject) {
       fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.taCalendarId + "/events", {
         method: "GET",
         headers: {
-          'Authorization': "Bearer " + GoogleSignin.currentUser().accessToken
+          'Authorization': "Bearer " + accessToken
         }
       }).then((response) => response.json())
         .then((responseJson) => {
@@ -89,9 +104,9 @@ class ServerCommunicator {
           if (responseJson.items == null) {
             console.log(responseJson);
             failure("No data!");
+            return;
           }
 
-          console.log("Before TA...")
           let now = new Date();
           var taHours = responseJson.items.filter((hour) => {
             hour.startDate = new Date(hour.start.dateTime);
@@ -101,7 +116,6 @@ class ServerCommunicator {
 
             return hour.startDate > now.setHours(0,0,0) && hour.startDate < now.setHours(23, 59, 59);
           });
-          console.log("After TA")
 
           resolve(taHours);
         }).catch((error) => {
@@ -111,11 +125,24 @@ class ServerCommunicator {
   }
 
   getUpcomingEvents() {
+    this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
+
+    if (this.accessToken == undefined) {
+      return GoogleSignin.currentUserAsync().then((user) => {
+        return RNGoogleSignin.getAccessToken(user)
+      }).then((token) => {
+        this.accessToken = token
+        return this.getUpcomingEvents()
+      })
+    }
+
+    let accessToken = this.accessToken
+
     return new Promise((success, failure) => {
       fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.eventsCalendarId + "/events", {
         method: "GET",
         headers: {
-          'Authorization': "Bearer " + GoogleSignin.currentUser().accessToken
+          'Authorization': "Bearer " + accessToken
         }
       }).then((response) => response.json())
         .then((responseJson) => {
@@ -125,16 +152,15 @@ class ServerCommunicator {
 
           if (responseJson.items == null) {
             failure();
+            return;
           }
 
-          console.log("Before events...")
           var events = responseJson.items.filter((event) => {
             event.startDate = new Date(event.start.dateTime);
             event.endDate = new Date(event.end.dateTime);
 
             return event.startDate > now.setHours(0,0,0) && event.startDate < weekFromNow.setHours(23, 59, 59)
           });
-          console.log("After events")
 
           success(events);
         }).catch((error) => {
