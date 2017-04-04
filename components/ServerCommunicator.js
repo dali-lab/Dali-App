@@ -21,6 +21,12 @@ class ServerCommunicator {
     this.beaconController = beaconController;
     this.beaconController.addCheckInListener(this.checkIn);
     this.beaconController.addEnterExitListener(this.enterExitDALI);
+
+    GoogleSignin.currentUserAsync().then((user) => {
+      if (user != null && StorageController.userIsTim(user)) {
+        this.beaconController.addTimsOfficeListener(this.timsOfficeListener);
+      }
+    })
   }
 
   checkIn=(entering) => {
@@ -78,6 +84,8 @@ class ServerCommunicator {
     });
   }
 
+
+
   getLabHours() {
     this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
 
@@ -103,22 +111,30 @@ class ServerCommunicator {
 
           if (responseJson.items == null) {
             console.log(responseJson);
-            failure("No data!");
+            reject("No data!");
             return;
           }
 
           let now = new Date();
+          let midnight = new Date();
+          midnight.setHours(23, 59, 59);
           var taHours = responseJson.items.filter((hour) => {
             hour.startDate = new Date(hour.start.dateTime);
             hour.endDate = new Date(hour.end.dateTime);
             hour.name = hour.summary;
             hour.skills = hour.description;
 
-            return hour.startDate > now.setHours(0,0,0) && hour.startDate < now.setHours(23, 59, 59);
+            // Either it is in the future or it is happening now
+            return (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight;
+          });
+
+          taHours.sort((hour1,hour2) => {
+            return hour1.startDate > hour2.startDate;
           });
 
           resolve(taHours);
         }).catch((error) => {
+          console.log(error);
           reject(error);
         });
     });
@@ -127,8 +143,11 @@ class ServerCommunicator {
   getUpcomingEvents() {
     this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
 
+
     if (this.accessToken == undefined) {
-      return GoogleSignin.currentUserAsync().then((user) => {
+      return GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
+        return GoogleSignin.currentUserAsync()
+      }).then((user) => {
         return RNGoogleSignin.getAccessToken(user)
       }).then((token) => {
         this.accessToken = token
@@ -152,8 +171,10 @@ class ServerCommunicator {
 
           if (responseJson.items == null) {
             failure();
+            console.log("Failed!", responseJson);
             return;
           }
+
 
           var events = responseJson.items.filter((event) => {
             event.startDate = new Date(event.start.dateTime);
@@ -161,9 +182,13 @@ class ServerCommunicator {
 
             return event.startDate > now.setHours(0,0,0) && event.startDate < weekFromNow.setHours(23, 59, 59)
           });
+          events.sort((event1, event2) => {
+            return event1.startDate > event2.startDate ? 1 : -1
+          });
 
           success(events);
         }).catch((error) => {
+          console.log(error);
           failure(error);
         });
     });
@@ -179,6 +204,15 @@ class ServerCommunicator {
       });
     }
 
+    if (StorageController.userIsTim(user)) {
+      this.post(env.timLocationInfoURL, {location: "DALI", enter: inDALI})
+        .then((response) => response.json()).then((responseJson) => {
+
+        }).catch((error) => {
+          // Failed...
+        });
+    }
+
     const color = StorageController.getColor().then((color) => {
       if (user == null) {
         GoogleSignin.currentUserAsync().then((user) => {
@@ -192,6 +226,21 @@ class ServerCommunicator {
         complete(user, inDALI);
       }
     });
+  }
+
+  timsOfficeListener=(enter) => {
+    console.log((enter ? "Entered" : "Exited") + " tim's office!")
+
+    // TODO: Force check for lab
+
+    if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+      this.post(env.timLocationInfoURL, {location: "OFFICE", enter: enter})
+        .then((response) => response.json()).then((responseJson) => {
+
+      }).catch((error) => {
+        // Failed...
+      });
+    }
   }
 }
 

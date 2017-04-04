@@ -9,7 +9,9 @@ import {
 	ListView,
 	Image,
 	Modal,
-	Dimensions
+	Dimensions,
+	AppState,
+	Linking
 } from 'react-native';
 let ServerCommunicator = require('./ServerCommunicator').default;
 let BeaconController = require('./BeaconController').default;
@@ -51,8 +53,25 @@ class Main extends Component {
 			settingsVisible: false,
 			labHours: null,
 			inDALI: null,
+			appState: AppState.currentState
 		}
+	}
 
+	componentDidMount() {
+		AppState.addEventListener('change', this._handleAppStateChange.bind(this));
+
+		this.refreshData()
+	}
+
+	_handleAppStateChange = (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      console.log('App has come to the foreground!')
+			this.refreshData()
+    }
+		this.setState({appState: nextAppState});
+  }
+
+	refreshData() {
 		ServerCommunicator.current.getLabHours().then((labHours) => {
 			this.setState({
 				labHours: labHours,
@@ -69,10 +88,15 @@ class Main extends Component {
 		})
 
 		BeaconController.current.startRanging()
+		BeaconController.current.addBeaconDidRangeListener((beacons) => {
+			this.setState({
+				inDALI: BeaconController.current.inDALI
+			});
+		})
 		BeaconController.current.addEnterExitListener((inDALI) => {
 			this.setState({
 				inDALI: inDALI
-			});
+			})
 		})
 	}
 
@@ -101,14 +125,23 @@ class Main extends Component {
 
 	renderEventRow(event) {
 		return (
-			<View style={styles.row}>
-				<Text style={styles.leftRowText}>{event.summary}</Text>
-				<View style={styles.rightRowView}>
-					<Text style={styles.rowTitle}>{formatEvent(event.startDate, event.endDate)}</Text>
-					<Text style={styles.detailText}>{event.location}</Text>
+			<TouchableHighlight
+				underlayColor="rgba(0,0,0,0.1)"
+				onPress={this.openEvent.bind(this, event)}>
+				<View style={styles.row}>
+					<Text style={styles.leftRowText}>{event.summary}</Text>
+					<View style={styles.rightRowView}>
+						<Text style={styles.rowTitle}>{formatEvent(event.startDate, event.endDate)}</Text>
+						<Text style={styles.detailText}>{event.location}</Text>
+					</View>
 				</View>
-			</View>
+			</TouchableHighlight>
 		)
+	}
+
+	openEvent(event) {
+		console.log(event);
+		Linking.openURL(event.htmlLink);
 	}
 
 	settingsButtonPressed() {

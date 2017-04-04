@@ -3,6 +3,7 @@ import {
   AppRegistry,
   AsyncStorage
 } from 'react-native';
+let env = require('./Environment');
 
 const prefix = "@DaliLabApp";
 
@@ -47,6 +48,50 @@ class StorageController {
         success(result == 'true');
       });
     });
+  }
+
+  static getLabPresencePreference() {
+    return new Promise((success, failure) => {
+      AsyncStorage.getItem(prefix + ':labPresencePref').then((result) => {
+        if (result == null) {
+          this.saveLabPresencePreference(false);
+          success(false);
+          return;
+        }
+        success(result == 'true');
+      })
+    });
+  }
+
+  static saveLabPresencePreference(value) {
+    return AsyncStorage.setItem(prefix + ':labPresencePref', value.toString())
+  }
+
+  static getBluetoothNotified() {
+    return new Promise((success, failure) => {
+      AsyncStorage.getItem(prefix + ':bluetoothNotified').then((result) => {
+        if (result == null) {
+          this.saveBluetoothNotified(false);
+          success(false);
+          return;
+        }
+        success(result == 'true');
+      });
+    });
+  }
+
+  static saveBluetoothNotified(value) {
+    return AsyncStorage.setItem(prefix + ':bluetoothNotified', value.toString());
+  }
+
+  static userIsTim(user) {
+
+    for (email in env.tim) {
+      if (user.email == email) {
+        return true
+      }
+    }
+    return false || __DEV__
   }
 }
 

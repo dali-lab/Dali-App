@@ -35,7 +35,8 @@ class Settings extends Component {
     this.state = {
       dataSource: dataSource.cloneWithRowsAndSections(this.getData(props)),
       checkInNotif: true,
-      labAccessNotif: true
+      labAccessNotif: true,
+			inLabLocShare: false,
     }
 
     StorageController.getLabAccessPreference().then((value) => {
@@ -64,6 +65,20 @@ class Settings extends Component {
         checkInNotif: value
       })
     })
+
+		StorageController.getLabPresencePreference().then((value) => {
+			if (value == null) {
+				this.setState({
+					inLabLocShare: true
+				})
+				StorageController.saveCheckInNotifPreference(true)
+				return
+			}
+
+			this.setState({
+				inLabLocShare: value
+			})
+		})
   }
 
 	getData() {
@@ -99,17 +114,35 @@ class Settings extends Component {
 			action: this.props.onLogout,
 			image: GoogleSignin.currentUser().photo
 		}
-		var update = {
-			title: "Update",
-			action: () => {
-				codePush.sync({
-					updateDialog: true,
-					installMode: codePush.InstallMode.IMMEDIATE
-				});
+
+		var locationRows = [
+			{
+				title: "Lab Presence Sharing",
+				detail: "Share your presence in the lab with other members looking for your assistance",
+				switchChanged: (value) => {
+					this.setState({
+						inLabLocShare: value,
+						dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
+					})
+
+					StorageController.saveLabPresencePreference(value);
+				},
+				stateName: "inLabLocShare"
+			}
+		]
+
+		if (!StorageController.userIsTim(GoogleSignin.currentUser())) {
+			return {
+				user: [signOutRow],
+				notifications: notificationsRows,
+				location: locationRows
+			}
+		}else{
+			return {
+				user: [signOutRow],
+				notifications: notificationsRows
 			}
 		}
-
-		return { user: [signOutRow, update], notifications: notificationsRows}
 	}
 
   renderRow(data, section, row) {
@@ -152,10 +185,18 @@ class Settings extends Component {
 
     return (
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionHeaderText}>NOTIFICATIONS</Text>
+        <Text style={styles.sectionHeaderText}>{sectionName.toUpperCase()}</Text>
       </View>
     )
   }
+
+	renderFooter() {
+		return (
+			<View style={styles.sectionFooter}>
+				<Text style={styles.sectionFooterText}>Developed by John Kotz; Designs by Kate Stinson</Text>
+			</View>
+		)
+	}
 
   render() {
     return (
@@ -181,11 +222,12 @@ class Settings extends Component {
              />
           }
         renderScene={(route, navigator) =>
-          <ListView
-            style={styles.listView}
-            dataSource={this.state.dataSource}
-            renderSectionHeader={this.renderSectionHeader.bind(this)}
-            renderRow={this.renderRow.bind(this)}/>
+						<ListView
+	            style={styles.listView}
+	            dataSource={this.state.dataSource}
+	            renderSectionHeader={this.renderSectionHeader.bind(this)}
+							renderFooter={this.renderFooter.bind(this)}
+	            renderRow={this.renderRow.bind(this)}/>
         }
         style={{paddingTop: 65}}
       />
@@ -210,7 +252,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir Next',
     fontSize: 18,
     fontWeight: '500',
-    marginTop: 10
+    marginTop: 15
   },
   navBarDoneText: {
     color: 'rgb(89, 229, 205)',
@@ -252,6 +294,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'grey'
   },
+	sectionFooter: {
+		marginTop: 10,
+		marginLeft: 10
+	},
+	sectionFooterText: {
+		fontSize: 12,
+    fontFamily: 'Avenir Next',
+    fontWeight: '400',
+		color: 'grey'
+	},
   notificationRow: {
     padding: 10,
 		paddingBottom: 18,
@@ -282,6 +334,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'white',
     paddingLeft: 15,
+		paddingBottom: 15,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'

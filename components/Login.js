@@ -95,13 +95,22 @@ class Login extends Component {
     GoogleSignin.signIn()
     .then((user) => {
       if (user.email.includes('@dali.dartmouth.edu')) {
-        this.props.onLogin(user);
+        // this.props.onLogin(user);
+        GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
+          this.props.onLogin(user);
+        })
+        .catch((err) => {
+          console.log("Play services error", err.code, err.message);
+        })
       }else{
         this.invalidAccount();
       }
     })
     .catch((err) => {
       console.log(err);
+      setTimeout(() => {
+        Alert.alert('Failed to login!', err.message);
+      }, 600);
     })
     .done();
   }

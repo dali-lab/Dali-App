@@ -67,20 +67,16 @@ export default class dali extends Component {
       user: null,
       configured: false
     };
-  }
-
-  componentWillMount() {
     GoogleSignin.currentUserAsync().then((user) => {
 			serverCommunicator.loggedIn(user);
       this.setState({
         user: user,
         configured: true
       });
-    }).done();
+    })
   }
 
 	onLogin(user) {
-		console.log(user);
 		serverCommunicator.loggedIn(user);
 		this.setState({
 			user: user,

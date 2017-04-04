@@ -13,6 +13,24 @@
       },
       "oauth_client": [
         {
+          "_name": "debug",
+          "client_id": "668475965898-m91v8bvkepcvn32ct8flbfuvfrslgm6k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.JohnKotz.DALI.DaliLabApp",
+            "certificate_hash": "459c654bdc1e8ceba9bda6c56a3c31b1838cebe3"
+          }
+        },
+        {
+          "_name": "release",
+          "client_id": "668475965898-8j5beunqd15c5inhh850bfqp9rn3bgkf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.JohnKotz.DALI.DaliLabApp",
+            "certificate_hash": "59a7ffe366cb7315b4c4ea7a1f01c3d71235efea"
+          }
+        },
+        {
           "client_id": "668475965898-pf7bqn8nkqeshgg450982lrsf5feur65.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -3,6 +3,8 @@ import Beacons from 'react-native-beacons-manager';
 import PushNotification from 'react-native-push-notification';
 import {
 	DeviceEventEmitter,
+	Platform,
+	Alert
 } from 'react-native';
 const StorageController = require('./StorageController').default
 import {GoogleSignin} from 'react-native-google-signin';
@@ -17,7 +19,12 @@ var labRegion = {
 
 var checkInRegion = {
 	identifier: 'Check In',
-	uuid: 'C371F9F9-572D-4D59-956C-5C3DF4BE50B8'
+	uuid: 'C371F9F9-572D-4D59-956C-5C3DF4BE50B7'
+};
+
+var timsOfficeRegion = {
+	identifier: 'Tims office',
+	uuid: 'BC832F8A-B9B3-4147-ADC7-9C9BEF02E4DC'
 };
 
 
@@ -33,32 +40,47 @@ class BeaconController {
 		if (ios) {
 			BeaconController.ios = ios
 			Beacons.requestAlwaysAuthorization();
+			Beacons.requestWhenInUseAuthorization();
 
 			Beacons.getAuthorizationStatus(function(authorization) {
 				// authorization is a string which is either "authorizedAlways",
 				// "authorizedWhenInUse", "denied", "notDetermined" or "restricted"
 				this.authorization = authorization;
 				console.log("Got authorization: " + authorization);
+
+				if (authorization != "authorizedAlways" && authorization != "authorizedWhenInUse") {
+					Alert.alert("No authorization!", "In your settings you have not given authorization to access your location. This will cause many features to be unavailable")
+				}
 			});
 			Beacons.startMonitoringForRegion(labRegion);
 			Beacons.startMonitoringForRegion(checkInRegion);
-			this.startRanging();
 		}else{
-			let newLab = labRegion
-			newLab.major = 1
-			newLab.minor = 1
 
-			let newCheckIn = checkInRegion
-			newCheckIn.major = 1
-			newCheckIn.minor = 1
+			Beacons.detectIBeacons()
+			Beacons.detectEstimotes()
 
-			Beacons.startMonitoringForRegion(newLab);
-			Beacons.startMonitoringForRegion(newCheckIn);
-			this.startRanging();
+			labRegion.major = 1
+			labRegion.minor = 1
+
+			checkInRegion.major = 1
+			checkInRegion.minor = 1
+
+			Beacons.startMonitoringForRegion(labRegion).then(()=> {
+				console.log("Started monitoring", labRegion)
+			}).catch((error) => {
+				console.log(error)
+			});
+			Beacons.startMonitoringForRegion(checkInRegion).then(()=> {
+				console.log("Started monitoring", checkInRegion)
+			}).catch((error) => {
+				console.log(error)
+			});
 		}
+
 		this.inDALI = false;
 		this.enterExitListeners = [];
 		this.beaconRangeListeners = [];
+		this.timsOfficeListeners = [];
 		this.checkInListeners = [];
 		BeaconController.current = this;
 
@@ -121,8 +143,23 @@ class BeaconController {
 		if (BeaconController.ios) {
 			Beacons.startUpdatingLocation();
 			Beacons.startRangingBeaconsInRegion(labRegion);
+			Beacons.startRangingBeaconsInRegion(checkInRegion);
+			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+				Beacons.startRangingBeaconsInRegion(timsOfficeRegion);
+			}
 		}else{
-			Beacons.startRangingBeaconsInRegion(labRegion.identifier, labRegion.uuid);
+			Beacons.startRangingBeaconsInRegion(labRegion.identifier, labRegion.uuid).then(() => {
+				console.log("Started ranging")
+			}).catch((error) => {
+				console.log("Failed to range")
+				console.log(error)
+				BeaconController.performCallbacks(this.enterExitListeners, false);
+			})
+
+			Beacons.startRangingBeaconsInRegion(checkInRegion);
+			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+				Beacons.startRangingBeaconsInRegion(timsOfficeRegion);
+			}
 		}
 
 		this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange.bind(this));
@@ -132,6 +169,7 @@ class BeaconController {
 	 * Stop ranging
 	 */
 	stopRanging() {
+		console.log("Stopping...");
 		if (BeaconController.ios) {
 			Beacons.stopUpdatingLocation();
 		}
@@ -146,6 +184,12 @@ class BeaconController {
 			// If we have exited the check-in-region, so we don't want to be notified about the lab
 			// We will instead deal with the check in listeners
 			BeaconController.performCallbacks(this.checkInListeners, false)
+			return
+		}
+
+		// Check for Tim's office
+		if (exitRegion.region == timsOfficeRegion.identifier || exitRegion.identifier == timsOfficeRegion.identifier) {
+			BeaconController.performCallbacks(this.timsOfficeListeners, false);
 			return
 		}
 
@@ -191,10 +235,16 @@ class BeaconController {
 			return
 		}
 
-		// Check Preferences
+		// Check for Tim's office
+		if (enterRegion.region == timsOfficeRegion.identifier || enterRegion.identifier == timsOfficeRegion.identifier) {
+			BeaconController.performCallbacks(this.timsOfficeListeners, true);
+			return
+		}
+
+		// Check user
 		GoogleSignin.currentUserAsync().then((user) => {
 			if (user != null) {
-				// Plus I have to chek their preferences
+				// Plus I have to check their preferences
 				return StorageController.getLabAccessPreference()
 			}
 		}).then((value) => {
@@ -215,12 +265,15 @@ class BeaconController {
 	 * Called from listener
 	 */
 	beaconsDidRange(data) {
-		console.log("Ranged beacons: " + data);
+		console.log("Ranged beacons: ");
+		console.log(data);
 		this.data = data;
-		this.beacons = data.beacons;
 
-		// Removes all beacons that are not in the lab region
-		this.beacons.filter((beacon) => {
+		// All beacons that are in the lab region
+		this.beacons = data.beacons.filter((beacon) => {
+			console.log("======");
+			console.log(beacon.uuid);
+			console.log(labRegion.uuid);
 			return beacon.uuid == labRegion.uuid;
 		});
 
@@ -228,13 +281,18 @@ class BeaconController {
 		this.inDALI = this.beacons.length > 0;
 
 		// Doing the same thing but for check-in beacons
-		checkInBeacons = data.beacons;
-		checkInBeacons.filter((beacon) => {
+		checkInBeacons = data.beacons.filter((beacon) => {
 			return beacon.uuid == checkInRegion.uuid;
 		});
 
+		// Get tim
+		timsOfficeBeacons = data.beacons.filter((beacon) => {
+			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+				BeaconController.performCallbacks(this.timsOfficeListeners, true);
+			}
+		})
+
 		// Provide the world with knowledge of our range
-		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
 		BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons, checkInBeacons);
 		this.stopRanging();
 	}
@@ -244,6 +302,24 @@ class BeaconController {
 	 */
 	addEnterExitListener(listener) {
 		this.enterExitListeners.push(listener);
+	}
+
+	addTimsOfficeListener(listener) {
+
+		if (Platform.OS === 'ios') {
+			Beacons.startMonitoringForRegion(timsOfficeRegion);
+		}else{
+			timsOfficeRegion.major = 1
+			timsOfficeRegion.minor = 1
+
+			Beacons.startMonitoringForRegion(timsOfficeRegion).then(()=> {
+				console.log("Started monitoring", timsOfficeRegion)
+			}).catch((error) => {
+				console.log(error)
+			});
+		}
+
+		this.timsOfficeListeners.push(listener);
 	}
 
 	/**
@@ -262,7 +338,7 @@ class BeaconController {
 	 *		//...
 	 *  }
 	 */
-	addBeaconDidRagneListener(listener) {
+	addBeaconDidRangeListener(listener) {
 		this.beaconRangeListeners.push(listener);
 	}
 
@@ -284,6 +360,11 @@ class BeaconController {
 	// Same as previous
 	removeCheckInListener(listener) {
 		return BeaconController.removeCallback(listener, this.checkInListeners);
+	}
+
+	// Same as previous
+	removeTimsOfficeListener(listener) {
+		return BeaconController.removeCallback(listener, this.timsOfficeListeners);
 	}
 
 	// Removes the given callback from the given list of callbacks

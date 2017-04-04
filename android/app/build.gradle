@@ -111,9 +111,9 @@ android {
     defaultConfig {
         applicationId "com.JohnKotz.DALI.DaliLabApp"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 20
         versionCode 1
-        versionName "1.2"
+        versionName "1.4"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
