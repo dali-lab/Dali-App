@@ -197,8 +197,20 @@ class ServerCommunicator {
   enterExitDALI=(inDALI) => {
     const user = GoogleSignin.currentUser();
     const complete = (user, inDALI) => {
-      this.post(env.daliEnterURL, {user: {email: user.email, id: user.id, familyName: user.familyName, givenName: user.givenName, name: user.name}, inDALI: inDALI, color: color})
-      .then((response) => {
+      StorageController.getLabPresencePreference().then((share) => {
+        return this.post(env.daliEnterURL, {
+          user: {
+            email: user.email,
+            id: user.id,
+            familyName: user.familyName,
+            givenName: user.givenName,
+            name: user.name
+          },
+          inDALI: inDALI,
+          color: color,
+          share: share
+        });
+      }).then((response) => {
       }).catch((error) => {
         // Failed to connect. Ignoring...
       });
