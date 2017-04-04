@@ -55,9 +55,9 @@ var Login = require('./components/Login');
 //		 requestPermissions: true,
 // });
 
+GoogleSignin.configure(env.googleConfig)
 let beaconController = new BeaconController();
 let serverCommunicator = new ServerCommunicator(beaconController);
-GoogleSignin.configure(env.googleConfig)
 
 export default class dali extends Component {
   constructor(props, context) {
