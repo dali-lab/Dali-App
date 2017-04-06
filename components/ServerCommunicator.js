@@ -25,6 +25,10 @@ class ServerCommunicator {
     GoogleSignin.currentUserAsync().then((user) => {
       if (user != null && StorageController.userIsTim(user)) {
         this.beaconController.addTimsOfficeListener(this.timsOfficeListener);
+        this.beaconController.addBeaconDidRangeListener(() => {
+          this.postForTim("DALI", this.beaconController.inDALI)
+        })
+        this.beaconController.startRanging()
       }
     })
   }
@@ -57,6 +61,10 @@ class ServerCommunicator {
     }
   }
 
+  updateSharePreference(share) {
+    this.enterExitDALI(this.beaconController.inDALI);
+  }
+
   postCheckin(user) {
     return this.post(env.checkInURL, {"username": user.email});
   }
@@ -84,7 +92,25 @@ class ServerCommunicator {
     });
   }
 
+  getTonightsLabHours() {
+    return new Promise((resolve, reject) => {
+      this.getLabHours().then((hours) => {
+        let now = new Date();
+        let midnight = new Date();
+        midnight.setHours(23, 59, 59);
+        var taHours = hours.filter((hour) => {
+          // Either it is in the future or it is happening now
+          return (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight && hour.status == "confirmed";
+        });
 
+        taHours.sort((hour1,hour2) => {
+          return hour1.startDate > hour2.startDate;
+        });
+
+        resolve(taHours)
+      });
+    })
+  }
 
   getLabHours() {
     this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
@@ -115,24 +141,16 @@ class ServerCommunicator {
             return;
           }
 
-          let now = new Date();
-          let midnight = new Date();
-          midnight.setHours(23, 59, 59);
-          var taHours = responseJson.items.filter((hour) => {
-            hour.startDate = new Date(hour.start.dateTime);
-            hour.endDate = new Date(hour.end.dateTime);
-            hour.name = hour.summary;
-            hour.skills = hour.description;
+          console.log(responseJson);
 
-            // Either it is in the future or it is happening now
-            return (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight;
+          responseJson.items.forEach((hour) => {
+              hour.startDate = new Date(hour.start.dateTime);
+              hour.endDate = new Date(hour.end.dateTime);
+              hour.name = hour.summary;
+              hour.skills = hour.description;
           });
 
-          taHours.sort((hour1,hour2) => {
-            return hour1.startDate > hour2.startDate;
-          });
-
-          resolve(taHours);
+          resolve(responseJson.items);
         }).catch((error) => {
           console.log(error);
           reject(error);
@@ -167,7 +185,7 @@ class ServerCommunicator {
         .then((responseJson) => {
           let now = new Date();
           let weekFromNow = new Date();
-          weekFromNow.setDate(now.getDate() + 7);
+          weekFromNow.setDate(now.getDate() + 6);
 
           if (responseJson.items == null) {
             failure();
@@ -194,6 +212,20 @@ class ServerCommunicator {
     });
   }
 
+  getTimLocation() {
+    return fetch(env.timLocationInfoURL, {method: "GET"})
+      .then((response) => response.json()).catch((error) => {
+        console.log(error);
+      })
+  }
+
+  getSharedMembersInLab() {
+    return fetch(env.sharedLabURL, {method: "GET"})
+      .then((response) => response.json()).catch((error) => {
+        console.log(error);
+      })
+  }
+
   enterExitDALI=(inDALI) => {
     const user = GoogleSignin.currentUser();
     const complete = (user, inDALI) => {
@@ -207,12 +239,13 @@ class ServerCommunicator {
             name: user.name
           },
           inDALI: inDALI,
-          color: color,
           share: share
         });
       }).then((response) => {
+        console.log(response);
       }).catch((error) => {
         // Failed to connect. Ignoring...
+        console.log(error)
       });
     }
 
@@ -224,20 +257,27 @@ class ServerCommunicator {
           // Failed...
         });
     }
-
-    const color = StorageController.getColor().then((color) => {
+    GoogleSignin.currentUserAsync().then((user) => {
       if (user == null) {
-        GoogleSignin.currentUserAsync().then((user) => {
-          if (user == null) {
-            return
-          }else{
-            complete(user, inDALI);
-          }
-        })
+        return
       }else{
         complete(user, inDALI);
       }
-    });
+    })
+
+    // const color = StorageController.getColor().then((color) => {
+    //   if (user == null) {
+    //     GoogleSignin.currentUserAsync().then((user) => {
+    //       if (user == null) {
+    //         return
+    //       }else{
+    //         complete(user, inDALI);
+    //       }
+    //     })
+    //   }else{
+    //     complete(user, inDALI);
+    //   }
+    // });
   }
 
   timsOfficeListener=(enter) => {
@@ -245,8 +285,12 @@ class ServerCommunicator {
 
     // TODO: Force check for lab
 
+    this.postForTim("OFFICE", enter);
+  }
+
+  postForTim(location, enter) {
     if (StorageController.userIsTim(GoogleSignin.currentUser())) {
-      this.post(env.timLocationInfoURL, {location: "OFFICE", enter: enter})
+      this.post(env.timLocationInfoURL, {location: location, enter: enter})
         .then((response) => response.json()).then((responseJson) => {
 
       }).catch((error) => {

@@ -13,6 +13,7 @@ import {
 const StorageController = require('./StorageController').default;
 import codePush from "react-native-code-push";
 import {GoogleSignin} from 'react-native-google-signin'
+let ServerCommunicator = require('./ServerCommunicator').default;
 
 
 class Settings extends Component {
@@ -126,6 +127,7 @@ class Settings extends Component {
 					})
 
 					StorageController.saveLabPresencePreference(value);
+					ServerCommunicator.current.updateSharePreference(value);
 				},
 				stateName: "inLabLocShare"
 			}

@@ -85,13 +85,7 @@ class StorageController {
   }
 
   static userIsTim(user) {
-
-    for (email in env.tim) {
-      if (user.email == email) {
-        return true
-      }
-    }
-    return false || __DEV__
+    return user.email == env.tim || __DEV__
   }
 }
 

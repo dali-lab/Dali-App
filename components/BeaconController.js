@@ -48,9 +48,9 @@ class BeaconController {
 				this.authorization = authorization;
 				console.log("Got authorization: " + authorization);
 
-				if (authorization != "authorizedAlways" && authorization != "authorizedWhenInUse") {
-					Alert.alert("No authorization!", "In your settings you have not given authorization to access your location. This will cause many features to be unavailable")
-				}
+				// if (authorization != "authorizedAlways" && authorization != "authorizedWhenInUse") {
+				// 	Alert.alert("No authorization!", "In your settings you have not given authorization to access your location. This will cause many features to be unavailable")
+				// }
 			});
 			Beacons.startMonitoringForRegion(labRegion);
 			Beacons.startMonitoringForRegion(checkInRegion);
@@ -140,13 +140,10 @@ class BeaconController {
 	 * Enable beacon ranging
 	 */
 	startRanging() {
+		this.numRanged = 0
 		if (BeaconController.ios) {
 			Beacons.startUpdatingLocation();
 			Beacons.startRangingBeaconsInRegion(labRegion);
-			Beacons.startRangingBeaconsInRegion(checkInRegion);
-			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
-				Beacons.startRangingBeaconsInRegion(timsOfficeRegion);
-			}
 		}else{
 			Beacons.startRangingBeaconsInRegion(labRegion.identifier, labRegion.uuid).then(() => {
 				console.log("Started ranging")
@@ -155,11 +152,6 @@ class BeaconController {
 				console.log(error)
 				BeaconController.performCallbacks(this.enterExitListeners, false);
 			})
-
-			Beacons.startRangingBeaconsInRegion(checkInRegion);
-			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
-				Beacons.startRangingBeaconsInRegion(timsOfficeRegion);
-			}
 		}
 
 		this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange.bind(this));
@@ -174,6 +166,7 @@ class BeaconController {
 			Beacons.stopUpdatingLocation();
 		}
 		this.rangingListener.remove();
+		this.rangingListener = null
 	}
 
 	didExitRegion(exitRegion) {
@@ -265,36 +258,50 @@ class BeaconController {
 	 * Called from listener
 	 */
 	beaconsDidRange(data) {
+		if (this.numRanged > 5) {
+			this.stopRanging()
+			return
+		}
+		this.numRanged+=1
+
 		console.log("Ranged beacons: ");
 		console.log(data);
 		this.data = data;
 
-		// All beacons that are in the lab region
-		this.beacons = data.beacons.filter((beacon) => {
-			console.log("======");
-			console.log(beacon.uuid);
-			console.log(labRegion.uuid);
-			return beacon.uuid == labRegion.uuid;
-		});
-
-		// Keeping track of wheter I'm in DALI or not
-		this.inDALI = this.beacons.length > 0;
-
-		// Doing the same thing but for check-in beacons
-		checkInBeacons = data.beacons.filter((beacon) => {
-			return beacon.uuid == checkInRegion.uuid;
-		});
-
-		// Get tim
-		timsOfficeBeacons = data.beacons.filter((beacon) => {
+		if (Platform.OS != "ios" ? (data.identifier == timsOfficeRegion.identifier) : (data.region.identifier == timsOfficeRegion.identifier)) {
+			console.log("Tims Office");
+			// Get tim
 			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
-				BeaconController.performCallbacks(this.timsOfficeListeners, true);
+				BeaconController.performCallbacks(this.timsOfficeListeners, data.beacons.count > 0);
 			}
-		})
 
-		// Provide the world with knowledge of our range
-		BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons, checkInBeacons);
-		this.stopRanging();
+			this.stopRanging();
+		}else if (Platform.OS != "ios" ? (data.identifier == checkInRegion.identifier) : (data.region.identifier == checkInRegion.identifier)) {
+			console.log("Check In");
+			// Doing the same thing but for check-in beacons
+			BeaconController.performCallbacks(this.checkInListeners, data.beacons.count > 0);
+
+			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+				if (Platform.OS == "ios") {
+					Beacons.startRangingBeaconsInRegion(timsOfficeRegion);
+				}else{
+					Beacons.startRangingBeaconsInRegion(timsOfficeRegion.identifier, timsOfficeRegion.uuid);
+				}
+			}else{
+				// this.stopRanging();
+			}
+		}else{
+			console.log("DALI");
+			// Keeping track of wheter I'm in DALI or not
+			this.inDALI = data.beacons.length > 0;
+			BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
+
+			if (Platform.OS != "ios") {
+				Beacons.startRangingBeaconsInRegion(checkInRegion.identifier, checkInRegion.uuid);
+			}else{
+				Beacons.startRangingBeaconsInRegion(checkInRegion);
+			}
+		}
 	}
 
 	/**

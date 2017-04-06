@@ -11,13 +11,17 @@ import {
 	Modal,
 	Dimensions,
 	AppState,
-	Linking
+	Linking,
+	Animated,
+	Patform
 } from 'react-native';
 let ServerCommunicator = require('./ServerCommunicator').default;
 let BeaconController = require('./BeaconController').default;
 import LinearGradient from 'react-native-linear-gradient';
 import {GoogleSignin} from 'react-native-google-signin';
 let Settings = require('./Settings');
+let PeopleInLab = require('./PeopleInLab');
+let StorageController = require('./StorageController').default;
 
 var window = Dimensions.get('window')
 
@@ -38,6 +42,12 @@ function formatEvent(start, end) {
 	return weekDays[start.getDay()] + ' ' + formatTime(start) + ' - ' + formatTime(end) + ' ' + ((start.getHours() + 1) >= 12 ? "PM" : "AM")
 }
 
+let taHoursExpanded = window.height/2 + 70
+let taHoursDefault =  window.height/2 - 100
+let eventsExpanded = window.height/2 + 50
+let eventsDefault = 240
+let shrunkSize = 70
+
 class Main extends Component {
 	propTypes: {
 		onLogout: ReactNative.PropTypes.func,
@@ -51,10 +61,19 @@ class Main extends Component {
 			officeHoursDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
 			eventsDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
 			settingsVisible: false,
+			peopleInLabVisible: false,
+			taHoursSelected: false,
+			eventsSelected: false,
 			labHours: null,
 			inDALI: null,
-			appState: AppState.currentState
+			inTimsOffice: false,
+			appState: AppState.currentState,
+			taGrowAnimationValue: new Animated.Value(),
+			eventGrowAnimationValue: new Animated.Value()
 		}
+
+		this.state.taGrowAnimationValue.setValue(taHoursDefault)
+		this.state.eventGrowAnimationValue.setValue(eventsDefault)
 	}
 
 	componentDidMount() {
@@ -72,32 +91,55 @@ class Main extends Component {
   }
 
 	refreshData() {
-		ServerCommunicator.current.getLabHours().then((labHours) => {
+		ServerCommunicator.current.getTonightsLabHours().then((labHours) => {
 			this.setState({
 				labHours: labHours,
 				officeHoursDataSource: this.state.officeHoursDataSource.cloneWithRows(labHours)
 			})
+
+			if (labHours.length) {
+				let first = labHours[0];
+				setTimeout(() => {
+					this.refreshData()
+	      }, Math.abs((new Date()) - first.endDate));
+			}
 		})
 
 		ServerCommunicator.current.getUpcomingEvents().then((events) => {
 			this.setState({
 				eventsDataSource: this.state.eventsDataSource.cloneWithRows(events)
 			})
+
+			if (events.length > 0) {
+				let first = events[0];
+				setTimeout(() => {
+					this.refreshData()
+				}, Math.abs((new Date()) - first.endDate));
+			}
 		}).catch((error) => {
 			console.log(error)
 		})
 
-		BeaconController.current.startRanging()
+
 		BeaconController.current.addBeaconDidRangeListener((beacons) => {
 			this.setState({
 				inDALI: BeaconController.current.inDALI
 			});
 		})
+		// BeaconController.current.startRanging()
 		BeaconController.current.addEnterExitListener((inDALI) => {
 			this.setState({
 				inDALI: inDALI
 			})
 		})
+
+		if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+			BeaconController.current.addTimsOfficeListener((enter) => {
+				this.setState({
+					inTimsOffice: enter
+				})
+			})
+		}
 	}
 
 	logout() {
@@ -150,10 +192,31 @@ class Main extends Component {
 		})
 	}
 
-	hideSettings() {
+	peopleInLabPressed() {
 		this.setState({
-			settingsVisible: false
+			peopleInLabVisible: true
 		})
+	}
+
+	hideModals() {
+		this.setState({
+			settingsVisible: false,
+			peopleInLabVisible: false
+		})
+	}
+
+	toggleSectionGrow(section) {
+		let TAstart = this.state.taHoursSelected ? taHoursExpanded : (this.state.eventsSelected ? shrunkSize : taHoursDefault)
+		let TAend = section == "taHoursSelected" ? (this.state.taHoursSelected ? taHoursDefault : taHoursExpanded) : (this.state.eventsSelected ? taHoursDefault : shrunkSize)
+
+		this.setState({
+			taHoursSelected: section == "taHoursSelected" && !this.state.taHoursSelected,
+			eventsSelected: section == "eventsSelected" && !this.state.eventsSelected,
+		})
+
+		Animated.spring(this.state.taGrowAnimationValue, {
+			toValue: TAend
+		}).start()
 	}
 
   render() {
@@ -162,33 +225,42 @@ class Main extends Component {
 			<Modal
           animationType={"slide"}
           transparent={false}
-          visible={this.state.settingsVisible}
-          onRequestClose={() => {
-						this.setState({
-							settingsVisible: false
-						})
-					}}>
-					<Settings
+          visible={this.state.settingsVisible || this.state.peopleInLabVisible}
+          onRequestClose={this.hideModals.bind(this)}>
+					{this.state.settingsVisible ? <Settings
 						user={this.props.user}
 						onLogout={this.props.onLogout}
-						dismiss={this.hideSettings.bind(this)}/>
+						dismiss={this.hideModals.bind(this)}/> : null}
+					{this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)}/> : null}
 				</Modal>
 				<Image source={require('./Assets/DALI_whiteLogo.png')} style={styles.daliImage}/>
-				<Text style={styles.locationText}>{this.state.inDALI ? "You are in DALI now" : (this.state.inDALI != null ? "You are not in DALI now" : "Loading location...")}</Text>
+				<Text style={styles.locationText}>{this.state.inTimsOffice ? "You are in Tim's Office" : (this.state.inDALI ? "You are in DALI now" : (this.state.inDALI != null ? "You are not in DALI now" : "Loading location..."))}</Text>
 				<View style={styles.internalView}>
-					<View style={[styles.topView, {height: (this.state.labHours != null && this.state.labHours.length > 0 ? window.height/2 - 130 : window.height/2 - 170)}]}>
+					<Animated.View style={[
+						styles.topView,
+						// {height: (this.state.taHoursSelected ? taHoursExpanded : (this.state.eventsSelected ? shrunkSize : taHoursDefault))},
+						{height: this.state.taGrowAnimationValue}
+					]}>
 						<View style={styles.separatorThick}/>
-						<Text style={styles.titleText}>{this.state.labHours == null ? "Loading TA office hours..." : (this.state.labHours.length > 0 ? "TA office hours tonight!" : "No TA office hours tonight")}</Text>
+						<TouchableHighlight
+							underlayColor="rgba(0,0,0,0)"
+							onPress={this.toggleSectionGrow.bind(this, 'taHoursSelected')}>
+							<Text style={styles.titleText}>{this.state.labHours == null ? "Loading TA office hours..." : (this.state.labHours.length > 0 ? "TA office hours tonight!" : "No TA office hours tonight")}</Text>
+						</TouchableHighlight>
 						<View style={styles.separatorThin}/>
 						<ListView
 							enableEmptySections={true}
 							style={styles.listView}
 							dataSource={this.state.officeHoursDataSource}
 							renderRow={this.renderOfficeHoursRow.bind(this)}/>
-					</View>
-					<View style={styles.bottomView}>
+					</Animated.View>
+					<View style={[styles.bottomView, this.state.eventsSelected ? {height: eventsExpanded} : null]}>
 						<View style={styles.separatorThick}/>
-						<Text style={styles.titleText}>Upcoming Events</Text>
+						<TouchableHighlight
+							underlayColor="rgba(0,0,0,0)"
+							onPress={this.toggleSectionGrow.bind(this, 'eventsSelected')}>
+							<Text style={styles.titleText}>Upcoming Events</Text>
+						</TouchableHighlight>
 						<View style={styles.separatorThin}/>
 						<ListView
 							enableEmptySections={true}
@@ -197,12 +269,23 @@ class Main extends Component {
 							renderRow={this.renderEventRow.bind(this)}/>
 					</View>
 				</View>
-				<TouchableHighlight
+				<LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
+					<View style={{flex: 1}}/>
+					<TouchableHighlight
+						underlayColor="rgba(0,0,0,0)"
+						style={styles.settingsButton}
+						onPress={this.settingsButtonPressed.bind(this)}>
+						<Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage}/>
+					</TouchableHighlight>
+					<View style={{flex: 1}}/>
+					<TouchableHighlight
 					underlayColor="rgba(0,0,0,0)"
-					style={styles.settingsButton}
-					onPress={this.settingsButtonPressed.bind(this)}>
-					<Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage}/>
-				</TouchableHighlight>
+					style={styles.inTheLabButton}
+					onPress={this.peopleInLabPressed.bind(this)}>
+						<Image source={require('./Assets/people.png')} style={styles.settingsButtonImage}/>
+					</TouchableHighlight>
+					<View style={{flex: 1}}/>
+				</LinearGradient>
 			</LinearGradient>
 		)
 	}
@@ -230,14 +313,14 @@ const styles = StyleSheet.create({
 		color: 'white',
 		fontFamily: 'Avenir Next',
 		fontSize: 16,
-		marginTop: 20,
+		marginTop: 10,
 		marginBottom: 15,
 	},
 	internalView: {
 		flex: 1
 	},
 	topView: {
-		height: window.height/2 - 150,
+		height: window.height/2 - 110,
 		alignItems: 'center'
 	},
 	titleText: {
@@ -250,7 +333,8 @@ const styles = StyleSheet.create({
 		backgroundColor: 'rgba(0,0,0,0)'
 	},
 	bottomView: {
-		alignItems: 'center'
+		alignItems: 'center',
+		height: eventsDefault
 	},
 	listView: {
 		flex: 1,
@@ -288,16 +372,24 @@ const styles = StyleSheet.create({
 		flexDirection: 'row'
 	},
 	settingsButton: {
-		marginBottom: 25,
 	},
 	settingsButtonImage: {
 		width: 30,
 		height: 30,
 		resizeMode: 'contain'
 	},
+	toolbarView: {
+		width: window.width,
+		flexDirection: 'row',
+		paddingTop: 15,
+		paddingBottom: 15,
+	},
+	inTheLabButton: {
+		alignSelf: 'center',
+	},
 	daliImage: {
 		height: 50,
-		marginTop: 60,
+		marginTop: 40,
 		resizeMode: 'contain'
 	}
 });
