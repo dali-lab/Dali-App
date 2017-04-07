@@ -1,3 +1,8 @@
+/**
+ Login.js
+ A component and controller for the Login interface
+ */
+
 'use strict';
 
 import React, { Component } from 'react';
@@ -16,6 +21,15 @@ import {
 } from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 
+/**
+ Login interface Component.
+ Includes:
+ - DALI Logo (animates from center to high center)
+ - Google Signin Button (appears after DALI Logo animation at low center)
+
+ PROPS:
+ - onLogin: Called when login is complete
+ */
 class Login extends Component {
   propTypes: {
 		onLogin: ReactNative.PropTypes.func,
@@ -25,13 +39,17 @@ class Login extends Component {
     super(props);
 
     this.state = {
+      // Indicates if I should show the signin button
       animateDone: false,
+      // The animated value to start at (aka center)
       slidingAnimationValue: new Animated.ValueXY({ x: 0, y: 75 }),
+      // Animated value of the opacity of the signin button
       fadeAnim: new Animated.Value(0)
     }
   }
 
   componentDidMount() {
+    // Define configuration of the animation
     const animationConfig = {
       duration: 1500, // milliseconds
       delay: 1000, // milliseconds
@@ -39,38 +57,50 @@ class Login extends Component {
     };
 
     const value = this.state.slidingAnimationValue;
+    // Set up the animation
     const slidingInAnimation = Animated.timing(value, {
       ...animationConfig, // ES6 spread operator
       toValue: {
-        x: 0,
+        x: 0, // Destination x, y
         y: 0,
       },
     }).start(() => {
+      // When it's done...
       this.setState({
         animateDone: true
       });
+      // ... start the fade in
       Animated.timing(          // Uses easing functions
          this.state.fadeAnim,    // The value to drive
          {toValue: 1}            // Configuration
        ).start();
     });
+
+    // Animation techniques borrowed from https://facebook.github.io/react-native/docs/animated.html
   }
 
+  /// Render login view
   render() {
+    // Special for x y coordinates
+    // Basically gets the transform from where it should be
     const slidingAnimationStyle = this.state
      .slidingAnimationValue
      .getTranslateTransform();
 
     return (
-
         <View style={styles.container}>
+          {/* Background image is a low poly*/}
           <Image source={require("./Assets/lowPolyBackground.png")} style={styles.container}>
+            {/* ... which has a gradient overlay (end slightly transparent so low poly is visible)*/}
             <LinearGradient colors={['#2f97aa', 'rgba(250,250,250,0.4)']} style={styles.container}>
               <View>
                 <View style={styles.innerContainer}>
+                  {/* Animated DALI Logo*/}
                   <Animated.Image
                     style={[styles.daliImage, {transform: slidingAnimationStyle}]}
                     source={require('./Assets/DALI_whiteLogo.png')}/>
+
+                  {/* If the animation is over, show button*/}
                   {this.state.animateDone ?
                     <Animated.View style={{opacity: this.state.fadeAnim}}>
                       <TouchableHighlight
@@ -82,45 +112,57 @@ class Login extends Component {
                         </View>
                       </TouchableHighlight>
                     </Animated.View> : <View style={{height: 48}}/>}
-                <View style={{height: 70}}/>
+                    {/* If we don't want to show it yet, I placehold so the DALI logo isn't incorrectly placed*/}
+                  {/* Offsets the group by a bit so it will look better*/}
+                  <View style={{height: 70}}/>
                 </View>
               </View>
             </LinearGradient>
           </Image>
         </View>
-    )
+    );
   }
 
+  /**
+   Opens a signin webview so the user can sign in. After doing so, handles errors and calls onLogin if legit
+   */
   signIn() {
     GoogleSignin.signIn()
     .then((user) => {
+      // Check user...
       if (user.email.includes('@dali.dartmouth.edu')) {
-        // this.props.onLogin(user);
+        // For some reason on Android the user needs Google Play for me to access the callendars
         GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
           this.props.onLogin(user);
         })
         .catch((err) => {
+          // Google Play not enabled!
           console.log("Play services error", err.code, err.message);
-        })
+          setTimeout(() => {
+            Alert.alert("No Google Play", "You don't have Google Play services enabled. You won't be able to use the application if you don't (we need to access the DALI calendars)")
+          }, 600)
+          GoogleSignin.signOut();
+        });
       }else{
-        this.invalidAccount();
+        // If they are not within the DALI scope...
+        console.log("Invalid account");
+        setTimeout(() => {
+          Alert.alert('Invalid Account', 'You must use a DALI lab account!');
+        }, 600);
+        GoogleSignin.signOut();
       }
     })
     .catch((err) => {
+      if (err.code == -5) {
+        // Very specific error for when the user cancels login
+        return
+      }
+
       console.log(err);
       setTimeout(() => {
         Alert.alert('Failed to login!', err.message);
       }, 600);
-    })
-    .done();
-  }
-
-  invalidAccount() {
-    console.log("Invalid account");
-    setTimeout(() => {
-      Alert.alert('Invalid Account', 'You must use a DALI lab account!');
-    }, 600);
-    GoogleSignin.signOut();
+    });
   }
 }
 
