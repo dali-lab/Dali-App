@@ -1,4 +1,11 @@
+/**
+ BeaconController.js
+ Deals with ALL the location information, and provides listener options for this data
 
+ REALLY IMPORANT FILE
+
+ AUTHOR: John Kotz
+ */
 import Beacons from 'react-native-beacons-manager';
 import PushNotification from 'react-native-push-notification';
 import {
@@ -6,48 +13,66 @@ import {
 	Platform,
 	Alert
 } from 'react-native';
+
+// My other modules
 const StorageController = require('./StorageController').default
 import {GoogleSignin} from 'react-native-google-signin';
 let env = require('./Environment');
 
+/**
+ Controlls the location data in the background of the app.
 
+ STATIC:
+ - current: Reference to the application's current BeaconController object
+ - inDALI: Function that returns Bool of if device is in DALI lab
+
+  TODO:
+	- Debug infinite ranging problem
+	- Debug background missing entry/exit
+ */
 class BeaconController {
 	static current = null;
-	static ios = false;
 	static inDALI() {
 		return BeaconController.current.inDALI;
 	}
 
-	constructor(ios) {
-		this.authorization = null;
-		if (ios) {
-			BeaconController.ios = ios
+	constructor() {
+		// Making sure I have no doplegangers
+		if (BeaconController.current != null) {
+			throw "Cannot create more than one BeaconController!"
+			return
+		}
+
+		if (Platform.OS == 'ios') {
+			// iOS has its own way of doing things...
+			// For one, Android doesn't ask for permission from the user
 			Beacons.requestAlwaysAuthorization();
 			Beacons.requestWhenInUseAuthorization();
 
+			this.authorization = null;
 			Beacons.getAuthorizationStatus(function(authorization) {
 				// authorization is a string which is either "authorizedAlways",
 				// "authorizedWhenInUse", "denied", "notDetermined" or "restricted"
 				this.authorization = authorization;
 				console.log("Got authorization: " + authorization);
-
-				// if (authorization != "authorizedAlways" && authorization != "authorizedWhenInUse") {
-				// 	Alert.alert("No authorization!", "In your settings you have not given authorization to access your location. This will cause many features to be unavailable")
-				// }
 			});
+
+			// For the other iOS only requires the object { identifier: "Some ID", uuid: "long-string-ofcharacters" }
 			Beacons.startMonitoringForRegion(env.labRegion);
 			Beacons.startMonitoringForRegion(env.checkInRegion);
 		}else{
-
+			// Android needs explicit declaration of type of beacon detected
 			Beacons.detectIBeacons()
 			Beacons.detectEstimotes()
 
+			// Android needs major and minor values
 			env.labRegion.major = 1
 			env.labRegion.minor = 1
 
 			env.checkInRegion.major = 1
 			env.checkInRegion.minor = 1
 
+			// Android may fail!
 			Beacons.startMonitoringForRegion(env.labRegion).then(()=> {
 				console.log("Started monitoring", env.labRegion)
 			}).catch((error) => {
@@ -60,13 +85,22 @@ class BeaconController {
 			});
 		}
 
+		// Store the current thought of where the device is in relation to DALI
 		this.inDALI = false;
+
+		// Listeners for the various events I monitor
 		this.enterExitListeners = [];
 		this.beaconRangeListeners = [];
 		this.timsOfficeListeners = [];
 		this.checkInListeners = [];
+
+		// To make sure I don't set up Tim's Office region twice
+		this.setUpTimsOffice = false
+
+		// Now that setup is complete I can save this controller as the active controller
 		BeaconController.current = this;
 
+		// Set up the listeners for the monitored beacons
 		this.enterListener = DeviceEventEmitter.addListener('regionDidEnter', this.didEnterRegion.bind(this));
 		this.exitListener = DeviceEventEmitter.addListener('regionDidExit', this.didExitRegion.bind(this));
 	}
@@ -115,16 +149,16 @@ class BeaconController {
 		});
 	}
 
-	requestPushPermissions() {
-		this.setUpNotifications()
-	}
-
 	/**
 	 * Enable beacon ranging
 	 */
 	startRanging() {
+		// To track the number of times I get beacons before I force cancel ranging
+		// Helped a bit towards infinite ranging problem
 		this.numRanged = 0
-		if (BeaconController.ios) {
+
+		// Again Android does things differently
+		if (Platform.OS == 'ios') {
 			Beacons.startUpdatingLocation();
 			Beacons.startRangingBeaconsInRegion(env.labRegion);
 		}else{
@@ -133,6 +167,7 @@ class BeaconController {
 			}).catch((error) => {
 				console.log("Failed to range")
 				console.log(error)
+				// Failed to range, report not in the lab
 				BeaconController.performCallbacks(this.enterExitListeners, false);
 			})
 		}
@@ -145,15 +180,20 @@ class BeaconController {
 	 */
 	stopRanging() {
 		console.log("Stopping...");
-		if (BeaconController.ios) {
+		if (Platform.OS == 'ios') {
 			Beacons.stopUpdatingLocation();
 		}
+
+		// So far I have not found a great way to stop ranging beacons, so I just remove the listener
 		if (this.rangingListener != null) {
 			this.rangingListener.remove();
+			this.rangingListener = null;
 		}
-		this.rangingListener = null
 	}
 
+	/**
+	 Called when the device exits a montiored region
+	 */
 	didExitRegion(exitRegion) {
 		console.log("Exited region");
 		console.log(exitRegion);
@@ -188,10 +228,15 @@ class BeaconController {
 			}
 		});
 
+		// Save and notify
 		this.inDALI = false;
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
 	}
 
+	/**
+	 Presents a notification to the user that they have been checked in
+	 Called by the ServerCommunicator when it has successfully checked in the user
+	 */
 	checkInComplete() {
 		StorageController.getCheckinNotifPreference().then((value) => {
 			if (value) {
@@ -203,6 +248,10 @@ class BeaconController {
 		})
 	}
 
+	/**
+	 Handles entering a region.
+	 Called by the didEnterRegion listener I set up
+	 */
 	didEnterRegion(enterRegion) {
 		console.log("Entered region");
 		console.log(enterRegion);
@@ -240,32 +289,50 @@ class BeaconController {
 	}
 
 	/**
-	 * Called from listener
+	 Handles beacons that have been ranged.
+	 Called by beaconsDidRange listener
 	 */
 	beaconsDidRange(data) {
+		// An attempt to stop the ranging if it gets out of controll
 		if (this.numRanged > 5) {
 			this.stopRanging()
 			return
 		}
 		this.numRanged+=1
 
+
 		console.log("Ranged beacons: ");
 		console.log(data);
-		this.data = data;
 
+		/*
+			Since I cannot actually range multiple regions at the same time,
+				I am staggering them, such that when one finishes it will start the next.
+			The order of this is:
+				- DALI lab
+				- Check in
+				- Tim's Office (only if user is Tim)
+
+			The order of the if statements is actually the reverse of this,
+				but it is the best way to default to DALI Lab region if it is an unhandled region
+		*/
+
+		// Check to see if this region is Tim's Office
 		if (Platform.OS != "ios" ? (data.identifier == env.timsOfficeRegion.identifier) : (data.region.identifier == env.timsOfficeRegion.identifier)) {
 			console.log("Tims Office");
 			// Get tim
 			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
 				BeaconController.performCallbacks(this.timsOfficeListeners, data.beacons.count > 0);
 			}
-
+			// Since this is to be the last in the chain
 			this.stopRanging();
+
+		// Check to see if this region is a event checkin
 		}else if (Platform.OS != "ios" ? (data.identifier == env.checkInRegion.identifier) : (data.region.identifier == env.checkInRegion.identifier)) {
 			console.log("Check In");
 			// Doing the same thing but for check-in beacons
 			BeaconController.performCallbacks(this.checkInListeners, data.beacons.count > 0);
 
+			// Starts the next (Tim's Office) only if user is Tim
 			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
 				if (Platform.OS == "ios") {
 					Beacons.startRangingBeaconsInRegion(env.timsOfficeRegion);
@@ -273,14 +340,18 @@ class BeaconController {
 					Beacons.startRangingBeaconsInRegion(env.timsOfficeRegion.identifier, env.timsOfficeRegion.uuid);
 				}
 			}else{
-				// this.stopRanging();
+				// Otherwise this is the end of the line
+				this.stopRanging();
 			}
+
+		// Last possible case: it is DALI
 		}else{
 			console.log("DALI");
 			// Keeping track of wheter I'm in DALI or not
 			this.inDALI = data.beacons.length > 0;
 			BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
 
+			// Start the next region (Check-in)
 			if (Platform.OS != "ios") {
 				Beacons.startRangingBeaconsInRegion(env.checkInRegion.identifier, env.checkInRegion.uuid);
 			}else{
@@ -290,28 +361,39 @@ class BeaconController {
 	}
 
 	/**
-	 * This listener will be a function that takes a Boolean value indicating inDALI
+	 This listener will be a function that takes a Boolean value indicating inDALI
 	 */
 	addEnterExitListener(listener) {
 		this.enterExitListeners.push(listener);
 	}
 
+	/**
+		If the user is Tim, adds the given listener to the listeners
+	*/
 	addTimsOfficeListener(listener) {
+		// Only if it's Tim
+		if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+			// Again split between iOS and Android
+			// Although if I have already set it up I wont do either
+			if (Platform.OS === 'ios' && !this.setUpTimsOffice) {
+				Beacons.startMonitoringForRegion(env.timsOfficeRegion);
+			}else if (!this.setUpTimsOffice) {
+				env.timsOfficeRegion.major = 1
+				env.timsOfficeRegion.minor = 1
 
-		if (Platform.OS === 'ios') {
-			Beacons.startMonitoringForRegion(env.timsOfficeRegion);
-		}else{
-			env.timsOfficeRegion.major = 1
-			env.timsOfficeRegion.minor = 1
+				Beacons.startMonitoringForRegion(env.timsOfficeRegion).then(()=> {
+					console.log("Started monitoring", env.timsOfficeRegion)
+				}).catch((error) => {
+					console.log(error)
+				});
+			}
 
-			Beacons.startMonitoringForRegion(env.timsOfficeRegion).then(()=> {
-				console.log("Started monitoring", env.timsOfficeRegion)
-			}).catch((error) => {
-				console.log(error)
-			});
+			// Its set up now
+			this.setUpTimsOffice = true
+
+			// Save listener
+			this.timsOfficeListeners.push(listener);
 		}
-
-		this.timsOfficeListeners.push(listener);
 	}
 
 	/**

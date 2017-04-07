@@ -28,7 +28,7 @@ let Login = require('./components/Login');
 
 // GoogleSignin requires configuration...
 GoogleSignin.configure(env.googleConfig);
-let beaconController = new BeaconController(true);
+let beaconController = new BeaconController();
 let serverCommunicator = new ServerCommunicator(beaconController);
 
 // Will pull the current user from memory.
