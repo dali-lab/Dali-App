@@ -1,3 +1,15 @@
+/**
+ * Main.js
+ * Presents the main interface for the DALI Lab app.
+ * Included in this view is:
+ * 	- ListView of TA Office Hours
+ * 	- ListView of Upcoming events
+ *
+ * AUTHOR: John Kotz
+ * Copyright (c) 2017 DALI Lab All Rights Reserved.
+ */
+
+
 import React, { Component } from 'react';
 import {
 	AppRegistry,
@@ -15,17 +27,29 @@ import {
 	Animated,
 	Patform
 } from 'react-native';
-let ServerCommunicator = require('./ServerCommunicator').default;
-let BeaconController = require('./BeaconController').default;
 import LinearGradient from 'react-native-linear-gradient';
 import {GoogleSignin} from 'react-native-google-signin';
+
+// My Components and classes
+let ServerCommunicator = require('./ServerCommunicator').default;
+let BeaconController = require('./BeaconController').default;
 let Settings = require('./Settings');
 let PeopleInLab = require('./PeopleInLab');
 let StorageController = require('./StorageController').default;
 
+
 var window = Dimensions.get('window')
 
+/**
+ Formats the given events into a simple start - end format
+ 	eg. Sun 12 - 1:30 PM
 
+ PARAMETERS:
+ - start: Start date
+ - end: End date
+
+ RETURNS: String
+ */
 function formatEvent(start, end) {
 	let weekDays = ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat']
 
@@ -42,12 +66,21 @@ function formatEvent(start, end) {
 	return weekDays[start.getDay()] + ' ' + formatTime(start) + ' - ' + formatTime(end) + ' ' + ((start.getHours() + 1) >= 12 ? "PM" : "AM")
 }
 
-let taHoursExpanded = window.height/2 + 70
-let taHoursDefault =  window.height/2 - 100
-let eventsExpanded = window.height/2 + 50
-let eventsDefault = 240
-let shrunkSize = 70
+// A bunch of constants
+// TODO: Refactor into better practice format
+const taHoursExpanded = window.height/2 + 70
+const officeHoursDefault =  window.height/2 - 100
+const eventsExpanded = window.height/2 + 50
+const eventsDefault = 240
+const shrunkSize = 70
 
+/**
+ Controlls the the interface for the Main component
+
+ PROPS:
+ - onLogout: Function to call to logout
+ - user: Object defining the user
+ */
 class Main extends Component {
 	propTypes: {
 		onLogout: ReactNative.PropTypes.func,
@@ -57,82 +90,126 @@ class Main extends Component {
 	constructor() {
 		super()
 
+		// All very important and not at all understandable:
 		this.state = {
+			// The data source for the office hours list view
 			officeHoursDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+			// The data source for the events list view
 			eventsDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+			// Indicates whether the Settings component is currently presented over the Main
 			settingsVisible: false,
+			// Indicates whether the PeopleInLab component is currently presented over the Main
 			peopleInLabVisible: false,
-			taHoursSelected: false,
+			// Indicates whether the office hours list view is currently expanded (Read more: toggleSectionGrow)
+			officeHoursSelected: false,
+			// Indicates whether the events list view is currently expanded (Read more: toggleSectionGrow)
 			eventsSelected: false,
-			labHours: null,
+			// Holds the data I will get about the office hours
+			officeHours: null,
+			// Holds the boolean I will get about whether the device is in the lab
 			inDALI: null,
+			// Holds the boolean I will get about whether the device is in Tim's Office
+			// Just for tim's device
 			inTimsOffice: false,
+			// The current state of the application (background or foreground)
+			// Will come in handy when reloading data on re-entry to the app
 			appState: AppState.currentState,
-			taGrowAnimationValue: new Animated.Value(),
-			eventGrowAnimationValue: new Animated.Value()
+			// Animated values defining the height of the office hours list view (for animating)
+			// (Read more: toggleSectionGrow)
+			officeHoursAnimationValue: new Animated.Value()
 		}
 
-		this.state.taGrowAnimationValue.setValue(taHoursDefault)
-		this.state.eventGrowAnimationValue.setValue(eventsDefault)
+		// Initialize the value of the office hours list to its default
+		this.state.officeHoursAnimationValue.setValue(officeHoursDefault)
 	}
 
 	componentDidMount() {
+		// Sets up a listener that will be triggered when the the app switches between background and foreground (or vise versa)
 		AppState.addEventListener('change', this._handleAppStateChange.bind(this));
 
+		// Get the data to be shown
 		this.refreshData()
 	}
 
 	_handleAppStateChange = (nextAppState) => {
+		// Refresh data if the app is coming into the foreground
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-      console.log('App has come to the foreground!')
 			this.refreshData()
     }
 		this.setState({appState: nextAppState});
   }
 
+	/**
+	 Refreshes the data that is to be presented.
+	 This includes:
+	 - Office hours
+	 - Upcoming events
+	 - Current location (ie. in lab or not)
+	 */
 	refreshData() {
-		ServerCommunicator.current.getTonightsLabHours().then((labHours) => {
+		// Retrieve office hours
+		ServerCommunicator.current.getTonightsLabHours().then((officeHours) => {
 			this.setState({
-				labHours: labHours,
-				officeHoursDataSource: this.state.officeHoursDataSource.cloneWithRows(labHours)
-			})
+				officeHours: officeHours,
+				// In order to update the list view I tell to to clone the previous dataSource with the new data
+				// It does this, and notices how the old and new data are different, updating the list view accordingly
+				officeHoursDataSource: this.state.officeHoursDataSource.cloneWithRows(officeHours)
+			});
 
-			if (labHours.length) {
-				let first = labHours[0];
+			if (officeHours.length > 0) {
+				// In order to remove office hours from the list as soon as they end, I am setting a timer...
+				let first = officeHours[0];
 				setTimeout(() => {
-					this.refreshData()
+					this.refreshData();
 	      }, Math.abs((new Date()) - first.endDate));
+				// ... for the number of milliseconds between now and the end of the most proximous office hour
 			}
-		})
+		}).catch((error) => {
+			console.log(error);
+		});
 
 		ServerCommunicator.current.getUpcomingEvents().then((events) => {
 			this.setState({
+				// Same as above, but with the events
 				eventsDataSource: this.state.eventsDataSource.cloneWithRows(events)
 			})
 
 			if (events.length > 0) {
+				// Again, same as before:
+				// Auto refresh when an event ends
 				let first = events[0];
 				setTimeout(() => {
-					this.refreshData()
+					this.refreshData();
 				}, Math.abs((new Date()) - first.endDate));
 			}
 		}).catch((error) => {
-			console.log(error)
-		})
+			console.log(error);
+		});
 
-
-		BeaconController.current.addBeaconDidRangeListener((beacons) => {
+		// In order to get the current location, I set up a listener
+		// TODO: Debug incorrect out-of-lab status
+		BeaconController.current.addBeaconDidRangeListener(() => {
 			this.setState({
 				inDALI: BeaconController.current.inDALI
 			});
 		})
-		// BeaconController.current.startRanging()
+
+		// I also set the current value in case I already have it
+		if (BeaconController.current.inDALI) {
+			this.setState({
+				inDALI: BeaconController.current.inDALI
+			})
+		}
+
+		// In the case I leave the lab with the app open, I should know
 		BeaconController.current.addEnterExitListener((inDALI) => {
 			this.setState({
 				inDALI: inDALI
 			})
 		})
 
+		// Same stuff as before, but for Tim's Office
+		// Only for Tim
 		if (StorageController.userIsTim(GoogleSignin.currentUser())) {
 			BeaconController.current.addTimsOfficeListener((enter) => {
 				this.setState({
@@ -142,6 +219,9 @@ class Main extends Component {
 		}
 	}
 
+	/**
+	 Logout and notify the index.__.js to switch to Login
+	 */
 	logout() {
 		GoogleSignin.signOut()
 		.then(() => {
@@ -152,11 +232,11 @@ class Main extends Component {
 		});
 	}
 
-
+	/// Renders a row for a office hour and returns it
 	renderOfficeHoursRow(hour) {
 		return (
 			<View style={styles.row}>
-				<Text style={[styles.leftRowText, {width: 60}]}>{hour.startDate.getHours() - 12} - {hour.endDate.getHours() - 12}pm</Text>
+				<Text style={[styles.leftRowText, {width: 60}]}>{hour.startDate.getHours() - 12} - {hour.endDate.getHours() - 12} pm</Text>
 				<View style={styles.rightRowView}>
 					<Text style={styles.rowTitle}>{hour.name}</Text>
 					<Text style={styles.detailText}>{hour.skills}</Text>
@@ -165,7 +245,10 @@ class Main extends Component {
 		)
 	}
 
+	/// Renders a row for an event and returns it
 	renderEventRow(event) {
+		// It is touchable so the user can click it an open the event in a web-browser
+		// underlayColor="rgba(0,0,0,0.1)" makes there be a slightly opaque overlay to be placed on the row when pressed
 		return (
 			<TouchableHighlight
 				underlayColor="rgba(0,0,0,0.1)"
@@ -181,87 +264,132 @@ class Main extends Component {
 		)
 	}
 
+	/// Opens an event in a web-browser
 	openEvent(event) {
 		console.log(event);
 		Linking.openURL(event.htmlLink);
 	}
 
+	/// Shows the Settings modal
 	settingsButtonPressed() {
 		this.setState({
 			settingsVisible: true
-		})
+		});
 	}
 
+	/// Shows the PeopleInLab modal
 	peopleInLabPressed() {
 		this.setState({
 			peopleInLabVisible: true
-		})
+		});
 	}
 
+	/// Dismisses all modals shown
 	hideModals() {
 		this.setState({
 			settingsVisible: false,
 			peopleInLabVisible: false
-		})
+		});
 	}
 
+	/// Toggles a section (office hours or events) to expand or contract
 	toggleSectionGrow(section) {
-		let TAstart = this.state.taHoursSelected ? taHoursExpanded : (this.state.eventsSelected ? shrunkSize : taHoursDefault)
-		let TAend = section == "taHoursSelected" ? (this.state.taHoursSelected ? taHoursDefault : taHoursExpanded) : (this.state.eventsSelected ? taHoursDefault : shrunkSize)
+		// Complicated terniary
+		// Basically defines the height we want the office hours section to be after the animation
+		// If selection is on the:
+		//      office hours and the office hours are expanded, then return to default
+		// 			office hours but the office hours are not expaned (either expanded or shrunk), go to expaned height
+		// 			events and the events section was expanded, we must colapse back to default
+		//      events and the events section was not expaned, expand events by shrinking
+		let end = section == "officeHoursSelected" ? (this.state.officeHoursSelected ? officeHoursDefault : taHoursExpanded) : (this.state.eventsSelected ? officeHoursDefault : shrunkSize);
 
+		// Update the state
 		this.setState({
-			taHoursSelected: section == "taHoursSelected" && !this.state.taHoursSelected,
+			officeHoursSelected: section == "officeHoursSelected" && !this.state.officeHoursSelected,
 			eventsSelected: section == "eventsSelected" && !this.state.eventsSelected,
-		})
+		});
 
-		Animated.spring(this.state.taGrowAnimationValue, {
-			toValue: TAend
-		}).start()
+		// Animate towards that beutifully calculated end height
+		Animated.spring(this.state.officeHoursAnimationValue, {
+			toValue: end
+		}).start();
 	}
 
+	/**
+	 Renders the Main view
+	 VERY complicated
+	 */
   render() {
 		return (
 			<LinearGradient colors={['#2696a9', 'rgb(146, 201, 210)']} style={styles.container}>
-			<Modal
-          animationType={"slide"}
-          transparent={false}
-          visible={this.state.settingsVisible || this.state.peopleInLabVisible}
-          onRequestClose={this.hideModals.bind(this)}>
-					{this.state.settingsVisible ? <Settings
-						user={this.props.user}
-						onLogout={this.props.onLogout}
-						dismiss={this.hideModals.bind(this)}/> : null}
-					{this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)}/> : null}
+			{/* Creates a gradient view that acts as the background*/}
+				{/* Controlls the modal presented views that branch off. Transitions using a slide up*/}
+				<Modal
+	          animationType={"slide"}
+	          transparent={false}
+	          visible={this.state.settingsVisible || this.state.peopleInLabVisible}
+	          onRequestClose={this.hideModals.bind(this)}>
+						{this.state.settingsVisible ? <Settings
+							user={this.props.user}
+							onLogout={this.props.onLogout}
+							dismiss={this.hideModals.bind(this)}/> : null}
+						{this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)}/> : null}
 				</Modal>
+
+				{/* DALI image*/}
 				<Image source={require('./Assets/DALI_whiteLogo.png')} style={styles.daliImage}/>
+
+				{/* Location label. More complicated terniary*/}
 				<Text style={styles.locationText}>{this.state.inTimsOffice ? "You are in Tim's Office" : (this.state.inDALI ? "You are in DALI now" : (this.state.inDALI != null ? "You are not in DALI now" : "Loading location..."))}</Text>
+
+				{/* A view to rull all views (actually not all, as the Modal and LinearGradient aren't controlled by this)*/}
 				<View style={styles.internalView}>
+					{/* An animated view allows me to use both basic CSS and pointers to changing Animated values*/}
 					<Animated.View style={[
 						styles.topView,
-						// {height: (this.state.taHoursSelected ? taHoursExpanded : (this.state.eventsSelected ? shrunkSize : taHoursDefault))},
-						{height: this.state.taGrowAnimationValue}
+						{height: this.state.officeHoursAnimationValue}
 					]}>
+						{/* Now we enter the office hours section*/}
+
+						{/* A top seperator*/}
 						<View style={styles.separatorThick}/>
+						{/* The text for office hours, which is selectable so the user can expand and contract it*/}
 						<TouchableHighlight
 							underlayColor="rgba(0,0,0,0)"
-							onPress={this.toggleSectionGrow.bind(this, 'taHoursSelected')}>
-							<Text style={styles.titleText}>{this.state.labHours == null ? "Loading TA office hours..." : (this.state.labHours.length > 0 ? "TA office hours tonight!" : "No TA office hours tonight")}</Text>
+							onPress={this.toggleSectionGrow.bind(this, 'officeHoursSelected')}>
+							<Text style={styles.titleText}>{this.state.officeHours == null ? "Loading TA office hours..." : (this.state.officeHours.length > 0 ? "TA office hours tonight!" : "No TA office hours tonight")}</Text>
 						</TouchableHighlight>
+
+						{/* Another separator*/}
 						<View style={styles.separatorThin}/>
+
+						{/* Here is where it gets interesting! This is the actual list view, but most of it's rendering is done in renderRow*/}
 						<ListView
 							enableEmptySections={true}
 							style={styles.listView}
 							dataSource={this.state.officeHoursDataSource}
 							renderRow={this.renderOfficeHoursRow.bind(this)}/>
 					</Animated.View>
+
+					{/* Moving on to the events section*/}
+					{/* This one actually doesnt need to animate.
+						It seems to grow and shrink, as it is pushed and pulled down and up behind the toolbar below,
+							but nothing more than a cleverly hidden opaque toolbar view is needed for this effect.
+						I just use a terniary operator to switch between large and normal height*/}
 					<View style={[styles.bottomView, this.state.eventsSelected ? {height: eventsExpanded} : null]}>
+
+						{/* I swear, this is the last seperator*/}
 						<View style={styles.separatorThick}/>
+						{/* Again, touchable text*/}
 						<TouchableHighlight
 							underlayColor="rgba(0,0,0,0)"
 							onPress={this.toggleSectionGrow.bind(this, 'eventsSelected')}>
 							<Text style={styles.titleText}>Upcoming Events</Text>
 						</TouchableHighlight>
+						{/* Sike! One more seperator*/}
 						<View style={styles.separatorThin}/>
+
+						{/* The other list view*/}
 						<ListView
 							enableEmptySections={true}
 							style={styles.listView}
@@ -269,29 +397,43 @@ class Main extends Component {
 							renderRow={this.renderEventRow.bind(this)}/>
 					</View>
 				</View>
+
+				{/* Aforementioned cleverly hidden opaque toolbar view.
+						Instead of trying to perfect the timing on another animation for the events list view or making a hideus solid toolbar,
+							I just created another gradient that ends on the color where the view ends and starts at the color where the view starts.
+							In effect creating an opaque but seemingly nonexistant background!*/}
 				<LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
-					<View style={{flex: 1}}/>
+					{/* Empty and clear view to make the buttons equidistant*/}
+					<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
+
+					{/* Settings button*/}
 					<TouchableHighlight
 						underlayColor="rgba(0,0,0,0)"
 						style={styles.settingsButton}
 						onPress={this.settingsButtonPressed.bind(this)}>
 						<Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage}/>
 					</TouchableHighlight>
-					<View style={{flex: 1}}/>
+
+					{/* Empty and clear view to make the buttons equidistant*/}
+					<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
+
+					{/* People button*/}
 					<TouchableHighlight
 					underlayColor="rgba(0,0,0,0)"
 					style={styles.inTheLabButton}
 					onPress={this.peopleInLabPressed.bind(this)}>
 						<Image source={require('./Assets/people.png')} style={styles.settingsButtonImage}/>
 					</TouchableHighlight>
-					<View style={{flex: 1}}/>
+
+					{/* Empty and clear view to make the buttons equidistant*/}
+					<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
 				</LinearGradient>
 			</LinearGradient>
 		)
 	}
 }
 
-
+// This a huge list of styles! Not gonna comment it
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

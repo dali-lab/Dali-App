@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * EDITS: John Kotz
  */
 
 #import "AppDelegate.h"
@@ -23,7 +25,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   NSURL *jsCodeLocation;
-  
+
   if([launchOptions objectForKey:@"UIApplicationLaunchOptionsLocationKey"])
   {
     NSLog(@"No UIApplicationLaunchOptionsLocationKey");
@@ -44,7 +46,7 @@
   // For production load from pre-bundled file on disk. To re-generate the static bundle, run
   //
   // $ curl http://localhost:8081/index.ios.bundle -o main.jsbundle
-  
+
   [Fabric with:@[[Crashlytics class]]];
   jsCodeLocation = [CodePush bundleURL];
 #endif
@@ -65,7 +67,7 @@
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-  
+
   return [RNGoogleSignin application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 

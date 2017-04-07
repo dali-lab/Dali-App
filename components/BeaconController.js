@@ -165,7 +165,9 @@ class BeaconController {
 		if (BeaconController.ios) {
 			Beacons.stopUpdatingLocation();
 		}
-		this.rangingListener.remove();
+		if (this.rangingListener != null) {
+			this.rangingListener.remove();	
+		}
 		this.rangingListener = null
 	}
 

@@ -1,7 +1,8 @@
 /**
- * Sample React Native App
+ * DALI Lab App - IN REACT-NATIVE!
  * https://github.com/facebook/react-native
- * @flow
+ *
+ * AUTHOR: John Kotz
  */
 
 import React, { Component } from 'react';
@@ -15,70 +16,77 @@ import {
 	ListView,
 	StatusBar
 } from 'react-native';
-
 import codePush from "react-native-code-push";
 import {GoogleSignin} from 'react-native-google-signin';
+
+// My packages
 let BeaconController = require('./components/BeaconController').default;
 let ServerCommunicator = require('./components/ServerCommunicator').default;
 let env = require('./components/Environment');
-var Main = require('./components/Main');
-var Login = require('./components/Login');
+let Main = require('./components/Main');
+let Login = require('./components/Login');
 
-// import PushNotification from 'react-native-push-notification';
-// PushNotification.configure({
-//	 // (optional) Called when Token is generated (iOS and Android)
-//		 onRegister: function(token) {
-//				 console.log( 'TOKEN:', token );
-//		 },
-
-//		 // (required) Called when a remote or local notification is opened or received
-//		 onNotification: function(notification) {
-//				 console.log( 'NOTIFICATION:', notification );
-//		 },
-
-//		 // IOS ONLY (optional): default: all - Permissions to register.
-//		 permissions: {
-//				 alert: true,
-//				 badge: true,
-//				 sound: false
-//		 },
-
-//		 // Should the initial notification be popped automatically
-//		 // default: true
-//		 popInitialNotification: true,
-
-//		 /**
-//			 * (optional) default: true
-//			 * - Specified if permissions (ios) and token (android and ios) will requested or not,
-//			 * - if not, you must call PushNotificationsHandler.requestPermissions() later
-//			 */
-//		 requestPermissions: true,
-// });
-
-GoogleSignin.configure(env.googleConfig)
+// GoogleSignin requires configuration...
+GoogleSignin.configure(env.googleConfig);
 let beaconController = new BeaconController(true);
 let serverCommunicator = new ServerCommunicator(beaconController);
 
+// Will pull the current user from memory.
+// I'm doing this early so the user doesn't have to wait for a second for it to take effect
+var startingUser = null;
+GoogleSignin.currentUserAsync().then((user) => {
+	startingUser = user;
+	serverCommunicator.loggedIn(user);
+	if (dali.current) {
+		dali.current.setState({
+			user: user
+		})
+	}
+})
+
+// The entrance Component for the application. This will be rendered first
 export default class dali extends Component {
+	static current = null;
+
   constructor(props, context) {
     super(props, context);
 
+		// Start with the startingUser
     this.state = {
-      user: null,
-      configured: false
+      user: null
     };
+		dali.current = this
   }
 
   componentWillMount() {
-    GoogleSignin.currentUserAsync().then((user) => {
-			serverCommunicator.loggedIn(user);
-      this.setState({
-        user: user,
-        configured: true
-      });
-    }).done();
+		// I may have already successfully retrieved the user!
+		if (startingUser == null && this.state.user == null) {
+			// I guess not
+			// So load it...
+			GoogleSignin.currentUserAsync().then((user) => {
+				if (user) {
+					// Updating my controllers
+					serverCommunicator.loggedIn(user)
+				};
+
+				// Now move on to the main screen
+	      this.setState({
+	        user: user
+	      });
+	    }).done();
+		}else if (startingUser != null) {
+			// I had a preloaded user!
+			this.setState({
+				user: startingUser
+			})
+		}
+		// Otherwise I dont care. I already have a user
   }
 
+	/**
+	 Updates the application towards using the Main screen rather than Login
+	 Called by the Login module when logging in is complete
+	 */
 	onLogin(user) {
 		serverCommunicator.loggedIn(user);
 		this.setState({
@@ -86,6 +94,10 @@ export default class dali extends Component {
 		});
 	}
 
+	/**
+	 Logs out the user and updates the application towards using the Login screen
+	 Called by the Settings component, although it is passed through Main first.
+	 */
 	onLogout() {
 		GoogleSignin.signOut().then(() => {
 			serverCommunicator.user = null;
@@ -96,15 +108,16 @@ export default class dali extends Component {
 	}
 
 	render() {
+		// Determines which view to use as the internal view
     var internalView = null;
-    if (!this.state.configured) {
-      internalView = <Login onLogin={this.onLogin.bind(this)}/>;
-    }else if (this.state.user == null){
+    if (this.state.user == null){
       internalView = <Login onLogin={this.onLogin.bind(this)}/>;
     }else{
       internalView = <Main onLogout={this.onLogout.bind(this)} user={this.state.user}/>;
     }
 
+		// Render with the internal view,
+		//	forcing some styles and status bar configurations to make it look good
     return (
       <View style={styles.container}>
 				<StatusBar
@@ -125,7 +138,9 @@ const styles = StyleSheet.create({
 	}
 });
 
+// Configure the application to use codePush
 let codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME };
 dali = codePush(codePushOptions)(dali);
 
+// Start the app with the given class
 AppRegistry.registerComponent('dali', () => dali);
