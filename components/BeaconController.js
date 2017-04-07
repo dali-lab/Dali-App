@@ -8,24 +8,7 @@ import {
 } from 'react-native';
 const StorageController = require('./StorageController').default
 import {GoogleSignin} from 'react-native-google-signin';
-
-// Define a region which can be identifier + uuid,
-// identifier + uuid + major or identifier + uuid + major + minor
-// (minor and major properties are numbers)
-var labRegion = {
-	identifier: 'DALI lab',
-	uuid: 'F2363048-F649-4537-AB7E-4DADB9966544'
-};
-
-var checkInRegion = {
-	identifier: 'Check In',
-	uuid: 'C371F9F9-572D-4D59-956C-5C3DF4BE50B7'
-};
-
-var timsOfficeRegion = {
-	identifier: 'Tims office',
-	uuid: 'BC832F8A-B9B3-4147-ADC7-9C9BEF02E4DC'
-};
+let env = require('./Environment');
 
 
 class BeaconController {
@@ -52,26 +35,26 @@ class BeaconController {
 				// 	Alert.alert("No authorization!", "In your settings you have not given authorization to access your location. This will cause many features to be unavailable")
 				// }
 			});
-			Beacons.startMonitoringForRegion(labRegion);
-			Beacons.startMonitoringForRegion(checkInRegion);
+			Beacons.startMonitoringForRegion(env.labRegion);
+			Beacons.startMonitoringForRegion(env.checkInRegion);
 		}else{
 
 			Beacons.detectIBeacons()
 			Beacons.detectEstimotes()
 
-			labRegion.major = 1
-			labRegion.minor = 1
+			env.labRegion.major = 1
+			env.labRegion.minor = 1
 
-			checkInRegion.major = 1
-			checkInRegion.minor = 1
+			env.checkInRegion.major = 1
+			env.checkInRegion.minor = 1
 
-			Beacons.startMonitoringForRegion(labRegion).then(()=> {
-				console.log("Started monitoring", labRegion)
+			Beacons.startMonitoringForRegion(env.labRegion).then(()=> {
+				console.log("Started monitoring", env.labRegion)
 			}).catch((error) => {
 				console.log(error)
 			});
-			Beacons.startMonitoringForRegion(checkInRegion).then(()=> {
-				console.log("Started monitoring", checkInRegion)
+			Beacons.startMonitoringForRegion(env.checkInRegion).then(()=> {
+				console.log("Started monitoring", env.checkInRegion)
 			}).catch((error) => {
 				console.log(error)
 			});
@@ -143,9 +126,9 @@ class BeaconController {
 		this.numRanged = 0
 		if (BeaconController.ios) {
 			Beacons.startUpdatingLocation();
-			Beacons.startRangingBeaconsInRegion(labRegion);
+			Beacons.startRangingBeaconsInRegion(env.labRegion);
 		}else{
-			Beacons.startRangingBeaconsInRegion(labRegion.identifier, labRegion.uuid).then(() => {
+			Beacons.startRangingBeaconsInRegion(env.labRegion.identifier, env.labRegion.uuid).then(() => {
 				console.log("Started ranging")
 			}).catch((error) => {
 				console.log("Failed to range")
@@ -166,7 +149,7 @@ class BeaconController {
 			Beacons.stopUpdatingLocation();
 		}
 		if (this.rangingListener != null) {
-			this.rangingListener.remove();	
+			this.rangingListener.remove();
 		}
 		this.rangingListener = null
 	}
@@ -175,7 +158,7 @@ class BeaconController {
 		console.log("Exited region");
 		console.log(exitRegion);
 
-		if (exitRegion.region == checkInRegion.identifier || exitRegion.identifier == checkInRegion.identifier) {
+		if (exitRegion.region == env.checkInRegion.identifier || exitRegion.identifier == env.checkInRegion.identifier) {
 			// If we have exited the check-in-region, so we don't want to be notified about the lab
 			// We will instead deal with the check in listeners
 			BeaconController.performCallbacks(this.checkInListeners, false)
@@ -183,7 +166,7 @@ class BeaconController {
 		}
 
 		// Check for Tim's office
-		if (exitRegion.region == timsOfficeRegion.identifier || exitRegion.identifier == timsOfficeRegion.identifier) {
+		if (exitRegion.region == env.timsOfficeRegion.identifier || exitRegion.identifier == env.timsOfficeRegion.identifier) {
 			BeaconController.performCallbacks(this.timsOfficeListeners, false);
 			return
 		}
@@ -225,13 +208,13 @@ class BeaconController {
 		console.log(enterRegion);
 
 		// Check for check-in
-		if (enterRegion.region == checkInRegion.identifier || enterRegion.identifier == checkInRegion.identifier) {
+		if (enterRegion.region == env.checkInRegion.identifier || enterRegion.identifier == env.checkInRegion.identifier) {
 			BeaconController.performCallbacks(this.checkInListeners, true);
 			return
 		}
 
 		// Check for Tim's office
-		if (enterRegion.region == timsOfficeRegion.identifier || enterRegion.identifier == timsOfficeRegion.identifier) {
+		if (enterRegion.region == env.timsOfficeRegion.identifier || enterRegion.identifier == env.timsOfficeRegion.identifier) {
 			BeaconController.performCallbacks(this.timsOfficeListeners, true);
 			return
 		}
@@ -270,7 +253,7 @@ class BeaconController {
 		console.log(data);
 		this.data = data;
 
-		if (Platform.OS != "ios" ? (data.identifier == timsOfficeRegion.identifier) : (data.region.identifier == timsOfficeRegion.identifier)) {
+		if (Platform.OS != "ios" ? (data.identifier == env.timsOfficeRegion.identifier) : (data.region.identifier == env.timsOfficeRegion.identifier)) {
 			console.log("Tims Office");
 			// Get tim
 			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
@@ -278,16 +261,16 @@ class BeaconController {
 			}
 
 			this.stopRanging();
-		}else if (Platform.OS != "ios" ? (data.identifier == checkInRegion.identifier) : (data.region.identifier == checkInRegion.identifier)) {
+		}else if (Platform.OS != "ios" ? (data.identifier == env.checkInRegion.identifier) : (data.region.identifier == env.checkInRegion.identifier)) {
 			console.log("Check In");
 			// Doing the same thing but for check-in beacons
 			BeaconController.performCallbacks(this.checkInListeners, data.beacons.count > 0);
 
 			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
 				if (Platform.OS == "ios") {
-					Beacons.startRangingBeaconsInRegion(timsOfficeRegion);
+					Beacons.startRangingBeaconsInRegion(env.timsOfficeRegion);
 				}else{
-					Beacons.startRangingBeaconsInRegion(timsOfficeRegion.identifier, timsOfficeRegion.uuid);
+					Beacons.startRangingBeaconsInRegion(env.timsOfficeRegion.identifier, env.timsOfficeRegion.uuid);
 				}
 			}else{
 				// this.stopRanging();
@@ -299,9 +282,9 @@ class BeaconController {
 			BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
 
 			if (Platform.OS != "ios") {
-				Beacons.startRangingBeaconsInRegion(checkInRegion.identifier, checkInRegion.uuid);
+				Beacons.startRangingBeaconsInRegion(env.checkInRegion.identifier, env.checkInRegion.uuid);
 			}else{
-				Beacons.startRangingBeaconsInRegion(checkInRegion);
+				Beacons.startRangingBeaconsInRegion(env.checkInRegion);
 			}
 		}
 	}
@@ -316,13 +299,13 @@ class BeaconController {
 	addTimsOfficeListener(listener) {
 
 		if (Platform.OS === 'ios') {
-			Beacons.startMonitoringForRegion(timsOfficeRegion);
+			Beacons.startMonitoringForRegion(env.timsOfficeRegion);
 		}else{
-			timsOfficeRegion.major = 1
-			timsOfficeRegion.minor = 1
+			env.timsOfficeRegion.major = 1
+			env.timsOfficeRegion.minor = 1
 
-			Beacons.startMonitoringForRegion(timsOfficeRegion).then(()=> {
-				console.log("Started monitoring", timsOfficeRegion)
+			Beacons.startMonitoringForRegion(env.timsOfficeRegion).then(()=> {
+				console.log("Started monitoring", env.timsOfficeRegion)
 			}).catch((error) => {
 				console.log(error)
 			});
