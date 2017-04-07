@@ -1,12 +1,21 @@
+/**
+ StorageController.js
+ Deals with all the data storage that is necesary throughout the app
+
+ AUTHOR: John Kotz
+ */
+
 import React, { Component } from 'react';
 import {
   AppRegistry,
   AsyncStorage
 } from 'react-native';
-let env = require('./Environment');
 
+// To make sure I don't overwrite not my data
 const prefix = "@DaliLabApp";
 
+/// Controller of storage
+/// NOTE: It doesn't like me saving Bool's, so I convert them to strings and back
 class StorageController {
   static saveColor(color) {
     return AsyncStorage.setItem(prefix + ':selectedColor', color);
@@ -20,6 +29,7 @@ class StorageController {
     return AsyncStorage.setItem(prefix + ':checkInNotifPref', value.toString());
   }
 
+  /// This one has a default value, so if it is null I will set it to it's default
   static getCheckinNotifPreference() {
     return new Promise((success, failure) => {
       AsyncStorage.getItem(prefix + ':checkInNotifPref').then((result) => {
@@ -37,6 +47,7 @@ class StorageController {
     return AsyncStorage.setItem(prefix + ':labAccessNotifPref', value.toString());
   }
 
+  /// This one has a default value, so if it is null I will set it to it's default
   static getLabAccessPreference() {
     return new Promise((success, failure) => {
       AsyncStorage.getItem(prefix + ':labAccessNotifPref').then((result) => {
@@ -50,6 +61,7 @@ class StorageController {
     });
   }
 
+  /// This one has a default value, so if it is null I will set it to it's default
   static getLabPresencePreference() {
     return new Promise((success, failure) => {
       AsyncStorage.getItem(prefix + ':labPresencePref').then((result) => {
@@ -67,6 +79,7 @@ class StorageController {
     return AsyncStorage.setItem(prefix + ':labPresencePref', value.toString())
   }
 
+  /// This one has a default value, so if it is null I will set it to it's default
   static getBluetoothNotified() {
     return new Promise((success, failure) => {
       AsyncStorage.getItem(prefix + ':bluetoothNotified').then((result) => {
@@ -82,10 +95,6 @@ class StorageController {
 
   static saveBluetoothNotified(value) {
     return AsyncStorage.setItem(prefix + ':bluetoothNotified', value.toString());
-  }
-
-  static userIsTim(user) {
-    return user.email == env.tim// || __DEV__
   }
 }
 

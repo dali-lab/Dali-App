@@ -13,10 +13,11 @@ import {
 	Platform,
 	Alert
 } from 'react-native';
+import {GoogleSignin} from 'react-native-google-signin';
 
 // My other modules
 const StorageController = require('./StorageController').default
-import {GoogleSignin} from 'react-native-google-signin';
+const GlobalFunctions = require('./GlobalFunctions').default
 let env = require('./Environment');
 
 /**
@@ -320,7 +321,7 @@ class BeaconController {
 		if (Platform.OS != "ios" ? (data.identifier == env.timsOfficeRegion.identifier) : (data.region.identifier == env.timsOfficeRegion.identifier)) {
 			console.log("Tims Office");
 			// Get tim
-			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+			if (GlobalFunctions.userIsTim()) {
 				BeaconController.performCallbacks(this.timsOfficeListeners, data.beacons.count > 0);
 			}
 			// Since this is to be the last in the chain
@@ -333,7 +334,7 @@ class BeaconController {
 			BeaconController.performCallbacks(this.checkInListeners, data.beacons.count > 0);
 
 			// Starts the next (Tim's Office) only if user is Tim
-			if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+			if (GlobalFunctions.userIsTim()) {
 				if (Platform.OS == "ios") {
 					Beacons.startRangingBeaconsInRegion(env.timsOfficeRegion);
 				}else{
@@ -372,7 +373,7 @@ class BeaconController {
 	*/
 	addTimsOfficeListener(listener) {
 		// Only if it's Tim
-		if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+		if (GlobalFunctions.userIsTim()) {
 			// Again split between iOS and Android
 			// Although if I have already set it up I wont do either
 			if (Platform.OS === 'ios' && !this.setUpTimsOffice) {

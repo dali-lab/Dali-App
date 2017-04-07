@@ -23,6 +23,7 @@ import {GoogleSignin} from 'react-native-google-signin'
 
 // My modules
 const StorageController = require('./StorageController').default;
+const GlobalFunctions = require('./GlobalFunctions').default;
 let ServerCommunicator = require('./ServerCommunicator').default;
 
 
@@ -152,7 +153,7 @@ class Settings extends Component {
 			}
 		]
 
-		if (!StorageController.userIsTim(GoogleSignin.currentUser())) {
+		if (!GlobalFunctions.userIsTim()) {
 			return {
 				user: [signOutRow],
 				notifications: notificationsRows,

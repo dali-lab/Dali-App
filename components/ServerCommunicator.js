@@ -1,6 +1,7 @@
 let BeaconController = require('./BeaconController').default;
 let env = require('./Environment');
 let StorageController = require('./StorageController').default;
+let GlobalFunctions = require('./GlobalFunctions').default;
 import {Platform, NativeModules} from 'react-native';
 const { RNGoogleSignin } = NativeModules;
 import {GoogleSignin} from 'react-native-google-signin';
@@ -23,7 +24,7 @@ class ServerCommunicator {
     this.beaconController.addEnterExitListener(this.enterExitDALI);
 
     GoogleSignin.currentUserAsync().then((user) => {
-      if (user != null && StorageController.userIsTim(user)) {
+      if (user != null && GlobalFunctions.userIsTim()) {
         this.beaconController.addTimsOfficeListener(this.timsOfficeListener);
         this.beaconController.addBeaconDidRangeListener(() => {
           this.postForTim("DALI", this.beaconController.inDALI)
@@ -249,7 +250,7 @@ class ServerCommunicator {
       });
     }
 
-    if (StorageController.userIsTim(user)) {
+    if (GlobalFunctions.userIsTim()) {
       this.post(env.timLocationInfoURL, {location: "DALI", enter: inDALI})
         .then((response) => response.json()).then((responseJson) => {
 
@@ -289,7 +290,7 @@ class ServerCommunicator {
   }
 
   postForTim(location, enter) {
-    if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+    if (GlobalFunctions.userIsTim()) {
       this.post(env.timLocationInfoURL, {location: location, enter: enter})
         .then((response) => response.json()).then((responseJson) => {
 

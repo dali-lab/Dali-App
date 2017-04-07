@@ -36,6 +36,7 @@ let BeaconController = require('./BeaconController').default;
 let Settings = require('./Settings');
 let PeopleInLab = require('./PeopleInLab');
 let StorageController = require('./StorageController').default;
+let GlobalFunctions = require('./GlobalFunctions').default;
 
 
 var window = Dimensions.get('window')
@@ -211,7 +212,7 @@ class Main extends Component {
 
 		// Same stuff as before, but for Tim's Office
 		// Only for Tim
-		if (StorageController.userIsTim(GoogleSignin.currentUser())) {
+		if (GlobalFunctions.userIsTim()) {
 			BeaconController.current.addTimsOfficeListener((enter) => {
 				this.setState({
 					inTimsOffice: enter
