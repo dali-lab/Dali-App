@@ -1,3 +1,11 @@
+/**
+ Settings.js
+ Defines a Settings component
+
+ AUTHOR: John Kotz
+ */
+
+
 import React, { Component } from 'react';
 import {
 	AppRegistry,
@@ -10,12 +18,22 @@ import {
   Navigator,
   Switch
 } from 'react-native';
-const StorageController = require('./StorageController').default;
 import codePush from "react-native-code-push";
 import {GoogleSignin} from 'react-native-google-signin'
+
+// My modules
+const StorageController = require('./StorageController').default;
 let ServerCommunicator = require('./ServerCommunicator').default;
 
 
+/**
+ The Settings component
+
+ PROPS:
+ - onLogout: Function to call in order to logout
+ - dismiss: Function to dismiss the modal
+ - user: Object with information about the user
+ */
 class Settings extends Component {
   propTypes: {
     onLogout: ReactNative.PropTypes.func,
@@ -26,62 +44,63 @@ class Settings extends Component {
   constructor(props) {
     super(props)
 
+		// The list view dataSource
     const dataSource = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2,
       sectionHeaderHasChanged: (s1, s2) => s1 !== s2
     });
 
-
-
     this.state = {
       dataSource: dataSource.cloneWithRowsAndSections(this.getData(props)),
+			// The default values of the settings
       checkInNotif: true,
-      labAccessNotif: true,
+      labAccessNotif: false,
 			inLabLocShare: false,
     }
 
+		// Gets the lab access preference from the storage
     StorageController.getLabAccessPreference().then((value) => {
       if (value == null) {
-        this.setState({
-          labAccessNotif: true
-        })
-        StorageController.saveLabAccessPreference(true)
-        return
+				// Save the default value if there isn't one
+        StorageController.saveLabAccessPreference(this.state.labAccessNotif);
+        return;
       }
 
       this.setState({
         labAccessNotif: value
-      })
+      });
     });
+
+		// Get the preference for notifying the user on check-in
     StorageController.getCheckinNotifPreference().then((value) => {
       if (value == null) {
-        this.setState({
-          checkInNotif: true
-        })
-        StorageController.saveCheckInNotifPreference(true)
-        return
+				// Save default...
+        StorageController.saveCheckInNotifPreference(this.state.checkInNotif);
+        return;
       }
 
       this.setState({
         checkInNotif: value
-      })
-    })
+      });
+    });
 
+		// Get the preference of lab presence sharing
 		StorageController.getLabPresencePreference().then((value) => {
 			if (value == null) {
-				this.setState({
-					inLabLocShare: true
-				})
-				StorageController.saveCheckInNotifPreference(true)
-				return
+				// Save default...
+				StorageController.saveCheckInNotifPreference(this.state.inLabLocShare);
+				return;
 			}
 
 			this.setState({
 				inLabLocShare: value
-			})
-		})
+			});
+		});
   }
 
+	/**
+	 Retrieves the data regarding the sections and rows of the list
+	 */
 	getData() {
 		var notificationsRows = [
 			{
@@ -147,8 +166,12 @@ class Settings extends Component {
 		}
 	}
 
+	/**
+	 Renders the rows
+	 */
   renderRow(data, section, row) {
     if (section == 'user') {
+			// The user cells are different
       return (
         <TouchableHighlight onPress={data.action}>
           <View>
@@ -163,23 +186,27 @@ class Settings extends Component {
       )
     }
 
+		// The other rows are all pretty simple
     return (
       <View>
-      <View style={styles.notificationRow}>
-        <View style={styles.notificationRowTextContainer}>
-          <Text style={styles.notificationRowTitle}>{data.title}</Text>
-          <Text style={styles.notificationRowDetail}>{data.detail}</Text>
-        </View>
-        <Switch
-          value={this.state[data.stateName]}
-          onValueChange={data.switchChanged}
-          style={styles.notificationRowSwitch}/>
-      </View>
-      <View style={row == 0 ? styles.seperatorSmall : styles.seperator}/>
+	      <View style={styles.notificationRow}>
+	        <View style={styles.notificationRowTextContainer}>
+	          <Text style={styles.notificationRowTitle}>{data.title}</Text>
+	          <Text style={styles.notificationRowDetail}>{data.detail}</Text>
+	        </View>
+	        <Switch
+	          value={this.state[data.stateName]}
+	          onValueChange={data.switchChanged}
+	          style={styles.notificationRowSwitch}/>
+	      </View>
+	      <View style={row == 0 ? styles.seperatorSmall : styles.seperator}/>
       </View>
     )
   }
 
+	/**
+	 Gets a view of a section header
+	 */
   renderSectionHeader(data, sectionName) {
     if (sectionName == "user") {
       return <View/>
@@ -192,6 +219,9 @@ class Settings extends Component {
     )
   }
 
+	/**
+	 Get footer
+	 */
 	renderFooter() {
 		return (
 			<View style={styles.sectionFooter}>
@@ -200,25 +230,33 @@ class Settings extends Component {
 		)
 	}
 
+	/**
+	 Render the view
+	 */
   render() {
+		// The navagator class is powerfull, and allows navigation bars
     return (
       <Navigator
         navigationBar={
              <Navigator.NavigationBar
                routeMapper={{
-                 LeftButton: (route, navigator, index, navState) =>
-                  { return (null); },
-                 RightButton: (route, navigator, index, navState) =>
-                   { return (
+                 LeftButton: (route, navigator, index, navState) => {
+									 return (null);
+								 },
+                 RightButton: (route, navigator, index, navState) => {
+									 // Done Button
+									 return (
                       <TouchableHighlight
 												underlayColor="rgba(0,0,0,0)"
                         style={styles.navBarDoneButton}
                         onPress={this.props.dismiss}>
                         <Text style={styles.navBarDoneText}>Done</Text>
                       </TouchableHighlight>
-                    );},
-                 Title: (route, navigator, index, navState) =>
-                   { return (<Text style={styles.navBarTitleText}>Settings</Text>); },
+                    );
+									},
+                 	Title: (route, navigator, index, navState) => {
+										return (<Text style={styles.navBarTitleText}>Settings</Text>);
+									}
                }}
                style={{backgroundColor: 'rgb(33, 122, 136)'}}
              />

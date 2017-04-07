@@ -1,6 +1,8 @@
 /**
  Login.js
  A component and controller for the Login interface
+
+ AUTHOR: John Kotz
  */
 
 'use strict';
@@ -165,7 +167,6 @@ class Login extends Component {
     });
   }
 }
-
 
 const styles = StyleSheet.create({
   container: {

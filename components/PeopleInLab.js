@@ -1,3 +1,10 @@
+/**
+ PeopleInLab.js
+ Defines a component for showing the people who are in the lab
+
+ AUTHOR: John Kotz
+ */
+
 import React, { Component } from 'react';
 import {
 	AppRegistry,
@@ -12,6 +19,12 @@ import {
 } from 'react-native';
 let ServerCommunicator = require('./ServerCommunicator').default;
 
+/**
+ A component for showing the people who are in the lab
+
+ PROPS:
+ - dismiss: Function to call to dismiss the modal
+ */
 class PeopleInLab extends Component {
   propTypes: {
     dismiss: ReactNative.PropTypes.func.isRequired,
@@ -20,12 +33,13 @@ class PeopleInLab extends Component {
   constructor(props) {
 		super(props)
 
+		// Data source for the list view
 		const dataSource = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2,
       sectionHeaderHasChanged: (s1, s2) => s1 !== s2
     });
 
-
+		// I need to alert the user if I can't connect, but I only want to do it once
 		this.alerted = false
 
 		this.state = {
@@ -35,12 +49,15 @@ class PeopleInLab extends Component {
 			dataSource: dataSource.cloneWithRowsAndSections({})
 		}
 
+		// After setup, retrieve the data
 		this.getData()
 	}
 
+	/// Retrieves the data from the server
 	getData() {
 		ServerCommunicator.current.getSharedMembersInLab().then((people) => {
 			if (people == null) {
+				// Failed to connect
 				if (!this.alerted) {
 					setTimeout(() => {
 						Alert.alert("Failed to connect", "Failed to connect to the server. It may be down. Contact John Kotz", [
@@ -51,7 +68,7 @@ class PeopleInLab extends Component {
 				this.alerted = true
 				return
 			}
-			
+
 			this.setState({
 				peopleInLab: people,
 				dataSource: this.state.dataSource.cloneWithRowsAndSections({
@@ -65,6 +82,7 @@ class PeopleInLab extends Component {
 
 		ServerCommunicator.current.getTimLocation().then((locations) => {
 			if (locations == null) {
+				// Failed to connect
 				if (!this.alerted) {
 					setTimeout(() => {
 						Alert.alert("Failed to connect", "Failed to connect to the server. It may be down. Contact John Kotz", [
@@ -85,11 +103,19 @@ class PeopleInLab extends Component {
 			console.log(error);
 		})
 
-		setTimeout(() => {
-			this.getData()
-		}, 10000)
+		// Refresh data every 10 seconds
+		if (!this.stopTimer) {
+			setTimeout(() => {
+				this.getData()
+			}, 10000);
+		}
 	}
 
+	componentWillUnmount() {
+		this.stopTimer = true
+	}
+
+	/// Render the rows
 	renderRow(data, section, row) {
 		if (section == 'tim') {
 			let locKnown = this.state.timInOffice || this.state.timInDALI
@@ -109,6 +135,7 @@ class PeopleInLab extends Component {
 		}
 	}
 
+	/// Render the header
 	renderSectionHeader(data, sectionName) {
 		if (sectionName == "tim") {
 			return (
@@ -125,38 +152,41 @@ class PeopleInLab extends Component {
 		}
 	}
 
+	/// Render the view
 	render() {
-		return (<Navigator
-			navigationBar={
-					 <Navigator.NavigationBar
-						 routeMapper={{
-							 LeftButton: (route, navigator, index, navState) =>
-								{ return (null); },
-							 RightButton: (route, navigator, index, navState) =>
-								 { return (
-										<TouchableHighlight
-											underlayColor="rgba(0,0,0,0)"
-											style={styles.navBarDoneButton}
-											onPress={this.props.dismiss}>
-											<Text style={styles.navBarDoneText}>Done</Text>
-										</TouchableHighlight>
-									);},
-							 Title: (route, navigator, index, navState) =>
-								 { return (<Text style={styles.navBarTitleText}>People In The Lab</Text>); },
-						 }}
-						 style={{backgroundColor: 'rgb(33, 122, 136)'}}
-					 />
+		return (
+			<Navigator
+				navigationBar={
+						 <Navigator.NavigationBar
+							 routeMapper={{
+								 LeftButton: (route, navigator, index, navState) =>
+									{ return (null); },
+								 RightButton: (route, navigator, index, navState) =>
+									 { return (
+											<TouchableHighlight
+												underlayColor="rgba(0,0,0,0)"
+												style={styles.navBarDoneButton}
+												onPress={this.props.dismiss}>
+												<Text style={styles.navBarDoneText}>Done</Text>
+											</TouchableHighlight>
+										);},
+								 Title: (route, navigator, index, navState) =>
+									 { return (<Text style={styles.navBarTitleText}>People In The Lab</Text>); },
+							 }}
+							 style={{backgroundColor: 'rgb(33, 122, 136)'}}
+						 />
+					}
+				renderScene={(route, navigator) =>
+						<ListView
+							style={styles.listView}
+							dataSource={this.state.dataSource}
+							enableEmptySections={true}
+							renderSectionHeader={this.renderSectionHeader.bind(this)}
+							renderRow={this.renderRow.bind(this)}/>
 				}
-			renderScene={(route, navigator) =>
-					<ListView
-						style={styles.listView}
-						dataSource={this.state.dataSource}
-						enableEmptySections={true}
-						renderSectionHeader={this.renderSectionHeader.bind(this)}
-						renderRow={this.renderRow.bind(this)}/>
-			}
-			style={{paddingTop: 65}}
-		/>)
+				style={{paddingTop: 65}}
+			/>
+		)
 	}
 }
 
