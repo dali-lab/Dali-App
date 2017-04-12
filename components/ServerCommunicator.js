@@ -255,7 +255,7 @@ class ServerCommunicator {
             event.startDate = new Date(event.start.dateTime);
             event.endDate = new Date(event.end.dateTime);
 
-            return event.startDate > now && event.startDate < weekFromNow
+            return event.startDate > now && event.startDate < weekFromNow && event.status == "confirmed";
           });
 
           // Sort by date (soonest first)
