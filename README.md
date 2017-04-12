@@ -33,6 +33,7 @@ Clone the repository and install the necessary packages
 git clone https://github.com/dali-lab/Dali-App.git dali-app
 cd dali-app # change directory into main directory
 npm install # install the packages
+react-native link # Link all packages to the Xcode project and gradle
 ```
 
 #### Building
