@@ -1,5 +1,7 @@
 # DALI Lab App
 
+Copyright (c) 2017 DALI Lab All Rights Reserved.
+
 A React-Native application for showing information pertinent to DALI Lab members. Runs on iOS and Android, and uses Bluetooth beacon monitoring to recognize when the device enters or exits the DALI Lab.
 
 ## Features
