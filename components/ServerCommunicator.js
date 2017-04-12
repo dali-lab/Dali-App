@@ -16,6 +16,7 @@ let env = require('./Environment');
 let StorageController = require('./StorageController').default;
 let GlobalFunctions = require('./GlobalFunctions').default;
 
+let days = ['SU','MO','TU','WE','TH','FR','SA'];
 
 /**
  This class will control all server comunication.
@@ -131,7 +132,6 @@ class ServerCommunicator {
 
   /// Calls getLabHours and filters it by those still tonight
   getTonightsLabHours() {
-    let days = ['SU','MO','TU','WE','TH','FR','SA'];
 
     return new Promise((resolve, reject) => {
       this.getLabHours().then((hours) => {
@@ -168,16 +168,9 @@ class ServerCommunicator {
             // Not the right day of the week
             return false;
           }else{
-            console.log(hour);
-            console.log("Parts", parts);
-            console.log("Freq", freq);
-            console.log("Count", count);
-            console.log("Day", day);
             // Right day of week. Check time
             let thisWeeksTime = new Date(hour.start.dateTime);
             thisWeeksTime.setDate(thisWeeksTime.getDate() + numDaysDiff);
-
-            console.log(now, " : ", thisWeeksTime);
 
             return (thisWeeksTime > now || thisWeeksTime > now && thisWeeksTime < now) && thisWeeksTime <= midnight;
           }
@@ -305,26 +298,51 @@ class ServerCommunicator {
               return event.startDate > now && event.startDate < weekFromNow;
             }
 
-            let numDaysDiff = now.getDate() - hour.startDate.getDate();
+            let numDaysDiff = now.getDate() - event.startDate.getDate();
 
+            console.log(event);
+            console.log(event.recurrence)
             let recurrence = event.recurrence[0];
             let parts = recurrence.replace("RRULE:", "").split(';');
-            let freq = parts[0].replace("FREQ=", "");
-            let count = parseInt(parts[1].replace("COUNT=", ""));
-            let day = parts[2].replace("BYDAY=", "");
 
-            let lastDuplicate = new Date(event.start.dateTime);
-            lastDuplicate.setDate(event.startDate.getDate() + 7 * count);
+            let obj = {}
 
-            if (now > lastDuplicate) {
+            parts.forEach((part) => {
+              let strings = part.split("=");
+              // Now I will parse the information the best I can
+
+              if (strings[0] == "COUNT") {
+                let count = parseInt(strings[1]);
+                let lastDuplicate = new Date(event.start.dateTime);
+                lastDuplicate.setDate(event.startDate.getDate() + 7 * count);
+
+                obj.lastDuplicate = lastDuplicate;
+              }else if (strings[0] == "FREQ") {
+                obj.frequency = strings[1];
+              }else if (strings[0] == "UNTIL") {
+                let year = strings[1].substring(0,4);
+                let month = strings[1].substring(4,6);
+                let day = strings[1].substring(6,8);
+
+                obj.lastDuplicate = new Date(year, month-1, day);
+                obj.lastDuplicate.setHours(event.startDate.getHours(), event.startDate.getMinutes());
+              }else if (strings[0] == "BYDAY") {
+                obj.day = strings[1];
+              }else{
+                obj[strings[0]] = strings[1];
+              }
+            })
+            console.log(obj);
+
+            if (now > obj.lastDuplicate) {
               // The last occurence of this event has passed
-              return false;
-            }else if (days[now.getDay()] != day){
-              // Not the right day of the week
+              console.log("DIAGNOSIS: The last occurence of this event has passed")
               return false;
             }else{
-              // Right day of week. Check time
-              let thisWeeksTime = new Date(hour.start.dateTime);
+              // Before end. Check time
+              console.log("DIAGNOSIS: Before end. Check time...")
+
+              let thisWeeksTime = new Date(event.start.dateTime);
               thisWeeksTime.setDate(thisWeeksTime.getDate() + numDaysDiff);
 
               console.log(now, " : ", thisWeeksTime);
