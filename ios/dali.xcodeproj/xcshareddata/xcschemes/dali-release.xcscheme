@@ -101,7 +101,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-ENABLE_FABRIC"
+            argument = "-ENABLE_FABRIC YES"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
