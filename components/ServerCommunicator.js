@@ -321,7 +321,7 @@ class ServerCommunicator {
     });
 
     // As well if the user is Tim, we will post for him
-    postForTim("DALI", inDALI);
+    this.postForTim("DALI", inDALI);
   }
 
   timsOfficeListener=(enter) => {

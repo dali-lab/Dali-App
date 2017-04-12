@@ -173,7 +173,9 @@ class BeaconController {
 			})
 		}
 
-		this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange.bind(this));
+		if (this.rangingListener == null) {
+			this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange.bind(this));
+		}
 	}
 
 	/**
