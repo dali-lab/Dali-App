@@ -9,7 +9,7 @@ import {GoogleSignin} from 'react-native-google-signin';
 
 class GlobalFunctions {
   static userIsTim() {
-    return GoogleSignin.currentUser().email == env.tim// || __DEV__
+    return GoogleSignin.currentUser().email == env.tim || __DEV__
   }
 }
 

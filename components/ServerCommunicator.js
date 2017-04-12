@@ -131,14 +131,56 @@ class ServerCommunicator {
 
   /// Calls getLabHours and filters it by those still tonight
   getTonightsLabHours() {
+    let days = ['SU','MO','TU','WE','TH','FR','SA'];
+
     return new Promise((resolve, reject) => {
       this.getLabHours().then((hours) => {
         let now = new Date();
         let midnight = new Date();
         midnight.setHours(23, 59, 59);
         var taHours = hours.filter((hour) => {
-          // Either it is in the future or it is happening now
-          return (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight && hour.status == "confirmed";
+          if (hour.status != "confirmed") {
+            return false;
+          }
+
+          // This method worked for the first week, but no longer!
+          // Because we only get one event for each that recurrs
+          if (hour.recurrence == undefined || hour.recurrence.length == 0) {
+            return (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight;
+          }
+
+          // This new method should determine what day of the week the
+          let numDaysDiff = now.getDate() - hour.startDate.getDate();
+
+          let recurrence = hour.recurrence[0];
+          let parts = recurrence.replace("RRULE:", "").split(';');
+          let freq = parts[0].replace("FREQ=", "");
+          let count = parseInt(parts[1].replace("COUNT=", ""));
+          let day = parts[2].replace("BYDAY=", "");
+
+          let lastDuplicate = new Date(hour.start.dateTime);
+          lastDuplicate.setDate(hour.startDate.getDate() + 7 * count);
+
+          if (now > lastDuplicate) {
+            // The last occurence of this event has passed
+            return false;
+          }else if (days[now.getDay()] != day){
+            // Not the right day of the week
+            return false;
+          }else{
+            console.log(hour);
+            console.log("Parts", parts);
+            console.log("Freq", freq);
+            console.log("Count", count);
+            console.log("Day", day);
+            // Right day of week. Check time
+            let thisWeeksTime = new Date(hour.start.dateTime);
+            thisWeeksTime.setDate(thisWeeksTime.getDate() + numDaysDiff);
+
+            console.log(now, " : ", thisWeeksTime);
+
+            return (thisWeeksTime > now || thisWeeksTime > now && thisWeeksTime < now) && thisWeeksTime <= midnight;
+          }
         });
 
         taHours.sort((hour1,hour2) => {
@@ -252,10 +294,43 @@ class ServerCommunicator {
 
           // Filter events so they fit between those days
           var events = responseJson.items.filter((event) => {
+            if (event.status != "confirmed") {
+              return false
+            }
+
             event.startDate = new Date(event.start.dateTime);
             event.endDate = new Date(event.end.dateTime);
 
-            return event.startDate > now && event.startDate < weekFromNow && event.status == "confirmed";
+            if (event.recurrence == undefined || event.recurrence.length == 0) {
+              return event.startDate > now && event.startDate < weekFromNow;
+            }
+
+            let numDaysDiff = now.getDate() - hour.startDate.getDate();
+
+            let recurrence = event.recurrence[0];
+            let parts = recurrence.replace("RRULE:", "").split(';');
+            let freq = parts[0].replace("FREQ=", "");
+            let count = parseInt(parts[1].replace("COUNT=", ""));
+            let day = parts[2].replace("BYDAY=", "");
+
+            let lastDuplicate = new Date(event.start.dateTime);
+            lastDuplicate.setDate(event.startDate.getDate() + 7 * count);
+
+            if (now > lastDuplicate) {
+              // The last occurence of this event has passed
+              return false;
+            }else if (days[now.getDay()] != day){
+              // Not the right day of the week
+              return false;
+            }else{
+              // Right day of week. Check time
+              let thisWeeksTime = new Date(hour.start.dateTime);
+              thisWeeksTime.setDate(thisWeeksTime.getDate() + numDaysDiff);
+
+              console.log(now, " : ", thisWeeksTime);
+
+              return thisWeeksTime > now && thisWeeksTime < weekFromNow;
+            }
           });
 
           // Sort by date (soonest first)
@@ -334,7 +409,7 @@ class ServerCommunicator {
 
   /// Posts the location info given to the server
   postForTim(location, enter) {
-    if (GlobalFunctions.userIsTim()) {
+    if (GlobalFunctions.userIsTim() && GoogleSignin.currentUser() != null) {
       this.post(env.timLocationInfoURL, {location: location, enter: enter})
         .then((response) => response.json()).then((responseJson) => {
 
