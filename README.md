@@ -40,7 +40,7 @@ react-native link # Link all packages to the Xcode project and gradle
 
 Will not compile without components/Environment.js (contact John Kotz if you would like to develop for it).
 
-###### iOS
+##### iOS
 *Xcode required*
 
 __*Debug*__: use a development live reload server. This will also enable the \_\_DEV\_\_ variable.
@@ -52,7 +52,7 @@ __*Release*__: build for release. This will build the application to a releasabl
 
 >To build for release, open Xcode and switch the Scheme to dali-release. Select a destination device and run
 
-###### Android
+##### Android
 To run on an emulator, download AndroidStudio and create a device of your choice. Launch it and you can then run one of the following.
 
 To run on a device, [enable developer mode](http://www.greenbot.com/article/2457986/how-to-enable-developer-options-on-your-android-phone-or-tablet.html) and [enable USB debugging](https://www.kingoapp.com/root-tutorials/how-to-enable-usb-debugging-mode-on-android.htm). Then when you plug in your device you can build to it.
