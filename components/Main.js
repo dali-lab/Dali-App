@@ -170,6 +170,27 @@ class Main extends Component {
 		});
 
 		ServerCommunicator.current.getUpcomingEvents().then((events) => {
+			var i = 0;
+			var foundWeek = false;
+			var foundToday = false;
+			console.log(events);
+			while (i < events.length) {
+				let event = events[i];
+				if (event.today && !foundToday) {
+					events.splice(i, 0, "TODAY SEPERATOR")
+					i++;
+					foundToday = true
+				}else if ( !foundWeek) {
+					events.splice(i, 0, "THIS WEEK SEPERATOR");
+					i++;
+					foundWeek = true;
+				}else if (event.nextWeek) {
+					events.splice(i, 0, "NEXT WEEK SEPERATOR");
+					break;
+				}
+				i++;
+			}
+
 			this.setState({
 				// Same as above, but with the events
 				eventsDataSource: this.state.eventsDataSource.cloneWithRows(events)
@@ -249,6 +270,32 @@ class Main extends Component {
 
 	/// Renders a row for an event and returns it
 	renderEventRow(event) {
+		if (event == "TODAY SEPERATOR") {
+			return (
+				<View style={styles.weekSeperator}>
+					<View style={styles.weekSeperatorLine}/>
+					<Text style={styles.weekSeperatorText}>Today</Text>
+					<View style={styles.weekSeperatorLine}/>
+				</View>
+			)
+		}else if (event == "THIS WEEK SEPERATOR") {
+			return (
+				<View style={styles.weekSeperator}>
+					<View style={styles.weekSeperatorLine}/>
+					<Text style={styles.weekSeperatorText}>This Week</Text>
+					<View style={styles.weekSeperatorLine}/>
+				</View>
+			)
+		}else if (event == "NEXT WEEK SEPERATOR") {
+			return (
+				<View style={styles.weekSeperator}>
+					<View style={styles.weekSeperatorLine}/>
+					<Text style={styles.weekSeperatorText}>Next Week</Text>
+					<View style={styles.weekSeperatorLine}/>
+				</View>
+			)
+		}
+
 		// It is touchable so the user can click it an open the event in a web-browser
 		// underlayColor="rgba(0,0,0,0.1)" makes there be a slightly opaque overlay to be placed on the row when pressed
 		return (
@@ -259,7 +306,7 @@ class Main extends Component {
 					<Text style={styles.leftRowText}>{event.summary}</Text>
 					<View style={styles.rightRowView}>
 						<Text style={styles.rowTitle}>{formatEvent(event.startDate, event.endDate)}</Text>
-						<Text style={styles.detailText}>{event.location}</Text>
+						<Text style={styles.detailText}>{event.location == "" ? event.description : event.location}</Text>
 					</View>
 				</View>
 			</TouchableHighlight>
@@ -506,6 +553,27 @@ const styles = StyleSheet.create({
 		fontStyle: 'italic',
 		fontSize: 11,
 		fontWeight: '500'
+	},
+	weekSeperator: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		paddingTop: 5,
+	},
+	weekSeperatorLine: {
+		flex: 1,
+		height: 1.5,
+		marginRight: 5,
+		marginLeft: 5,
+		backgroundColor: 'white'
+	},
+	weekSeperatorText: {
+		marginRight: 5,
+		fontFamily: 'Avenir Next',
+		marginLeft: 5,
+		fontWeight: '700',
+		backgroundColor: 'rgba(0,0,0,0)',
+		color: 'white'
 	},
 	row: {
 		paddingTop: 10,

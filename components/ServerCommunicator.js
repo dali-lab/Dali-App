@@ -277,13 +277,19 @@ class ServerCommunicator {
           // Get today...
           let now = new Date();
           // ... aka the beginning of today
-          now.setHours(0,0,0);
 
           // Get next week
           let weekFromNow = new Date();
           weekFromNow.setDate(now.getDate() + 6);
           // At the end of the day
           weekFromNow.setHours(23, 59, 59);
+
+          let weekend = new Date();
+          weekend.setDate(now.getDate() + (7 - now.getDay()))
+          weekend.setHours(23, 59, 59);
+
+          let midnight = new Date();
+          midnight.setHours(23, 59, 59);
 
           // Filter events so they fit between those days
           var events = responseJson.items.filter((event) => {
@@ -295,13 +301,13 @@ class ServerCommunicator {
             event.endDate = new Date(event.end.dateTime);
 
             if (event.recurrence == undefined || event.recurrence.length == 0) {
+              event.nextWeek = event.startDate > weekend;
+              event.today = event.startDate > now && event.startDate < midnight;
               return event.startDate > now && event.startDate < weekFromNow;
             }
 
             let numDaysDiff = now.getDate() - event.startDate.getDate();
 
-            console.log(event);
-            console.log(event.recurrence)
             let recurrence = event.recurrence[0];
             let parts = recurrence.replace("RRULE:", "").split(';');
 
@@ -332,22 +338,18 @@ class ServerCommunicator {
                 obj[strings[0]] = strings[1];
               }
             })
-            console.log(obj);
 
             if (now > obj.lastDuplicate) {
               // The last occurence of this event has passed
-              console.log("DIAGNOSIS: The last occurence of this event has passed")
               return false;
             }else{
               // Before end. Check time
-              console.log("DIAGNOSIS: Before end. Check time...")
+              event.startDate.setDate(event.startDate.getDate() + 7 * Math.ceil(numDaysDiff / 7));
 
-              let thisWeeksTime = new Date(event.start.dateTime);
-              thisWeeksTime.setDate(thisWeeksTime.getDate() + numDaysDiff);
+              event.today = event.startDate > now && event.startDate < midnight;
+              event.nextWeek = event.startDate > weekend;
 
-              console.log(now, " : ", thisWeeksTime);
-
-              return thisWeeksTime > now && thisWeeksTime < weekFromNow;
+              return event.startDate > now && event.startDate < weekFromNow;
             }
           });
 
