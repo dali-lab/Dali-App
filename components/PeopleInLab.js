@@ -46,6 +46,7 @@ class PeopleInLab extends Component {
 			timInDALI: null,
 			timInOffice: null,
 			peopleInLab: null,
+			dismissed: false,
 			dataSource: dataSource.cloneWithRowsAndSections({})
 		}
 
@@ -69,12 +70,14 @@ class PeopleInLab extends Component {
 				return
 			}
 
-			this.setState({
-				peopleInLab: people,
-				dataSource: this.state.dataSource.cloneWithRowsAndSections({
-					tim: [{inDALI: null, inOffice: null}], others: people
+			if (!this.state.dismissed) {
+				this.setState({
+					peopleInLab: people,
+					dataSource: this.state.dataSource.cloneWithRowsAndSections({
+						tim: [{inDALI: null, inOffice: null}], others: people
+					})
 				})
-			})
+			}
 		}).catch((error) => {
 			console.error(error);
 		})
@@ -94,11 +97,13 @@ class PeopleInLab extends Component {
 				return
 			}
 
-			this.setState({
-				timInDALI: locations.inDALI,
-				timInOffice: locations.inOffice,
-				dataSource: this.state.dataSource.cloneWithRowsAndSections({tim: [locations], others: this.state.peopleInLab == null ? [] : this.state.peopleInLab})
-			})
+			if (!this.state.dismissed) {
+				this.setState({
+					timInDALI: locations.inDALI,
+					timInOffice: locations.inOffice,
+					dataSource: this.state.dataSource.cloneWithRowsAndSections({tim: [locations], others: this.state.peopleInLab == null ? [] : this.state.peopleInLab})
+				});
+			}
 		}).catch((error) => {
 			console.log(error);
 		})
@@ -166,7 +171,12 @@ class PeopleInLab extends Component {
 											<TouchableHighlight
 												underlayColor="rgba(0,0,0,0)"
 												style={styles.navBarDoneButton}
-												onPress={this.props.dismiss}>
+												onPress={() => {
+													this.setState({
+														dismissed: true
+													})
+													this.props.dismiss()
+												}}>
 												<Text style={styles.navBarDoneText}>Done</Text>
 											</TouchableHighlight>
 										);},
