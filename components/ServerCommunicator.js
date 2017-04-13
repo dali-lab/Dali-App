@@ -158,7 +158,7 @@ class ServerCommunicator {
           let count = parseInt(parts[1].replace("COUNT=", ""));
           let day = parts[2].replace("BYDAY=", "");
 
-          let lastDuplicate = new Date(hour.start.dateTime);
+          let lastDuplicate = new Date(hour.end.dateTime);
           lastDuplicate.setDate(hour.startDate.getDate() + 7 * count);
 
           if (now > lastDuplicate) {
@@ -169,10 +169,15 @@ class ServerCommunicator {
             return false;
           }else{
             // Right day of week. Check time
-            let thisWeeksTime = new Date(hour.start.dateTime);
-            thisWeeksTime.setDate(thisWeeksTime.getDate() + numDaysDiff);
+            let thisWeeksStartTime = new Date(hour.start.dateTime);
+            thisWeeksStartTime.setDate(thisWeeksStartTime.getDate() + numDaysDiff);
 
-            return (thisWeeksTime > now || thisWeeksTime > now && thisWeeksTime < now) && thisWeeksTime <= midnight;
+            let thisWeeksEndTime = new Date(hour.end.dateTime);
+            thisWeeksEndTime.setDate(thisWeeksEndTime.getDate() + numDaysDiff);
+
+            console.log(thisWeeksStartTime, thisWeeksEndTime);
+
+            return thisWeeksStartTime > now || thisWeeksEndTime > now && thisWeeksStartTime < now;
           }
         });
 
