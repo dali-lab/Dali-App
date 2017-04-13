@@ -13,7 +13,6 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-#import <CodePush/CodePush.h>
 #import <RNGoogleSignin/RNGoogleSignin.h>
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
@@ -52,7 +51,7 @@
   if ([[NSUserDefaults standardUserDefaults] valueForKey:@"ENABLE_FABRIC"]) {
     [Fabric with:@[[Crashlytics class]]];
   }
-  jsCodeLocation = [CodePush bundleURL];
+  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation

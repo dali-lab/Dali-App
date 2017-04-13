@@ -18,7 +18,6 @@ import {
   Navigator,
   Switch
 } from 'react-native';
-import codePush from "react-native-code-push";
 import {GoogleSignin} from 'react-native-google-signin'
 
 // My modules

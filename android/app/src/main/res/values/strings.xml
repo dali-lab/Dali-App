@@ -1,4 +1,3 @@
 <resources>
-    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">D9oIZEJyzmHIky2ot0h_7WmJFfI4EJbblTNLf</string>
     <string name="app_name">dali</string>
 </resources>

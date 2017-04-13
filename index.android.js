@@ -16,7 +16,6 @@ import {
 	ListView,
 	StatusBar
 } from 'react-native';
-import codePush from "react-native-code-push";
 import {GoogleSignin} from 'react-native-google-signin';
 
 // My packages
@@ -137,10 +136,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	}
 });
-
-// Configure the application to use codePush
-let codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME };
-dali = codePush(codePushOptions)(dali);
 
 // Start the app with the given class
 AppRegistry.registerComponent('dali', () => dali);

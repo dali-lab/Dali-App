@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -29,7 +28,6 @@
 		5252937A1E688677004BFAF5 /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 52BF8A771E60C3C9000465F8 /* GoogleSignIn.bundle */; };
 		526AF3BB1E67E87B00BA1EFE /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3B91E67E87B00BA1EFE /* Fabric.framework */; };
 		526AF3BC1E67E87B00BA1EFE /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */; };
-		5271C2DB1E4D15AC004AFE2F /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2C01E4D158D004AFE2F /* libCodePush.a */; };
 		5271C2DD1E4D15B7004AFE2F /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2DC1E4D15B7004AFE2F /* libz.tbd */; };
 		528564311E68B82900C22D43 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5285641D1E68B7ED00C22D43 /* libRCTPushNotification.a */; };
 		52BF8A7B1E60C3C9000465F8 /* GoogleAppUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */; };
@@ -193,13 +191,6 @@
 			remoteGlobalIDString = 3D3CD9181DE5FBD800167DC4;
 			remoteInfo = "jschelpers-tvOS";
 		};
-		5271C2BF1E4D158D004AFE2F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5271C2BB1E4D158D004AFE2F /* CodePush.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = CodePush;
-		};
 		5285641C1E68B7ED00C22D43 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */;
@@ -296,7 +287,6 @@
 		5259642C1E51173B009C970E /* dali.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = dali.entitlements; path = dali/dali.entitlements; sourceTree = "<group>"; };
 		526AF3B91E67E87B00BA1EFE /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
-		5271C2BB1E4D158D004AFE2F /* CodePush.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CodePush.xcodeproj; path = "../node_modules/react-native-code-push/ios/CodePush.xcodeproj"; sourceTree = "<group>"; };
 		5271C2DC1E4D15B7004AFE2F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		52BF8A721E60C3C2000465F8 /* GoogleSdk */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GoogleSdk; sourceTree = "<group>"; };
@@ -327,7 +317,6 @@
 			files = (
 				528564311E68B82900C22D43 /* libRCTPushNotification.a in Frameworks */,
 				5271C2DD1E4D15B7004AFE2F /* libz.tbd in Frameworks */,
-				5271C2DB1E4D15AC004AFE2F /* libCodePush.a in Frameworks */,
 				52EE3C5D1E4BC7D50089140E /* CoreLocation.framework in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -452,14 +441,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5271C2BC1E4D158D004AFE2F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				5271C2C01E4D158D004AFE2F /* libCodePush.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		5285640D1E68B7ED00C22D43 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -546,7 +527,6 @@
 				526AF3B91E67E87B00BA1EFE /* Fabric.framework */,
 				526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */,
 				52BF8A721E60C3C2000465F8 /* GoogleSdk */,
-				5271C2BB1E4D158D004AFE2F /* CodePush.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -658,10 +638,6 @@
 				{
 					ProductGroup = 52C253B81E6E626D00C3DA3E /* Products */;
 					ProjectRef = B17E0FF91B5C41F1ACB388D6 /* BVLinearGradient.xcodeproj */;
-				},
-				{
-					ProductGroup = 5271C2BC1E4D158D004AFE2F /* Products */;
-					ProjectRef = 5271C2BB1E4D158D004AFE2F /* CodePush.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
@@ -875,13 +851,6 @@
 			remoteRef = 3DAD3EAE1DF850E9000B6D8A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		5271C2C01E4D158D004AFE2F /* libCodePush.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libCodePush.a;
-			remoteRef = 5271C2BF1E4D158D004AFE2F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		5285641D1E68B7ED00C22D43 /* libRCTPushNotification.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1042,9 +1011,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/dali\"",
-					"\"$(SRCROOT)/dali\"",
-					"\"$(SRCROOT)/dali\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1076,9 +1042,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/dali\"",
-					"\"$(SRCROOT)/dali\"",
-					"\"$(SRCROOT)/dali\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
