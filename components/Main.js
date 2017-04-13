@@ -173,7 +173,6 @@ class Main extends Component {
 			var i = 0;
 			var foundWeek = false;
 			var foundToday = false;
-			console.log(events);
 			while (i < events.length) {
 				let event = events[i];
 				if (event.today && !foundToday) {
@@ -199,10 +198,16 @@ class Main extends Component {
 			if (events.length > 0) {
 				// Again, same as before:
 				// Auto refresh when an event ends
-				let first = events[0];
-				setTimeout(() => {
-					this.refreshData();
-				}, Math.abs((new Date()) - first.endDate));
+				var i = 0;
+				var first = events[0];
+				while (i < events.length && first.endDate == undefined) {
+					first = events[++i];
+				}
+				if (first.today) {
+					setTimeout(() => {
+						this.refreshData();
+					}, Math.abs((new Date()) - first.endDate));
+				}
 			}
 		}).catch((error) => {
 			console.log(error);
