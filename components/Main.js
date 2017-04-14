@@ -179,7 +179,7 @@ class Main extends Component {
 					events.splice(i, 0, "TODAY SEPERATOR")
 					i++;
 					foundToday = true
-				}else if ( !foundWeek) {
+				}else if (!foundWeek && !event.nextWeek) {
 					events.splice(i, 0, "THIS WEEK SEPERATOR");
 					i++;
 					foundWeek = true;
