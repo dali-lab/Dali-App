@@ -25,7 +25,7 @@ import {
 	AppState,
 	Linking,
 	Animated,
-	Patform
+	Platform
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {GoogleSignin} from 'react-native-google-signin';
@@ -390,8 +390,23 @@ class Main extends Component {
 						{this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)}/> : null}
 				</Modal>
 
-				{/* DALI image*/}
-				<Image source={require('./Assets/DALI_whiteLogo.png')} style={styles.daliImage}/>
+				<View style={{
+						width: window.width,
+						alignItems: 'center',
+						flexDirection: 'row',
+						marginTop: 20 + (Platform.OS == "ios" ? 10 : 0)
+					}}>
+					{/* DALI image*/}
+					<Image source={require('./Assets/DALI_whiteLogo.png')} style={[styles.daliImage, {width: window.width - 100, marginLeft: 50}]}/>
+
+					{/* Settings button*/}
+					<TouchableHighlight
+						underlayColor="rgba(0,0,0,0)"
+						style={{marginRight: 20, alignSelf: 'flex-start'}}
+						onPress={this.settingsButtonPressed.bind(this)}>
+						<Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage}/>
+					</TouchableHighlight>
+				</View>
 
 				{/* Location label. More complicated terniary*/}
 				<Text style={styles.locationText}>{this.state.inTimsOffice ? "You are in Tim's Office" : (this.state.inDALI ? "You are in DALI now" : (this.state.inDALI != null ? "You are not in DALI now" : "Loading location..."))}</Text>
@@ -457,15 +472,17 @@ class Main extends Component {
 							I just created another gradient that ends on the color where the view ends and starts at the color where the view starts.
 							In effect creating an opaque but seemingly nonexistant background!*/}
 				<LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
+
 					{/* Empty and clear view to make the buttons equidistant*/}
 					<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
 
-					{/* Settings button*/}
+					{/* Food button*/}
 					<TouchableHighlight
-						underlayColor="rgba(0,0,0,0)"
-						style={styles.settingsButton}
-						onPress={this.settingsButtonPressed.bind(this)}>
-						<Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage}/>
+					underlayColor="rgba(0,0,0,0)"
+					onPress={() => {
+
+					}}>
+						<Image source={require('./Assets/food.png')} style={styles.settingsButtonImage}/>
 					</TouchableHighlight>
 
 					{/* Empty and clear view to make the buttons equidistant*/}
@@ -474,7 +491,6 @@ class Main extends Component {
 					{/* People button*/}
 					<TouchableHighlight
 					underlayColor="rgba(0,0,0,0)"
-					style={styles.inTheLabButton}
 					onPress={this.peopleInLabPressed.bind(this)}>
 						<Image source={require('./Assets/people.png')} style={styles.settingsButtonImage}/>
 					</TouchableHighlight>
@@ -588,8 +604,6 @@ const styles = StyleSheet.create({
 		marginTop: 5,
 		flexDirection: 'row'
 	},
-	settingsButton: {
-	},
 	settingsButtonImage: {
 		width: 30,
 		height: 30,
@@ -601,12 +615,9 @@ const styles = StyleSheet.create({
 		paddingTop: 15,
 		paddingBottom: 15,
 	},
-	inTheLabButton: {
-		alignSelf: 'center',
-	},
 	daliImage: {
 		height: 50,
-		marginTop: 40,
+		width: 100,
 		resizeMode: 'contain'
 	}
 });

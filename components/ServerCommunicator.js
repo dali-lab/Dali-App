@@ -175,8 +175,6 @@ class ServerCommunicator {
             let thisWeeksEndTime = new Date(hour.end.dateTime);
             thisWeeksEndTime.setDate(thisWeeksEndTime.getDate() + numDaysDiff);
 
-            console.log(thisWeeksStartTime, thisWeeksEndTime);
-
             return thisWeeksStartTime > now || thisWeeksEndTime > now && thisWeeksStartTime < now;
           }
         });
