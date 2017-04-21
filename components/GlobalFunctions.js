@@ -9,7 +9,15 @@ import {GoogleSignin} from 'react-native-google-signin';
 
 class GlobalFunctions {
   static userIsDALIMember () {
-    return GoogleSignin.currentUser().email.includes('@dali.dartmouth.edu') || __DEV__
+    return GoogleSignin.currentUser() != null ? GlobalFunctions.userIsDALIMember(GoogleSignin.currentUser()) : false;
+  }
+
+  static userIsDALIMember (user) {
+    return user.email.includes('@dali.dartmouth.edu') || __DEV__;
+  }
+
+  static currentLabUser () {
+    return GlobalFunctions.userIsDALIMember() ? GoogleSignin.currentUser() : null;
   }
 
   static userIsTim() {

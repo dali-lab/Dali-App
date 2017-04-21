@@ -214,7 +214,7 @@ class BeaconController {
 
 		// I will only send enter and exit notifications if the user is signed in
 		GoogleSignin.currentUserAsync().then((user) => {
-			if (user != null) {
+			if (user != null && GlobalFunctions.userIsDALIMember(user)) {
 				// Plus I have to chek their preferences
 				return StorageController.getLabAccessPreference()
 			}
@@ -239,14 +239,16 @@ class BeaconController {
 	 Called by the ServerCommunicator when it has successfully checked in the user
 	 */
 	checkInComplete() {
-		StorageController.getCheckinNotifPreference().then((value) => {
-			if (value) {
-				PushNotification.localNotification({
-					title:"Checked In",
-					message: "Just checked you into this event. Have fun!"
-				});
-			}
-		})
+		if (GlobalFunctions.userIsDALIMember()) {}
+			StorageController.getCheckinNotifPreference().then((value) => {
+				if (value) {
+					PushNotification.localNotification({
+						title:"Checked In",
+						message: "Just checked you into this event. Have fun!"
+					});
+				}
+			})
+		}
 	}
 
 	/**
@@ -271,7 +273,7 @@ class BeaconController {
 
 		// Check user
 		GoogleSignin.currentUserAsync().then((user) => {
-			if (user != null) {
+			if (user != null && GlobalFunctions.userIsDALIMember(user)) {
 				// Plus I have to check their preferences
 				return StorageController.getLabAccessPreference()
 			}
