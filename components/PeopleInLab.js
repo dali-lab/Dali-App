@@ -144,9 +144,7 @@ class PeopleInLab extends Component {
 	renderSectionHeader(data, sectionName) {
 		if (sectionName == "tim") {
 			return (
-				<View style={styles.sectionHeader}>
-	        <Text style={styles.sectionHeaderText}>STAFF</Text>
-	      </View>
+				<View/>
 			)
 		}else if (sectionName == "others") {
 			return (

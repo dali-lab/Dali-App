@@ -28,7 +28,6 @@ let env = require('./Environment');
  - inDALI: Function that returns Bool of if device is in DALI lab
 
   TODO:
-	- Debug infinite ranging problem
 	- Debug background missing entry/exit
  */
 class BeaconController {
@@ -47,7 +46,6 @@ class BeaconController {
 		if (Platform.OS == 'ios') {
 			// iOS has its own way of doing things...
 			// For one, Android doesn't ask for permission from the user
-			Beacons.requestAlwaysAuthorization();
 			Beacons.requestWhenInUseAuthorization();
 
 			this.authorization = null;

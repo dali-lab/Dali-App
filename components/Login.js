@@ -131,33 +131,22 @@ class Login extends Component {
   signIn() {
     GoogleSignin.signIn()
     .then((user) => {
-      // Check user...
-      if (user.email.includes('@dali.dartmouth.edu')) {
-        // For some reason on Android the user needs Google Play for me to access the callendars
-        GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
-          this.props.onLogin(user);
-        })
-        .catch((err) => {
-          // Google Play not enabled!
-          console.log("Play services error", err.code, err.message);
-          setTimeout(() => {
-            Alert.alert("No Google Play", "You don't have Google Play services enabled. You won't be able to use the application if you don't (we need to access the DALI calendars)")
-          }, 600)
-          GoogleSignin.signOut();
-        });
-      }else{
-        // If they are not within the DALI scope...
-        console.log("Invalid account");
+      // For some reason on Android the user needs Google Play for me to access the callendars
+      GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
+        this.props.onLogin(user);
+      })
+      .catch((err) => {
+        // Google Play not enabled!
+        console.log("Play services error", err.code, err.message);
         setTimeout(() => {
-          Alert.alert('Invalid Account', 'You must use a DALI lab account!');
-        }, 600);
+          Alert.alert("No Google Play", "You don't have Google Play services enabled. You won't be able to use the application if you don't (we need to access the DALI calendars)")
+        }, 600)
         GoogleSignin.signOut();
-      }
+      });
     })
     .catch((err) => {
       if (err.code == -5) {
-        // Very specific error for when the user cancels login
-        return
+        return // Very specific error for when the user cancels login
       }
 
       console.log(err);

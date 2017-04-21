@@ -608,7 +608,7 @@
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = JQ28K6Y7JE;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -1018,7 +1018,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.JohnKotz.DALI.DaliLabApp;
 				PRODUCT_NAME = dali;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "2f6df243-944f-45f2-9f81-e74168d6dc8d";
+				PROVISIONING_PROFILE_SPECIFIER = "DALI Lab - Development";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1028,7 +1029,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = dali/dali.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1047,7 +1048,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.JohnKotz.DALI.DaliLabApp;
 				PRODUCT_NAME = dali;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "213aab0b-5491-47ef-84fd-4de8eeb1cd0f";
+				PROVISIONING_PROFILE_SPECIFIER = "DALI Lab - Distribution";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

@@ -44,7 +44,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>3</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -79,8 +79,6 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>In order to recognize when you enter and exit DALI lab or its meetings we need location data</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>When-in-use location is used by the location listing, and can be used to check in, but the app will have to be open. Background options like autocheckin and so on will not be avaialbe, though</string>
 	<key>UIBackgroundModes</key>
