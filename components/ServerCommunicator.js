@@ -392,7 +392,7 @@ class ServerCommunicator {
 
   /// Query the server for Tim's location
   getTimLocation() {
-    if (GoogleSignin.userIsDALIMember()) {
+    if (GlobalFunctions.userIsDALIMember()) {
       return fetch(env.timLocationInfoURL, {method: "GET"})
         .then((response) => response.json()).catch((error) => {
           console.log(error);
@@ -402,7 +402,7 @@ class ServerCommunicator {
 
   /// Query the server for the location of sharing members
   getSharedMembersInLab() {
-    if (GoogleSignin.userIsDALIMember()) {
+    if (GlobalFunctions.userIsDALIMember()) {
       return fetch(env.sharedLabURL, {method: "GET"})
         .then((response) => response.json()).catch((error) => {
           console.log(error);
