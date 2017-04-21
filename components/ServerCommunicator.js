@@ -69,7 +69,7 @@ class ServerCommunicator {
       this.awaitingUser = false;
     }else{
       const user = GoogleSignin.currentUser();
-      if (user != null) {
+      if (user != null && GlobalFunctions.isDALIMember(user)) {
         // Post checkin
         this.postCheckin(user).then((response) => {
           this.beaconController.checkInComplete();
@@ -77,7 +77,7 @@ class ServerCommunicator {
       }else{
         // We didnt get a user... I am going to try to wait for sign in
         GoogleSignin.currentUserAsync().then((user) => {
-          if (user == null) {
+          if (user == null && GlobalFunctions.isDALIMember(user)) {
             // Experimental...
             this.awaitingUser = true;
           }else{
@@ -99,7 +99,12 @@ class ServerCommunicator {
 
   /// Posts to the relevant data to the relevant server
   postCheckin(user) {
-    return this.post(env.checkInURL, {"username": user.email});
+    if (GlobalFunctions.isDALIMember(user)) {
+      return this.post(env.checkInURL, {"username": user.email});
+    }
+    return new Promise(function(resolve, reject) {
+      reject("User is not a DALI member")
+    });
   }
 
   /// On login
@@ -119,20 +124,24 @@ class ServerCommunicator {
 
   /// Simple convenience post method
   post(path, params, method) {
-    console.log("Posting to: " + path);
-    return fetch(path, {
-      method: method || 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(params)
+    if (GlobalFunctions.userIsDALIMember()) {
+      console.log("Posting to: " + path);
+      return fetch(path, {
+        method: method || 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params)
+      });
+    }
+    return new Promise(function(resolve, reject) {
+      reject("Can't post if you are not a member");
     });
   }
 
   /// Calls getLabHours and filters it by those still tonight
   getTonightsLabHours() {
-
     return new Promise((resolve, reject) => {
       this.getLabHours().then((hours) => {
         let now = new Date();
@@ -190,26 +199,37 @@ class ServerCommunicator {
 
   // Gets the lab hours listed on the Google Calendar
   getLabHours() {
-    // There is some wierd accessToken stuff on Android, so I will check if I have it...
-    this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
-
-    if (this.accessToken == undefined) {
-      // If not, I will request it...
-      return GoogleSignin.currentUserAsync().then((user) => {
-        return RNGoogleSignin.getAccessToken(user)
-      }).then((token) => {
-        // Save it...
-        this.accessToken = token
-        // And start the function over
-        return this.getLabHours()
-      })
-    }
-
-    // Now that I have the token...
-    let accessToken = this.accessToken
-
     // I can access the calendar
     return new Promise(function(resolve, reject) {
+      // There is some wierd accessToken stuff on Android, so I will check if I have it...
+      this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
+
+      if (this.accessToken == undefined) {
+        // If not, I will request it...
+        return GoogleSignin.currentUserAsync().then((user) => {
+          if (user == null || !GlobalFunctions.userIsDALIMember()) {
+            reject()
+            return
+          }
+
+          return RNGoogleSignin.getAccessToken(user)
+        }).then((token) => {
+          // Save it...
+          this.accessToken = token
+          // And start the function over
+          this.getLabHours().then(() => {
+            resolve.apply(null, arguments);
+          }).catch(() => {
+            reject.apply(null, arguments);
+          })
+        }).catch(() => {
+          reject.apply(null, arguments);
+        })
+      }
+
+      // Now that I have the token...
+      let accessToken = this.accessToken
+
       fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.taCalendarId + "/events", {
         method: "GET",
         headers: {
@@ -372,18 +392,22 @@ class ServerCommunicator {
 
   /// Query the server for Tim's location
   getTimLocation() {
-    return fetch(env.timLocationInfoURL, {method: "GET"})
-      .then((response) => response.json()).catch((error) => {
-        console.log(error);
-      })
+    if (GoogleSignin.userIsDALIMember()) {
+      return fetch(env.timLocationInfoURL, {method: "GET"})
+        .then((response) => response.json()).catch((error) => {
+          console.log(error);
+        })
+    }
   }
 
   /// Query the server for the location of sharing members
   getSharedMembersInLab() {
-    return fetch(env.sharedLabURL, {method: "GET"})
-      .then((response) => response.json()).catch((error) => {
-        console.log(error);
-      })
+    if (GoogleSignin.userIsDALIMember()) {
+      return fetch(env.sharedLabURL, {method: "GET"})
+        .then((response) => response.json()).catch((error) => {
+          console.log(error);
+        })
+    }
   }
 
   /// Handle enter exit event
@@ -392,7 +416,7 @@ class ServerCommunicator {
 
     // Get the user
     GoogleSignin.currentUserAsync().then((user) => {
-      if (user == null) {
+      if (user == null || !GlobalFunctions.isDALIMember(user)) {
         return
       }
       // Get sharing preference
@@ -432,7 +456,7 @@ class ServerCommunicator {
 
   /// Posts the location info given to the server
   postForTim(location, enter) {
-    if (GlobalFunctions.userIsTim() && GoogleSignin.currentUser() != null) {
+    if (GoogleSignin.currentUser() != null && GlobalFunctions.userIsTim()) {
       this.post(env.timLocationInfoURL, {location: location, enter: enter})
         .then((response) => response.json()).then((responseJson) => {
 

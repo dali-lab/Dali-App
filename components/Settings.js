@@ -152,7 +152,12 @@ class Settings extends Component {
 			}
 		]
 
-		if (!GlobalFunctions.userIsTim()) {
+		if (GlobalFunctions.userIsTim()) {
+			return {
+				user: [signOutRow],
+				notifications: notificationsRows
+			}
+		}else if (GlobalFunctions.userIsDALIMember()){
 			return {
 				user: [signOutRow],
 				notifications: notificationsRows,
@@ -160,8 +165,7 @@ class Settings extends Component {
 			}
 		}else{
 			return {
-				user: [signOutRow],
-				notifications: notificationsRows
+				user: [signOutRow]
 			}
 		}
 	}
@@ -225,7 +229,7 @@ class Settings extends Component {
 	renderFooter() {
 		return (
 			<View style={styles.sectionFooter}>
-				<Text style={styles.sectionFooterText}>Developed by John Kotz; Designs by Kate Stinson</Text>
+				<Text style={styles.sectionFooterText}>Developed by John Kotz; Designs by Kate Stinson and Jenny Seong</Text>
 			</View>
 		)
 	}

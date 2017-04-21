@@ -9,7 +9,6 @@
  * Copyright (c) 2017 DALI Lab All Rights Reserved.
  */
 
-
 import React, { Component } from 'react';
 import {
 	AppRegistry,
@@ -149,25 +148,27 @@ class Main extends Component {
 	 */
 	refreshData() {
 		// Retrieve office hours
-		ServerCommunicator.current.getTonightsLabHours().then((officeHours) => {
-			this.setState({
-				officeHours: officeHours,
-				// In order to update the list view I tell to to clone the previous dataSource with the new data
-				// It does this, and notices how the old and new data are different, updating the list view accordingly
-				officeHoursDataSource: this.state.officeHoursDataSource.cloneWithRows(officeHours)
-			});
+		if (GlobalFunctions.userIsDALIMember()) {
+			ServerCommunicator.current.getTonightsLabHours().then((officeHours) => {
+				this.setState({
+					officeHours: officeHours,
+					// In order to update the list view I tell to to clone the previous dataSource with the new data
+					// It does this, and notices how the old and new data are different, updating the list view accordingly
+					officeHoursDataSource: this.state.officeHoursDataSource.cloneWithRows(officeHours)
+				});
 
-			if (officeHours.length > 0) {
-				// In order to remove office hours from the list as soon as they end, I am setting a timer...
-				let first = officeHours[0];
-				setTimeout(() => {
-					this.refreshData();
-	      }, Math.abs((new Date()) - first.endDate));
-				// ... for the number of milliseconds between now and the end of the most proximous office hour
-			}
-		}).catch((error) => {
-			console.log(error);
-		});
+				if (officeHours.length > 0) {
+					// In order to remove office hours from the list as soon as they end, I am setting a timer...
+					let first = officeHours[0];
+					setTimeout(() => {
+						this.refreshData();
+		      }, Math.abs((new Date()) - first.endDate));
+					// ... for the number of milliseconds between now and the end of the most proximous office hour
+				}
+			}).catch((error) => {
+				console.log(error);
+			});
+		}
 
 		ServerCommunicator.current.getUpcomingEvents().then((events) => {
 			var i = 0;
@@ -213,37 +214,39 @@ class Main extends Component {
 			console.log(error);
 		});
 
-		// In order to get the current location, I set up a listener
-		// TODO: Debug incorrect out-of-lab status
-		BeaconController.current.addBeaconDidRangeListener(() => {
-			this.setState({
-				inDALI: BeaconController.current.inDALI
-			});
-		})
-		BeaconController.current.startRanging()
-
-		// I also set the current value in case I already have it
-		if (BeaconController.current.inDALI) {
-			this.setState({
-				inDALI: BeaconController.current.inDALI
-			})
-		}
-
-		// In the case I leave the lab with the app open, I should know
-		BeaconController.current.addEnterExitListener((inDALI) => {
-			this.setState({
-				inDALI: inDALI
-			})
-		})
-
-		// Same stuff as before, but for Tim's Office
-		// Only for Tim
-		if (GlobalFunctions.userIsTim()) {
-			BeaconController.current.addTimsOfficeListener((enter) => {
+		if (GlobalFunctions.userIsDALIMember()) {
+			// In order to get the current location, I set up a listener
+			// TODO: Debug incorrect out-of-lab status
+			BeaconController.current.addBeaconDidRangeListener(() => {
 				this.setState({
-					inTimsOffice: enter
+					inDALI: BeaconController.current.inDALI
+				});
+			})
+			BeaconController.current.startRanging()
+
+			// I also set the current value in case I already have it
+			if (BeaconController.current.inDALI) {
+				this.setState({
+					inDALI: BeaconController.current.inDALI
+				})
+			}
+
+			// In the case I leave the lab with the app open, I should know
+			BeaconController.current.addEnterExitListener((inDALI) => {
+				this.setState({
+					inDALI: inDALI
 				})
 			})
+
+			// Same stuff as before, but for Tim's Office
+			// Only for Tim
+			if (GlobalFunctions.userIsTim()) {
+				BeaconController.current.addTimsOfficeListener((enter) => {
+					this.setState({
+						inTimsOffice: enter
+					})
+				})
+			}
 		}
 	}
 
@@ -409,7 +412,23 @@ class Main extends Component {
 				</View>
 
 				{/* Location label. More complicated terniary*/}
-				<Text style={styles.locationText}>{this.state.inTimsOffice ? "You are in Tim's Office" : (this.state.inDALI ? "You are in DALI now" : (this.state.inDALI != null ? "You are not in DALI now" : "Loading location..."))}</Text>
+				{GlobalFunctions.userIsDALIMember() ?
+					<Text style={styles.locationText}>{this.state.inTimsOffice ? "You are in Tim's Office" : (this.state.inDALI ? "You are in DALI now" : (this.state.inDALI != null ? "You are not in DALI now" : "Loading location..."))}</Text>
+					: <View style={{alignItems: 'center'}}>
+							<TouchableHighlight onPress={() => {
+										Linking.openURL("http://maps.apple.com/?address=5,Maynard+St,Hanover,New+Hampshire");
+									}}
+									underlayColor="rgba(0,0,0,0)">
+								<Text style={[styles.locationText, {textDecorationLine: "underline", marginBottom: 0}]}>Open in Maps</Text>
+							</TouchableHighlight>
+							<TouchableHighlight onPress={() => {
+										Linking.openURL("https://dali.dartmouth.edu");
+									}}
+									underlayColor="rgba(0,0,0,0)">
+								<Text style={[styles.locationText, {textDecorationLine: "underline"}]}>Website</Text>
+							</TouchableHighlight>
+						</View>
+				}
 
 				{/* A view to rull all views (actually not all, as the Modal and LinearGradient aren't controlled by this)*/}
 				<View style={styles.internalView}>
@@ -426,18 +445,30 @@ class Main extends Component {
 						<TouchableHighlight
 							underlayColor="rgba(0,0,0,0)"
 							onPress={this.toggleSectionGrow.bind(this, 'officeHoursSelected')}>
-							<Text style={styles.titleText}>{this.state.officeHours == null ? "Loading TA office hours..." : (this.state.officeHours.length > 0 ? "TA office hours tonight!" : "No TA office hours tonight")}</Text>
+							<Text style={styles.titleText}>{
+								GlobalFunctions.userIsDALIMember() ?
+									(this.state.officeHours == null ?
+										"Loading TA office hours..." :
+										(this.state.officeHours.length > 0 ?
+											"TA office hours tonight!" :
+											"No TA office hours tonight"
+										))
+									: "Description"
+								}</Text>
 						</TouchableHighlight>
 
 						{/* Another separator*/}
 						<View style={styles.separatorThin}/>
 
 						{/* Here is where it gets interesting! This is the actual list view, but most of it's rendering is done in renderRow*/}
-						<ListView
-							enableEmptySections={true}
-							style={styles.listView}
-							dataSource={this.state.officeHoursDataSource}
-							renderRow={this.renderOfficeHoursRow.bind(this)}/>
+						{GlobalFunctions.userIsDALIMember() ?
+							<ListView
+								enableEmptySections={true}
+								style={styles.listView}
+								dataSource={this.state.officeHoursDataSource}
+								renderRow={this.renderOfficeHoursRow.bind(this)}/>
+							: <Text style={styles.daliDescText}>We design and build technology tools to help our partners change behavior, enhance understanding and even create delight.  DALI uses mindful design to create solutions to a wide variety of problems.</Text>
+						}
 					</Animated.View>
 
 					{/* Moving on to the events section*/}
@@ -471,7 +502,8 @@ class Main extends Component {
 						Instead of trying to perfect the timing on another animation for the events list view or making a hideus solid toolbar,
 							I just created another gradient that ends on the color where the view ends and starts at the color where the view starts.
 							In effect creating an opaque but seemingly nonexistant background!*/}
-				<LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
+				{GlobalFunctions.userIsDALIMember() ?
+					<LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
 
 					{/* Empty and clear view to make the buttons equidistant*/}
 					<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
@@ -497,7 +529,7 @@ class Main extends Component {
 
 					{/* Empty and clear view to make the buttons equidistant*/}
 					<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
-				</LinearGradient>
+				</LinearGradient> : null}
 			</LinearGradient>
 		)
 	}
@@ -509,6 +541,16 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	daliDescText: {
+		marginTop: 15,
+		marginRight: 40,
+		marginLeft: 40,
+		backgroundColor: 'rgba(0,0,0,0)',
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontSize: 15,
+		flex: 1
 	},
 	separatorThick: {
 		backgroundColor: 'white',
