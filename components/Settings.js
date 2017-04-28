@@ -157,7 +157,7 @@ class Settings extends Component {
 				user: [signOutRow],
 				notifications: notificationsRows
 			}
-		}else if (GlobalFunctions.userIsDALIMember()){
+		}else if (GoogleSignin.currentUser() != null){
 			return {
 				user: [signOutRow],
 				notifications: notificationsRows,

@@ -52,7 +52,8 @@ export default class dali extends Component {
 
 		// Start with the startingUser
     this.state = {
-      user: null
+      user: null,
+			skippedLogin: false
     };
 		dali.current = this
   }
@@ -106,11 +107,17 @@ export default class dali extends Component {
 		})
 	}
 
+	onSkipLogin() {
+		this.setState({
+			skippedLogin: true,
+		})
+	}
+
 	render() {
 		// Determines which view to use as the internal view
     var internalView = null;
-    if (this.state.user == null){
-      internalView = <Login onLogin={this.onLogin.bind(this)}/>;
+    if (this.state.user == null && !this.state.skippedLogin){
+      internalView = <Login onLogin={this.onLogin.bind(this)} onSkipLogin={this.onSkipLogin.bind(this)}/>;
     }else{
       internalView = <Main onLogout={this.onLogout.bind(this)} user={this.state.user}/>;
     }

@@ -56,9 +56,11 @@ class BeaconController {
 				console.log("Got authorization: " + authorization);
 			});
 
+			console.log("Starting monitoring...");
 			// For the other iOS only requires the object { identifier: "Some ID", uuid: "long-string-ofcharacters" }
 			Beacons.startMonitoringForRegion(env.labRegion);
 			Beacons.startMonitoringForRegion(env.checkInRegion);
+			Beacons.startUpdatingLocation();
 		}else{
 			// Android needs explicit declaration of type of beacon detected
 			Beacons.detectIBeacons()
@@ -181,9 +183,6 @@ class BeaconController {
 	 */
 	stopRanging() {
 		console.log("Stopping...");
-		if (Platform.OS == 'ios') {
-			Beacons.stopUpdatingLocation();
-		}
 
 		// So far I have not found a great way to stop ranging beacons, so I just remove the listener
 		if (this.rangingListener != null) {
@@ -239,7 +238,7 @@ class BeaconController {
 	 Called by the ServerCommunicator when it has successfully checked in the user
 	 */
 	checkInComplete() {
-		if (GlobalFunctions.userIsDALIMember()) {
+		if (GoogleSignin.currentUser() != null) {
 			StorageController.getCheckinNotifPreference().then((value) => {
 				if (value) {
 					PushNotification.localNotification({

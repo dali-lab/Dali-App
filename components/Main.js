@@ -148,7 +148,7 @@ class Main extends Component {
 	 */
 	refreshData() {
 		// Retrieve office hours
-		if (GlobalFunctions.userIsDALIMember()) {
+		if (GoogleSignin.currentUser() != null) {
 			ServerCommunicator.current.getTonightsLabHours().then((officeHours) => {
 				this.setState({
 					officeHours: officeHours,
@@ -214,7 +214,7 @@ class Main extends Component {
 			console.log(error);
 		});
 
-		if (GlobalFunctions.userIsDALIMember()) {
+		if (GoogleSignin.currentUser() != null) {
 			// In order to get the current location, I set up a listener
 			// TODO: Debug incorrect out-of-lab status
 			BeaconController.current.addBeaconDidRangeListener(() => {
@@ -412,7 +412,7 @@ class Main extends Component {
 				</View>
 
 				{/* Location label. More complicated terniary*/}
-				{GlobalFunctions.userIsDALIMember() ?
+				{GoogleSignin.currentUser() == null ?
 					<Text style={styles.locationText}>{this.state.inTimsOffice ? "You are in Tim's Office" : (this.state.inDALI ? "You are in DALI now" : (this.state.inDALI != null ? "You are not in DALI now" : "Loading location..."))}</Text>
 					: <View style={{alignItems: 'center'}}>
 							<TouchableHighlight onPress={() => {
@@ -446,7 +446,7 @@ class Main extends Component {
 							underlayColor="rgba(0,0,0,0)"
 							onPress={this.toggleSectionGrow.bind(this, 'officeHoursSelected')}>
 							<Text style={styles.titleText}>{
-								GlobalFunctions.userIsDALIMember() ?
+								GoogleSignin.currentUser() == null ?
 									(this.state.officeHours == null ?
 										"Loading TA office hours..." :
 										(this.state.officeHours.length > 0 ?
@@ -461,7 +461,7 @@ class Main extends Component {
 						<View style={styles.separatorThin}/>
 
 						{/* Here is where it gets interesting! This is the actual list view, but most of it's rendering is done in renderRow*/}
-						{GlobalFunctions.userIsDALIMember() ?
+						{GoogleSignin.currentUser() == null ?
 							<ListView
 								enableEmptySections={true}
 								style={styles.listView}
@@ -502,20 +502,20 @@ class Main extends Component {
 						Instead of trying to perfect the timing on another animation for the events list view or making a hideus solid toolbar,
 							I just created another gradient that ends on the color where the view ends and starts at the color where the view starts.
 							In effect creating an opaque but seemingly nonexistant background!*/}
-				{GlobalFunctions.userIsDALIMember() ?
+				{GoogleSignin.currentUser() == null ?
 					<LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
 
-					{/* Empty and clear view to make the buttons equidistant*/}
-					<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
+					{false ? <View>
+						<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
+						{/* Empty and clear view to make the buttons equidistant*/}
 
-					{/* Food button*/}
-					<TouchableHighlight
-					underlayColor="rgba(0,0,0,0)"
-					onPress={() => {
-
-					}}>
+						{/* Food button*/}
+						<TouchableHighlight
+						underlayColor="rgba(0,0,0,0)"
+						onPress={() => {}}>
 						<Image source={require('./Assets/food.png')} style={styles.settingsButtonImage}/>
 					</TouchableHighlight>
+					</View>: null}
 
 					{/* Empty and clear view to make the buttons equidistant*/}
 					<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>

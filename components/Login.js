@@ -23,6 +23,8 @@ import {
 } from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 
+let GlobalFunctions = require('./GlobalFunctions').default;
+
 /**
  Login interface Component.
  Includes:
@@ -35,6 +37,7 @@ import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 class Login extends Component {
   propTypes: {
 		onLogin: ReactNative.PropTypes.func,
+    onSkipLogin: ReactNative.PropTypes.func,
   }
 
   constructor(props) {
@@ -113,7 +116,16 @@ class Login extends Component {
                           <Text style={styles.googleText}>SIGN IN WITH GOOGLE</Text>
                         </View>
                       </TouchableHighlight>
-                    </Animated.View> : <View style={{height: 48}}/>}
+                      <TouchableHighlight
+                        style={{alignSelf: 'center', marginTop: 15}}
+                        underlayColor="rgba(0,0,0,0.1)"
+                        onPress={() => {
+                          GoogleSignin.signOut()
+                          this.props.onSkipLogin()
+                        }}>
+                        <Text style={{color: "white"}}>Skip Sign In</Text>
+                      </TouchableHighlight>
+                    </Animated.View> : <View style={{height: 80}}/>}
                     {/* If we don't want to show it yet, I placehold so the DALI logo isn't incorrectly placed*/}
                   {/* Offsets the group by a bit so it will look better*/}
                   <View style={{height: 70}}/>
@@ -133,6 +145,14 @@ class Login extends Component {
     .then((user) => {
       // For some reason on Android the user needs Google Play for me to access the callendars
       GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
+        if (!GlobalFunctions.isDALIMember(user)) {
+          GoogleSignin.signOut();
+          setTimeout(() => {
+            Alert.alert("Not DALI account!", "To access features specific to DALI members use a DALI email");
+          }, 600);
+          return;
+        }
+
         this.props.onLogin(user);
       })
       .catch((err) => {

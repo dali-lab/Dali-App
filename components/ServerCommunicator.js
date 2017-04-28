@@ -124,7 +124,7 @@ class ServerCommunicator {
 
   /// Simple convenience post method
   post(path, params, method) {
-    if (GlobalFunctions.userIsDALIMember()) {
+    if (GoogleSignin.currentUser() != null) {
       console.log("Posting to: " + path);
       return fetch(path, {
         method: method || 'POST',
@@ -199,6 +199,12 @@ class ServerCommunicator {
 
   // Gets the lab hours listed on the Google Calendar
   getLabHours() {
+    if (GoogleSignin.currentUser() == null){
+      return new Promise(function(resolve, reject) {
+        reject()
+      });
+    }
+
     // I can access the calendar
     return new Promise(function(resolve, reject) {
       // There is some wierd accessToken stuff on Android, so I will check if I have it...
@@ -207,7 +213,7 @@ class ServerCommunicator {
       if (this.accessToken == undefined) {
         // If not, I will request it...
         return GoogleSignin.currentUserAsync().then((user) => {
-          if (user == null || !GlobalFunctions.userIsDALIMember()) {
+          if (user == null || !GoogleSignin.currentUser() != null) {
             reject()
             return
           }
@@ -264,135 +270,138 @@ class ServerCommunicator {
 
   /// Gets the events in the next week
   getUpcomingEvents() {
-    // Same accessToken funny business as getLabHours
-    this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
-
-
-    if (this.accessToken == undefined) {
-      return GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
-        return GoogleSignin.currentUserAsync()
-      }).then((user) => {
-        return RNGoogleSignin.getAccessToken(user)
-      }).then((token) => {
-        this.accessToken = token
-        return this.getUpcomingEvents()
-      })
-    }
-
-    let accessToken = this.accessToken
-
-    // Get the calendar
     return new Promise((success, failure) => {
-      fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.eventsCalendarId + "/events", {
-        method: "GET",
-        headers: {
-          'Authorization': "Bearer " + accessToken
-        }
-      }).then((response) => response.json())
-        .then((responseJson) => {
-          // Handle no data
-          if (responseJson.items == null) {
-            failure();
-            console.log("Failed!", responseJson);
-            return;
+      GoogleSignin.currentUserAsync().then((user) => {
+        if (user != null) {
+          this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
+
+          console.log("Got here with ", GoogleSignin.currentUser());
+
+          if (this.accessToken == undefined) {
+            return GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
+              return GoogleSignin.currentUserAsync()
+            }).then((user) => {
+              return RNGoogleSignin.getAccessToken(user)
+            }).then((token) => {
+              this.accessToken = token
+              return this.getUpcomingEvents()
+            })
           }
 
-          // Get today...
-          let now = new Date();
-          // ... aka the beginning of today
+          let accessToken = this.accessToken
+        }
 
-          // Get next week
-          let weekFromNow = new Date();
-          weekFromNow.setDate(now.getDate() + 6);
-          // At the end of the day
-          weekFromNow.setHours(23, 59, 59);
-
-          let weekend = new Date();
-          weekend.setDate(now.getDate() + (7 - now.getDay()))
-          weekend.setHours(23, 59, 59);
-
-          let midnight = new Date();
-          midnight.setHours(23, 59, 59);
-
-          // Filter events so they fit between those days
-          var events = responseJson.items.filter((event) => {
-            if (event.status != "confirmed") {
-              return false
+        fetch("https://www.googleapis.com/calendar/v3/calendars/" + (user != null ? env.eventsCalendarId : env.publicEventsCalendarId) + "/events" + (user == null ? "?key=" + env.googleConfig.publicKey : ""), {
+          method: "GET",
+          headers: user != null ? {
+            'Authorization': "Bearer " + accessToken
+          } : null
+        }).then((response) => response.json())
+          .then((responseJson) => {
+            // Handle no data
+            if (responseJson.items == null) {
+              failure();
+              console.log("Failed!", responseJson);
+              return;
             }
 
-            event.startDate = new Date(event.start.dateTime);
-            event.endDate = new Date(event.end.dateTime);
+            // Get today...
+            let now = new Date();
+            // ... aka the beginning of today
 
-            if (event.recurrence == undefined || event.recurrence.length == 0) {
-              event.nextWeek = event.startDate > weekend;
-              event.today = event.startDate > now && event.startDate < midnight;
-              return event.startDate > now && event.startDate < weekFromNow;
-            }
+            // Get next week
+            let weekFromNow = new Date();
+            weekFromNow.setDate(now.getDate() + 6);
+            // At the end of the day
+            weekFromNow.setHours(23, 59, 59);
 
-            let numDaysDiff = now.getDate() - event.startDate.getDate();
+            let weekend = new Date();
+            weekend.setDate(now.getDate() + (7 - now.getDay()))
+            weekend.setHours(23, 59, 59);
 
-            let recurrence = event.recurrence[0];
-            let parts = recurrence.replace("RRULE:", "").split(';');
+            let midnight = new Date();
+            midnight.setHours(23, 59, 59);
 
-            let obj = {}
-
-            parts.forEach((part) => {
-              let strings = part.split("=");
-              // Now I will parse the information the best I can
-
-              if (strings[0] == "COUNT") {
-                let count = parseInt(strings[1]);
-                let lastDuplicate = new Date(event.start.dateTime);
-                lastDuplicate.setDate(event.startDate.getDate() + 7 * count);
-
-                obj.lastDuplicate = lastDuplicate;
-              }else if (strings[0] == "FREQ") {
-                obj.frequency = strings[1];
-              }else if (strings[0] == "UNTIL") {
-                let year = strings[1].substring(0,4);
-                let month = strings[1].substring(4,6);
-                let day = strings[1].substring(6,8);
-
-                obj.lastDuplicate = new Date(year, month-1, day);
-                obj.lastDuplicate.setHours(event.startDate.getHours(), event.startDate.getMinutes());
-              }else if (strings[0] == "BYDAY") {
-                obj.day = strings[1];
-              }else{
-                obj[strings[0]] = strings[1];
+            // Filter events so they fit between those days
+            var events = responseJson.items.filter((event) => {
+              if (event.status != "confirmed") {
+                return false
               }
-            })
 
-            if (now > obj.lastDuplicate) {
-              // The last occurence of this event has passed
-              return false;
-            }else{
-              // Before end. Check time
-              event.startDate.setDate(event.startDate.getDate() + 7 * Math.ceil(numDaysDiff / 7));
+              event.startDate = new Date(event.start.dateTime);
+              event.endDate = new Date(event.end.dateTime);
 
-              event.today = event.startDate > now && event.startDate < midnight;
-              event.nextWeek = event.startDate > weekend;
+              if (event.recurrence == undefined || event.recurrence.length == 0) {
+                event.nextWeek = event.startDate > weekend;
+                event.today = event.startDate > now && event.startDate < midnight;
+                return event.startDate > now && event.startDate < weekFromNow;
+              }
 
-              return event.startDate > now && event.startDate < weekFromNow;
-            }
-          });
+              let numDaysDiff = now.getDate() - event.startDate.getDate();
 
-          // Sort by date (soonest first)
-          events.sort((event1, event2) => {
-            return event1.startDate > event2.startDate ? 1 : -1
-          });
+              let recurrence = event.recurrence[0];
+              let parts = recurrence.replace("RRULE:", "").split(';');
 
-          // Return them
-          success(events);
-        }).catch((error) => {
-          console.log(error);
-          failure(error);
+              let obj = {}
+
+              parts.forEach((part) => {
+                let strings = part.split("=");
+                // Now I will parse the information the best I can
+
+                if (strings[0] == "COUNT") {
+                  let count = parseInt(strings[1]);
+                  let lastDuplicate = new Date(event.start.dateTime);
+                  lastDuplicate.setDate(event.startDate.getDate() + 7 * count);
+
+                  obj.lastDuplicate = lastDuplicate;
+                }else if (strings[0] == "FREQ") {
+                  obj.frequency = strings[1];
+                }else if (strings[0] == "UNTIL") {
+                  let year = strings[1].substring(0,4);
+                  let month = strings[1].substring(4,6);
+                  let day = strings[1].substring(6,8);
+
+                  obj.lastDuplicate = new Date(year, month-1, day);
+                  obj.lastDuplicate.setHours(event.startDate.getHours(), event.startDate.getMinutes());
+                }else if (strings[0] == "BYDAY") {
+                  obj.day = strings[1];
+                }else{
+                  obj[strings[0]] = strings[1];
+                }
+              })
+
+              if (now > obj.lastDuplicate) {
+                // The last occurence of this event has passed
+                return false;
+              }else{
+                // Before end. Check time
+                event.startDate.setDate(event.startDate.getDate() + 7 * Math.ceil(numDaysDiff / 7));
+
+                event.today = event.startDate > now && event.startDate < midnight;
+                event.nextWeek = event.startDate > weekend;
+
+                return event.startDate > now && event.startDate < weekFromNow;
+              }
+            });
+
+            // Sort by date (soonest first)
+            events.sort((event1, event2) => {
+              return event1.startDate > event2.startDate ? 1 : -1
+            });
+
+            // Return them
+            success(events);
+          }).catch((error) => {
+            console.log(error);
+            failure(error);
         });
+      });
     });
   }
 
   /// Query the server for Tim's location
   getTimLocation() {
-    if (GlobalFunctions.userIsDALIMember()) {
+    if (GoogleSignin.currentUser() != null) {
       return fetch(env.timLocationInfoURL, {method: "GET"})
         .then((response) => response.json()).catch((error) => {
           console.log(error);
@@ -402,7 +411,7 @@ class ServerCommunicator {
 
   /// Query the server for the location of sharing members
   getSharedMembersInLab() {
-    if (GlobalFunctions.userIsDALIMember()) {
+    if (GoogleSignin.currentUser() != null) {
       return fetch(env.sharedLabURL, {method: "GET"})
         .then((response) => response.json()).catch((error) => {
           console.log(error);
