@@ -103,6 +103,7 @@ export default class dali extends Component {
 			serverCommunicator.user = null;
 			this.setState({
 				user: null,
+				skippedLogin: false
 			});
 		})
 	}

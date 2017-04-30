@@ -46,7 +46,7 @@ class BeaconController {
 		if (Platform.OS == 'ios') {
 			// iOS has its own way of doing things...
 			// For one, Android doesn't ask for permission from the user
-			Beacons.requestWhenInUseAuthorization();
+			Beacons.requestAlwaysAuthorization();
 
 			this.authorization = null;
 			Beacons.getAuthorizationStatus(function(authorization) {
@@ -111,7 +111,6 @@ class BeaconController {
 
 			// (optional) Called when Token is generated (iOS and Android)
 			onRegister: function(token) {
-				console.log( 'TOKEN:', token );
 			},
 
 			// (required) Called when a remote or local notification is opened or received
@@ -182,8 +181,6 @@ class BeaconController {
 	 * Stop ranging
 	 */
 	stopRanging() {
-		console.log("Stopping...");
-
 		// So far I have not found a great way to stop ranging beacons, so I just remove the listener
 		if (this.rangingListener != null) {
 			this.rangingListener.remove();
@@ -213,7 +210,7 @@ class BeaconController {
 
 		// I will only send enter and exit notifications if the user is signed in
 		GoogleSignin.currentUserAsync().then((user) => {
-			if (user != null && GlobalFunctions.isDALIMember(user)) {
+			if (user != null) {
 				// Plus I have to chek their preferences
 				return StorageController.getLabAccessPreference()
 			}
@@ -272,7 +269,7 @@ class BeaconController {
 
 		// Check user
 		GoogleSignin.currentUserAsync().then((user) => {
-			if (user != null && GlobalFunctions.isDALIMember(user)) {
+			if (user != null) {
 				// Plus I have to check their preferences
 				return StorageController.getLabAccessPreference()
 			}
@@ -302,10 +299,6 @@ class BeaconController {
 		}
 		this.numRanged+=1
 
-
-		console.log("Ranged beacons: ");
-		console.log(data);
-
 		/*
 			Since I cannot actually range multiple regions at the same time,
 				I am staggering them, such that when one finishes it will start the next.
@@ -320,7 +313,6 @@ class BeaconController {
 
 		// Check to see if this region is Tim's Office
 		if (Platform.OS != "ios" ? (data.identifier == env.timsOfficeRegion.identifier) : (data.region.identifier == env.timsOfficeRegion.identifier)) {
-			console.log("Tims Office");
 			// Get tim
 			if (GlobalFunctions.userIsTim()) {
 				BeaconController.performCallbacks(this.timsOfficeListeners, data.beacons.count > 0);
@@ -330,7 +322,6 @@ class BeaconController {
 
 		// Check to see if this region is a event checkin
 		}else if (Platform.OS != "ios" ? (data.identifier == env.checkInRegion.identifier) : (data.region.identifier == env.checkInRegion.identifier)) {
-			console.log("Check In");
 			// Doing the same thing but for check-in beacons
 			BeaconController.performCallbacks(this.checkInListeners, data.beacons.count > 0);
 
@@ -348,7 +339,6 @@ class BeaconController {
 
 		// Last possible case: it is DALI
 		}else{
-			console.log("DALI");
 			// Keeping track of wheter I'm in DALI or not
 			this.inDALI = data.beacons.length > 0;
 			BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);

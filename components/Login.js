@@ -143,15 +143,17 @@ class Login extends Component {
   signIn() {
     GoogleSignin.signIn()
     .then((user) => {
+      if (user == null || !user.email.includes("@dali.dartmouth.edu")) {
+        GoogleSignin.signOut();
+        setTimeout(() => {
+          Alert.alert("Not DALI account!", "To access features specific to DALI members use a DALI email");
+        }, 600);
+        return;
+      }
+
       // For some reason on Android the user needs Google Play for me to access the callendars
       GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
-        if (!GlobalFunctions.isDALIMember(user)) {
-          GoogleSignin.signOut();
-          setTimeout(() => {
-            Alert.alert("Not DALI account!", "To access features specific to DALI members use a DALI email");
-          }, 600);
-          return;
-        }
+
 
         this.props.onLogin(user);
       })

@@ -60,6 +60,10 @@ class ServerCommunicator {
 
     // Save this is current
     ServerCommunicator.current = this;
+
+    GoogleSignin.currentUserAsync((user) => {
+      this.user = user
+    })
   }
 
   /// On a checkin event
@@ -68,8 +72,8 @@ class ServerCommunicator {
       // Again, experimental system
       this.awaitingUser = false;
     }else{
-      const user = GoogleSignin.currentUser();
-      if (user != null && GlobalFunctions.isDALIMember(user)) {
+      const user = this.user;
+      if (user != null) {
         // Post checkin
         this.postCheckin(user).then((response) => {
           this.beaconController.checkInComplete();
@@ -77,7 +81,7 @@ class ServerCommunicator {
       }else{
         // We didnt get a user... I am going to try to wait for sign in
         GoogleSignin.currentUserAsync().then((user) => {
-          if (user == null && GlobalFunctions.isDALIMember(user)) {
+          if (user == null) {
             // Experimental...
             this.awaitingUser = true;
           }else{
@@ -99,7 +103,7 @@ class ServerCommunicator {
 
   /// Posts to the relevant data to the relevant server
   postCheckin(user) {
-    if (GlobalFunctions.isDALIMember(user)) {
+    if (user != null) {
       return this.post(env.checkInURL, {"username": user.email});
     }
     return new Promise(function(resolve, reject) {
@@ -120,11 +124,15 @@ class ServerCommunicator {
     if (this.beaconController.inDALI) {
       this.enterExitDALI();
     }
+
+    GoogleSignin.currentUserAsync((user) => {
+      this.user = user
+    })
   }
 
   /// Simple convenience post method
   post(path, params, method) {
-    if (GoogleSignin.currentUser() != null) {
+    if (this.user != null) {
       console.log("Posting to: " + path);
       return fetch(path, {
         method: method || 'POST',
@@ -193,78 +201,75 @@ class ServerCommunicator {
         });
 
         resolve(taHours)
-      });
+      }).catch((error) => {
+  			reject(error)
+  		});
     })
   }
 
   // Gets the lab hours listed on the Google Calendar
   getLabHours() {
-    if (GoogleSignin.currentUser() == null){
+    return GoogleSignin.currentUserAsync().then((user) => {
+      if (user == null){
+        return new Promise(function(resolve, reject) {
+          reject()
+        });
+      }
+      this.user = user
+
+      // I can access the calendar
       return new Promise(function(resolve, reject) {
-        reject()
-      });
-    }
+        // There is some wierd accessToken stuff on Android, so I will check if I have it...
+        this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken
 
-    // I can access the calendar
-    return new Promise(function(resolve, reject) {
-      // There is some wierd accessToken stuff on Android, so I will check if I have it...
-      this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
-
-      if (this.accessToken == undefined) {
-        // If not, I will request it...
-        return GoogleSignin.currentUserAsync().then((user) => {
-          if (user == null || !GoogleSignin.currentUser() != null) {
-            reject()
-            return
-          }
-
-          return RNGoogleSignin.getAccessToken(user)
-        }).then((token) => {
-          // Save it...
-          this.accessToken = token
-          // And start the function over
-          this.getLabHours().then(() => {
-            resolve.apply(null, arguments);
+        if (this.accessToken == undefined) {
+          // If not, I will request it...
+          RNGoogleSignin.getAccessToken(user).then((token) => {
+            // Save it...
+            this.accessToken = token
+            // And start the function over
+            this.getLabHours().then(() => {
+              resolve.apply(null, arguments);
+            }).catch(() => {
+              reject.apply(null, arguments);
+            })
           }).catch(() => {
             reject.apply(null, arguments);
           })
-        }).catch(() => {
-          reject.apply(null, arguments);
-        })
-      }
-
-      // Now that I have the token...
-      let accessToken = this.accessToken
-
-      fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.taCalendarId + "/events", {
-        method: "GET",
-        headers: {
-          'Authorization': "Bearer " + accessToken
         }
-      }).then((response) => response.json())
-        .then((responseJson) => {
 
-          // Handle no data
-          if (responseJson == null || responseJson.items == null) {
-            console.log(responseJson);
-            reject("No data!");
-            return;
+        // Now that I have the token...
+        let accessToken = this.accessToken
+        fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.taCalendarId + "/events", {
+          method: "GET",
+          headers: {
+            'Authorization': "Bearer " + accessToken
           }
+        }).then((response) => response.json())
+          .then((responseJson) => {
 
-          // Parse data into machine readable info
-          responseJson.items.forEach((hour) => {
-              hour.startDate = new Date(hour.start.dateTime);
-              hour.endDate = new Date(hour.end.dateTime);
-              hour.name = hour.summary;
-              hour.skills = hour.description;
+            // Handle no data
+            if (responseJson == null || responseJson.items == null) {
+              console.log(responseJson);
+              reject("No data!");
+              return;
+            }
+
+            // Parse data into machine readable info
+            responseJson.items.forEach((hour) => {
+                hour.startDate = new Date(hour.start.dateTime);
+                hour.endDate = new Date(hour.end.dateTime);
+                hour.name = hour.summary;
+                hour.skills = hour.description;
+            });
+
+            // Return data
+            resolve(responseJson.items);
+          }).catch((error) => {
+            console.log(error);
+            reject(error);
           });
-
-          // Return data
-          resolve(responseJson.items);
-        }).catch((error) => {
-          console.log(error);
-          reject(error);
-        });
+      });
     });
   }
 
@@ -273,9 +278,8 @@ class ServerCommunicator {
     return new Promise((success, failure) => {
       GoogleSignin.currentUserAsync().then((user) => {
         if (user != null) {
-          this.accessToken = this.accessToken == undefined ? GoogleSignin.currentUser().accessToken : this.accessToken
+          this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken
 
-          console.log("Got here with ", GoogleSignin.currentUser());
 
           if (this.accessToken == undefined) {
             return GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
@@ -284,12 +288,16 @@ class ServerCommunicator {
               return RNGoogleSignin.getAccessToken(user)
             }).then((token) => {
               this.accessToken = token
-              return this.getUpcomingEvents()
+              this.getUpcomingEvents().then(() => {
+                success.apply(arguments);
+              }).catch(() => {
+                failure.apply(arguments);
+              })
             })
           }
-
-          let accessToken = this.accessToken
         }
+
+        let accessToken = this.accessToken
 
         fetch("https://www.googleapis.com/calendar/v3/calendars/" + (user != null ? env.eventsCalendarId : env.publicEventsCalendarId) + "/events" + (user == null ? "?key=" + env.googleConfig.publicKey : ""), {
           method: "GET",
@@ -395,13 +403,15 @@ class ServerCommunicator {
             console.log(error);
             failure(error);
         });
-      });
+      }).catch((error) => {
+  			console.log(error);
+  		});
     });
   }
 
   /// Query the server for Tim's location
   getTimLocation() {
-    if (GoogleSignin.currentUser() != null) {
+    if (this.user != null) {
       return fetch(env.timLocationInfoURL, {method: "GET"})
         .then((response) => response.json()).catch((error) => {
           console.log(error);
@@ -411,7 +421,7 @@ class ServerCommunicator {
 
   /// Query the server for the location of sharing members
   getSharedMembersInLab() {
-    if (GoogleSignin.currentUser() != null) {
+    if (this.user != null) {
       return fetch(env.sharedLabURL, {method: "GET"})
         .then((response) => response.json()).catch((error) => {
           console.log(error);
@@ -421,16 +431,18 @@ class ServerCommunicator {
 
   /// Handle enter exit event
   enterExitDALI=(inDALI) => {
-    const user = GoogleSignin.currentUser();
 
     // Get the user
     GoogleSignin.currentUserAsync().then((user) => {
-      if (user == null || !GlobalFunctions.isDALIMember(user)) {
-        return
+      if (user == null) {
+        throw "Not posting because there is no user";
       }
+      this.user = user
       // Get sharing preference
       return StorageController.getLabPresencePreference();
     }).then((share) => {
+      const user = this.user;
+      console.log(user);
       // Post...
       return this.post(env.daliEnterURL, {
         user: {
@@ -442,7 +454,9 @@ class ServerCommunicator {
         },
         inDALI: inDALI,
         share: share
-      });
+      }).catch((error) => {
+  			console.log(error);
+  		});;
     }).then((response) => {
       // Done
       console.log(response);
@@ -465,7 +479,7 @@ class ServerCommunicator {
 
   /// Posts the location info given to the server
   postForTim(location, enter) {
-    if (GoogleSignin.currentUser() != null && GlobalFunctions.userIsTim()) {
+    if (this.user != null && GlobalFunctions.userIsTim()) {
       this.post(env.timLocationInfoURL, {location: location, enter: enter})
         .then((response) => response.json()).then((responseJson) => {
 

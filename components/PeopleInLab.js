@@ -41,12 +41,12 @@ class PeopleInLab extends Component {
 
 		// I need to alert the user if I can't connect, but I only want to do it once
 		this.alerted = false
+		this.dismissed = false
 
 		this.state = {
 			timInDALI: null,
 			timInOffice: null,
 			peopleInLab: null,
-			dismissed: false,
 			dataSource: dataSource.cloneWithRowsAndSections({})
 		}
 
@@ -70,7 +70,7 @@ class PeopleInLab extends Component {
 				return
 			}
 
-			if (!this.state.dismissed) {
+			if (!this.dismissed) {
 				this.setState({
 					peopleInLab: people,
 					dataSource: this.state.dataSource.cloneWithRowsAndSections({
@@ -97,7 +97,7 @@ class PeopleInLab extends Component {
 				return
 			}
 
-			if (!this.state.dismissed) {
+			if (!this.dismissed) {
 				this.setState({
 					timInDALI: locations.inDALI,
 					timInOffice: locations.inOffice,
@@ -170,9 +170,7 @@ class PeopleInLab extends Component {
 												underlayColor="rgba(0,0,0,0)"
 												style={styles.navBarDoneButton}
 												onPress={() => {
-													this.setState({
-														dismissed: true
-													})
+													this.dismissed = true
 													this.props.dismiss()
 												}}>
 												<Text style={styles.navBarDoneText}>Done</Text>

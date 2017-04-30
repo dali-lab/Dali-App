@@ -38,7 +38,7 @@ class Settings extends Component {
   propTypes: {
     onLogout: ReactNative.PropTypes.func,
     dismiss: ReactNative.PropTypes.func.isRequired,
-    user: ReactNative.PropTypes.object.isRequired,
+    user: ReactNative.PropTypes.object,
   }
 
   constructor(props) {
@@ -130,9 +130,9 @@ class Settings extends Component {
 		]
 
 		var signOutRow = {
-			title: "Sign Out",
+			title: this.props.user != null ? "Sign Out" : "Sign In",
 			action: this.props.onLogout,
-			image: GoogleSignin.currentUser().photo
+			image: this.props.user != null ? this.props.user.photo : null
 		}
 
 		var locationRows = [
@@ -157,7 +157,7 @@ class Settings extends Component {
 				user: [signOutRow],
 				notifications: notificationsRows
 			}
-		}else if (GoogleSignin.currentUser() != null){
+		}else if (this.props.user != null){
 			return {
 				user: [signOutRow],
 				notifications: notificationsRows,
@@ -180,7 +180,7 @@ class Settings extends Component {
         <TouchableHighlight onPress={data.action}>
           <View>
             <View style={styles.userRow}>
-							<Image source={{uri: data.image}} style={styles.userProfileImage}/>
+							{data.image != null ? <Image source={{uri: data.image}} style={styles.userProfileImage}/> : null}
               <Text style={styles.userRowTitle}>{data.title}</Text>
               <Image source={require('./Assets/disclosureIndicator.png')} style={styles.disclosureIndicator}/>
             </View>
@@ -393,6 +393,8 @@ const styles = StyleSheet.create({
   userRowTitle: {
     fontSize: 16,
 		paddingLeft: 2,
+		marginTop: 5,
+		justifyContent: 'center',
     flex: 1,
     fontFamily: 'Avenir Next',
   }
