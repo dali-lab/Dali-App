@@ -222,6 +222,11 @@ class Main extends Component {
 					inDALI: BeaconController.current.inDALI
 				});
 			})
+			if (BeaconController.current.rangedDALI) {
+				this.setState({
+					inDALI: BeaconController.current.inDALI
+				})
+			}
 			BeaconController.current.startRanging()
 
 			// I also set the current value in case I already have it

@@ -96,7 +96,8 @@ class BeaconController {
 		this.checkInListeners = [];
 
 		// To make sure I don't set up Tim's Office region twice
-		this.setUpTimsOffice = false
+		this.setUpTimsOffice = false;
+		this.rangedDALI = false;
 
 		// Now that setup is complete I can save this controller as the active controller
 		BeaconController.current = this;
@@ -226,6 +227,7 @@ class BeaconController {
 		});
 
 		// Save and notify
+		this.rangedDALI = true;
 		this.inDALI = false;
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
 	}
@@ -283,6 +285,7 @@ class BeaconController {
 			}
 		});
 
+		this.rangedDALI = true;
 		this.inDALI = true;
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
 	}
@@ -341,6 +344,7 @@ class BeaconController {
 		}else{
 			// Keeping track of wheter I'm in DALI or not
 			this.inDALI = data.beacons.length > 0;
+			this.rangedDALI = true;
 			BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
 
 			// Start the next region (Check-in)
