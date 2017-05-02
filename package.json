@@ -10,6 +10,7 @@
   "dependencies": {
     "react": "15.4.2",
     "react-native": "^0.41.2",
+    "react-native-background-timer": "^1.0.0",
     "react-native-beacons-manager": "^1.0.1",
     "react-native-google-signin": "^0.8.1",
     "react-native-linear-gradient": "^2.0.0",

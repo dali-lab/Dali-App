@@ -96,6 +96,22 @@ class StorageController {
   static saveBluetoothNotified(value) {
     return AsyncStorage.setItem(prefix + ':bluetoothNotified', value.toString());
   }
+
+  static getServerUpdateInterval() {
+    return new Promise((success, failure) => {
+      AsyncStorage.getItem(prefix + ':bluetoothNotified').then((result) => {
+        if (result == null) {
+          success(null);
+          return;
+        }
+        success(parseInt(result));
+      });
+    });
+  }
+
+  static saveServerUpdateInterval(value) {
+    return AsyncStorage.setItem(prefix + ':serverUpdateInterval', value == null ? value : value.toString());
+  }
 }
 
 export default StorageController;

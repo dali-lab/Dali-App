@@ -111,7 +111,7 @@ android {
         applicationId "com.JohnKotz.DALI.DaliLabApp"
         minSdkVersion 16
         targetSdkVersion 20
-        versionCode 30
+        versionCode 31
         versionName "1.8"
         ndk {
             abiFilters "armeabi-v7a", "x86"
@@ -158,6 +158,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-background-timer')
     compile project(':react-native-linear-gradient')
     compile project(':react-native-push-notification')
     compile project(':react-native-google-signin')

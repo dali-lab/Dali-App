@@ -8,6 +8,7 @@
  */
 import Beacons from 'react-native-beacons-manager';
 import PushNotification from 'react-native-push-notification';
+import BackgroundTimer from 'react-native-background-timer';
 import {
 	DeviceEventEmitter,
 	Platform,
@@ -229,6 +230,8 @@ class BeaconController {
 		// Save and notify
 		this.rangedDALI = true;
 		this.inDALI = false;
+
+		this.setUpBackgroundUpdates(this.inDALI);
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
 	}
 
@@ -287,6 +290,8 @@ class BeaconController {
 
 		this.rangedDALI = true;
 		this.inDALI = true;
+
+		this.setUpBackgroundUpdates(this.inDALI);
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
 	}
 
@@ -322,6 +327,7 @@ class BeaconController {
 			}
 			// Since this is to be the last in the chain
 			this.stopRanging();
+			this.setUpBackgroundUpdates(data.beacons.count > 0);
 
 		// Check to see if this region is a event checkin
 		}else if (Platform.OS != "ios" ? (data.identifier == env.checkInRegion.identifier) : (data.region.identifier == env.checkInRegion.identifier)) {
@@ -347,6 +353,8 @@ class BeaconController {
 			this.rangedDALI = true;
 			BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
 
+			this.setUpBackgroundUpdates(this.inDALI);
+
 			// Start the next region (Check-in)
 			if (Platform.OS != "ios") {
 				Beacons.startRangingBeaconsInRegion(env.checkInRegion.identifier, env.checkInRegion.uuid);
@@ -354,6 +362,31 @@ class BeaconController {
 				Beacons.startRangingBeaconsInRegion(env.checkInRegion);
 			}
 		}
+	}
+
+	setUpBackgroundUpdates(inDALI) {
+		StorageController.getServerUpdateInterval().then((interval) => {
+			// Cancel the timer when you are done with it
+			if (!inDALI) {
+				if (interval != null) {
+					BackgroundTimer.clearInterval(interval);
+					StorageController.saveServerUpdateInterval(null);
+				}
+			}else{
+				if (interval == null) {
+					const intervalId = BackgroundTimer.setInterval(() => {
+						// this will be executed every 10 minutes
+						// even when app is the the background
+						console.log("Refreshing the server");
+						this.startRanging();
+					}, 10 * 60 * 1000); // 10 minutes
+
+					StorageController.saveServerUpdateInterval(intervalId).then(() => {
+						// saved
+					});
+				}
+			}
+		});
 	}
 
 	/**
