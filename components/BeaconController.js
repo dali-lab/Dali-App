@@ -48,6 +48,7 @@ class BeaconController {
 			// iOS has its own way of doing things...
 			// For one, Android doesn't ask for permission from the user
 			Beacons.requestAlwaysAuthorization();
+			Beacons.requestWhenInUseAuthorization();
 
 			this.authorization = null;
 			Beacons.getAuthorizationStatus(function(authorization) {

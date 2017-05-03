@@ -17,6 +17,12 @@ let StorageController = require('./StorageController').default;
 let GlobalFunctions = require('./GlobalFunctions').default;
 
 let days = ['SU','MO','TU','WE','TH','FR','SA'];
+const debugging = true
+
+function DifferenceInDays(firstDate, secondDate) {
+    return Math.round((secondDate-firstDate)/(1000*60*60*24));
+}
+
 
 /**
  This class will control all server comunication.
@@ -150,24 +156,33 @@ class ServerCommunicator {
 
   /// Calls getLabHours and filters it by those still tonight
   getTonightsLabHours() {
+    const prefix = "> getTonightsLabHours: ";
+    if (debugging) {console.log("Running getTonightsLabHours...");}
+
     return new Promise((resolve, reject) => {
       this.getLabHours().then((hours) => {
+        if (debugging) {console.log(prefix + "Got back:", hours);}
         let now = new Date();
         let midnight = new Date();
         midnight.setHours(23, 59, 59);
         var taHours = hours.filter((hour) => {
+          const innerPrefix = "==" + prefix + hour.name + ": "
           if (hour.status != "confirmed") {
             return false;
           }
 
+
           // This method worked for the first week, but no longer!
           // Because we only get one event for each that recurrs
           if (hour.recurrence == undefined || hour.recurrence.length == 0) {
+            if (debugging) {console.log(innerPrefix + "No recurrence");
+            console.log(innerPrefix + "Should show:", (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight);}
             return (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight;
           }
 
           // This new method should determine what day of the week the
-          let numDaysDiff = now.getDate() - hour.startDate.getDate();
+          let numDaysDiff = DifferenceInDays(hour.startDate, now);
+          if (debugging) {console.log(innerPrefix + "Num days diff:", numDaysDiff);}
 
           let recurrence = hour.recurrence[0];
           let parts = recurrence.replace("RRULE:", "").split(';');
@@ -180,19 +195,26 @@ class ServerCommunicator {
 
           if (now > lastDuplicate) {
             // The last occurence of this event has passed
+
+            if (debugging) {console.log(innerPrefix + "Past expiration");}
             return false;
           }else if (days[now.getDay()] != day){
             // Not the right day of the week
+            if (debugging) {console.log(innerPrefix + "Not today!");}
             return false;
           }else{
             // Right day of week. Check time
-            let thisWeeksStartTime = new Date(hour.start.dateTime);
-            thisWeeksStartTime.setDate(thisWeeksStartTime.getDate() + numDaysDiff);
+            if (debugging) {console.log(innerPrefix + "Correct day");}
 
             let thisWeeksEndTime = new Date(hour.end.dateTime);
             thisWeeksEndTime.setDate(thisWeeksEndTime.getDate() + numDaysDiff);
 
-            return thisWeeksStartTime > now || thisWeeksEndTime > now && thisWeeksStartTime < now;
+            if (debugging) {console.log(innerPrefix + "Now is:", now);
+            console.log(innerPrefix + "Ends at:", thisWeeksEndTime);}
+
+            let shouldShow = thisWeeksEndTime > now
+            if (debugging) {console.log(innerPrefix + "Should show:", shouldShow);}
+            return shouldShow;
           }
         });
 
@@ -209,6 +231,8 @@ class ServerCommunicator {
 
   // Gets the lab hours listed on the Google Calendar
   getLabHours() {
+    const prefix = "==> getLabHours: ";
+    if (debugging) {console.log("Running getLabHours");}
     return GoogleSignin.currentUserAsync().then((user) => {
       if (user == null){
         return new Promise(function(resolve, reject) {
@@ -221,13 +245,18 @@ class ServerCommunicator {
       return new Promise(function(resolve, reject) {
         // There is some wierd accessToken stuff on Android, so I will check if I have it...
         this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken
+        if (debugging) {console.log(prefix + "Access token?", this.accessToken);}
 
         if (this.accessToken == undefined) {
+          if (debugging) {console.log(prefix + "Nope...");}
           // If not, I will request it...
           RNGoogleSignin.getAccessToken(user).then((token) => {
             // Save it...
             this.accessToken = token
+
+            if (debugging) {console.log(prefix + "New one?", this.accessToken);
             // And start the function over
+            console.log(prefix + "Starting over...");}
             this.getLabHours().then(() => {
               resolve.apply(null, arguments);
             }).catch(() => {
@@ -238,8 +267,11 @@ class ServerCommunicator {
           })
         }
 
+        if (debugging) {console.log(prefix + "Yup!");}
+
         // Now that I have the token...
         let accessToken = this.accessToken
+        if (debugging) {console.log(prefix + "Fetching calendar...");}
         fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.taCalendarId + "/events", {
           method: "GET",
           headers: {
@@ -247,6 +279,7 @@ class ServerCommunicator {
           }
         }).then((response) => response.json())
           .then((responseJson) => {
+            if (debugging) {console.log(prefix + "Got it:", responseJson);}
 
             // Handle no data
             if (responseJson == null || responseJson.items == null) {
@@ -257,10 +290,10 @@ class ServerCommunicator {
 
             // Parse data into machine readable info
             responseJson.items.forEach((hour) => {
-                hour.startDate = new Date(hour.start.dateTime);
-                hour.endDate = new Date(hour.end.dateTime);
-                hour.name = hour.summary;
-                hour.skills = hour.description;
+              hour.startDate = new Date(hour.start.dateTime);
+              hour.endDate = new Date(hour.end.dateTime);
+              hour.name = hour.summary;
+              hour.skills = hour.description;
             });
 
             // Return data
