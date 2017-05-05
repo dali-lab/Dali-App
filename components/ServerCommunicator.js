@@ -142,6 +142,7 @@ class ServerCommunicator {
             name: "The Pitch",
             votingOpen: true,
             resultsReleased: false,
+            description: "You have now seen many pitches, so now please choose the three that you think showed the most merrit in your opinion.",
             options: [
                {name: "Pitch 1", id: 1},
                {name: "Pitch 2", id: 2},

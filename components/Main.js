@@ -110,7 +110,7 @@ class Main extends Component {
 			officeHours: null,
 			locationText: "Loading location...",
 			inVotingEvent: false || __DEV__,
-			votingVisibile: false,
+			votingVisibile: false || __DEV__,
 			// The current state of the application (background or foreground)
 			// Will come in handy when reloading data on re-entry to the app
 			appState: AppState.currentState,
