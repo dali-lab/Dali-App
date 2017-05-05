@@ -53,7 +53,6 @@ class BeaconController {
 		if (Platform.OS == 'ios') {
 			// iOS has its own way of doing things...
 			// For one, Android doesn't ask for permission from the user
-			Beacons.requestWhenInUseAuthorization();
 			Beacons.requestAlwaysAuthorization();
 			Beacons.requestWhenInUseAuthorization();
 
@@ -107,6 +106,7 @@ class BeaconController {
 		// Store the current thought of where the device is in relation to DALI
 		this.inDALI = false;
 		this.inVotingEvent = false;
+		this.votingEventMajor = null;
 		this.locationTextCurrentPriority = 0;
 
 		// Listeners for the various events I monitor
@@ -237,7 +237,6 @@ class BeaconController {
 			if (this.locationTextCurrentPriority == timsOfficePriority) {
 				BeaconController.performCallbacks(this.locationInformationListeners, "Loading location...");
 				this.locationTextCurrentPriority = 0;
-				this.stopRanging();
 				this.startRanging();
 			}
 			return
@@ -246,11 +245,11 @@ class BeaconController {
 		// Check for Voting event
 		if (exitRegion.region == env.votingRegion.identifier || exitRegion.identifier == env.votingRegion.identifier) {
 			this.inVotingEvent = false;
+			this.votingEventMajor = null;
 			BeaconController.performCallbacks(this.votingRegionListeners, false);
 			if (this.locationTextCurrentPriority == votingEventPriority) {
 				BeaconController.performCallbacks(this.locationInformationListeners, "Loading location...");
 				this.locationTextCurrentPriority = 0;
-				this.stopRanging();
 				this.startRanging();
 			}
 			return
@@ -330,6 +329,7 @@ class BeaconController {
 		// Check for Voting events
 		if (enterRegion.region == env.votingRegion.identifier || enterRegion.identifier == env.votingRegion.identifier) {
 			this.inVotingEvent = true;
+			this.startRanging();
 			BeaconController.performCallbacks(this.votingRegionListeners, true);
 
 			if (this.locationTextCurrentPriority < votingEventPriority) {
@@ -375,6 +375,7 @@ class BeaconController {
 
 	votingBeaconsDidRange(data) {
 		this.inVotingEvent = data.beacons.length > 0;
+		this.votingEventMajor = data.beacons[0].major;
 		BeaconController.performCallbacks(this.votingRegionListeners, data.beacons.length > 0);
 		this.stopRanging();
 		if (data.beacons.length > 0 && this.locationTextCurrentPriority < votingEventPriority) {
@@ -395,7 +396,7 @@ class BeaconController {
 	*/
 	beaconsDidRange(data) {
 		// An attempt to stop the ranging if it gets out of controll
-		if (this.numRanged > 5) {
+		if (this.numRanged > 20) {
 			this.stopRanging()
 			return
 		}
@@ -426,13 +427,20 @@ class BeaconController {
 				}
 			}
 			// Since this is to be the last in the chain
-			this.stopRanging();
+			if (data.beacons.length == 0 && this.locationTextCurrentPriority == 0) {
+				Beacons.startRangingBeaconsInRegion(env.labRegion);
+				this.startRanging();
+			}else{
+				this.stopRanging();
+			}
 			this.setUpBackgroundUpdates(data.beacons.length > 0);
 
 			// Check to see if this region is a voting region
 		}else if (Platform.OS != "ios" ? (data.identifier == env.votingRegion.identifier) : (data.region.identifier == env.votingRegion.identifier)) {
 			console.log("Voting");
 			this.votingBeaconsDidRange(data);
+
+
 
 			// Starts the next (Tim's Office) only if user is Tim
 			if (GlobalFunctions.userIsTim()) {
@@ -443,7 +451,12 @@ class BeaconController {
 				}
 			}else{
 				// Otherwise this is the end of the line
-				this.stopRanging();
+				if (data.beacons.length == 0 && this.locationTextCurrentPriority == 0) {
+					Beacons.startRangingBeaconsInRegion(env.labRegion);
+					this.startRanging();
+				}else{
+					this.stopRanging();
+				}
 			}
 
 			// Check to see if this region is a event checkin

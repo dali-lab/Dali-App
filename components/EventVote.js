@@ -22,6 +22,16 @@ class EventVote extends Component {
 
    constructor(props) {
       super(props)
+
+      this.state = {
+         eventData: null
+      }
+
+      ServerCommunicator.current.getEventNow().then((event) => {
+         this.setState({
+            eventData: event
+         });
+      });
    }
 
    render() {
@@ -45,7 +55,7 @@ class EventVote extends Component {
                   );
                },
                Title: (route, navigator, index, navState) => {
-                  return (<Text style={styles.navBarTitleText}>Event...</Text>);
+                  return (<Text style={styles.navBarTitleText}>Voting for {this.state.eventData == null ? 'Event...' : this.state.eventData.name}</Text>);
                }
             }}
             style={{backgroundColor: 'rgb(33, 122, 136)'}}/>

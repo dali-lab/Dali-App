@@ -109,7 +109,7 @@ class Main extends Component {
 			// Holds the data I will get about the office hours
 			officeHours: null,
 			locationText: "Loading location...",
-			inVotingEvent: false,
+			inVotingEvent: false || __DEV__,
 			votingVisibile: false,
 			// The current state of the application (background or foreground)
 			// Will come in handy when reloading data on re-entry to the app

@@ -138,7 +138,20 @@ class ServerCommunicator {
 
    getEventNow() {
       return new Promise(function(resolve, reject) {
-         resolve({name:"The Pitch"});
+         resolve({
+            name: "The Pitch",
+            votingOpen: true,
+            resultsReleased: false,
+            options: [
+               {name: "Pitch 1", id: 1},
+               {name: "Pitch 2", id: 2},
+               {name: "Pitch 3", id: 3},
+               {name: "Pitch 4", id: 4},
+               {name: "Pitch 5", id: 5},
+               {name: "Pitch 6", id: 6},
+               {name: "Pitch 7", id: 7},
+            ]
+         });
       });
    }
 
