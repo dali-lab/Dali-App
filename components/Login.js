@@ -20,6 +20,7 @@ import {
   Easing,
   Alert,
   AlertIOS,
+  StatusBar
 } from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 
@@ -94,6 +95,11 @@ class Login extends Component {
 
     return (
         <View style={styles.container}>
+         {this.state.loggingIn ?
+            <StatusBar
+					barStyle="dark-content"/>
+         : <StatusBar
+            barStyle="light-content"/>}
           {/* Background image is a low poly*/}
           <Image source={require("./Assets/lowPolyBackground.png")} style={styles.container}>
             {/* ... which has a gradient overlay (end slightly transparent so low poly is visible)*/}
@@ -141,10 +147,16 @@ class Login extends Component {
    Opens a signin webview so the user can sign in. After doing so, handles errors and calls onLogin if legit
    */
   signIn() {
+     this.setState({
+        loggingIn: true
+     });
     GoogleSignin.signIn()
     .then((user) => {
       if (user == null || !user.email.includes("@dali.dartmouth.edu")) {
         GoogleSignin.signOut();
+        this.setState({
+          loggingIn: false
+       });
         setTimeout(() => {
           Alert.alert("Not DALI account!", "To access features specific to DALI members use a DALI email");
         }, 600);

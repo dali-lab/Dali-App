@@ -24,7 +24,8 @@ import {
 	AppState,
 	Linking,
 	Animated,
-	Platform
+	Platform,
+	Alert
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {GoogleSignin} from 'react-native-google-signin';
@@ -34,6 +35,7 @@ let ServerCommunicator = require('./ServerCommunicator').default;
 let BeaconController = require('./BeaconController').default;
 let Settings = require('./Settings');
 let PeopleInLab = require('./PeopleInLab');
+let EventVote = require('./EventVote');
 let StorageController = require('./StorageController').default;
 let GlobalFunctions = require('./GlobalFunctions').default;
 
@@ -106,11 +108,9 @@ class Main extends Component {
 			eventsSelected: false,
 			// Holds the data I will get about the office hours
 			officeHours: null,
-			// Holds the boolean I will get about whether the device is in the lab
-			inDALI: null,
-			// Holds the boolean I will get about whether the device is in Tim's Office
-			// Just for tim's device
-			inTimsOffice: false,
+			locationText: "Loading location...",
+			inVotingEvent: true,
+			votingVisibile: false,
 			// The current state of the application (background or foreground)
 			// Will come in handy when reloading data on re-entry to the app
 			appState: AppState.currentState,
@@ -214,45 +214,17 @@ class Main extends Component {
 			console.log(error);
 		});
 
-		if (this.props.user != null) {
-			// In order to get the current location, I set up a listener
-			// TODO: Debug incorrect out-of-lab status
-			BeaconController.current.addBeaconDidRangeListener(() => {
-				this.setState({
-					inDALI: BeaconController.current.inDALI
-				});
-			})
-			if (BeaconController.current.rangedDALI) {
-				this.setState({
-					inDALI: BeaconController.current.inDALI
-				})
-			}
-			BeaconController.current.startRanging()
+		BeaconController.current.addLocationInformationListener((locationText) => {
+			this.setState({
+				locationText: locationText
+			});
+		});
 
-			// I also set the current value in case I already have it
-			if (BeaconController.current.inDALI) {
-				this.setState({
-					inDALI: BeaconController.current.inDALI
-				})
-			}
-
-			// In the case I leave the lab with the app open, I should know
-			BeaconController.current.addEnterExitListener((inDALI) => {
-				this.setState({
-					inDALI: inDALI
-				})
-			})
-
-			// Same stuff as before, but for Tim's Office
-			// Only for Tim
-			if (GlobalFunctions.userIsTim()) {
-				BeaconController.current.addTimsOfficeListener((enter) => {
-					this.setState({
-						inTimsOffice: enter
-					})
-				})
-			}
-		}
+		BeaconController.current.addVotingRegionListener((enter) => {
+			this.setState({
+				inVotingEvent: enter
+			});
+		});
 	}
 
 	/**
@@ -350,11 +322,30 @@ class Main extends Component {
 		});
 	}
 
+	votingButtonPressed() {
+		if (!BeaconController.current.inVotingEvent && !__DEV__) {
+			Alert.alert("You are not at any event",
+				"No voting event beacon was found nearby. The beacons use Bluetooth, so this may be because bluetooth is off. You might also not allow the app to access location, which is needed",
+				[
+					{text: 'Okay', onPress: () => {}},
+					{text: 'Settings', onPress: () => Linking.openURL('app-settings:')}
+				]
+			);
+			return
+		}
+
+		console.log("Voting now visible");
+		this.setState({
+			votingVisibile: true
+		});
+	}
+
 	/// Dismisses all modals shown
 	hideModals() {
 		this.setState({
 			settingsVisible: false,
-			peopleInLabVisible: false
+			peopleInLabVisible: false,
+			votingVisibile: false
 		});
 	}
 
@@ -393,13 +384,14 @@ class Main extends Component {
 				<Modal
 	          animationType={"slide"}
 	          transparent={false}
-	          visible={this.state.settingsVisible || this.state.peopleInLabVisible}
+	          visible={this.state.settingsVisible || this.state.peopleInLabVisible || this.state.votingVisibile}
 	          onRequestClose={this.hideModals.bind(this)}>
 						{this.state.settingsVisible ? <Settings
 							user={this.props.user}
 							onLogout={this.logout.bind(this)}
 							dismiss={this.hideModals.bind(this)}/> : null}
 						{this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)}/> : null}
+						{this.state.votingVisibile ? <EventVote dismiss={this.hideModals.bind(this)}/> : null}
 				</Modal>
 
 				<View style={{
@@ -408,8 +400,16 @@ class Main extends Component {
 						flexDirection: 'row',
 						marginTop: 20 + (Platform.OS == "ios" ? 10 : 0)
 					}}>
+					{/* Voting button*/}
+					<TouchableHighlight
+						underlayColor="rgba(0,0,0,0)"
+						style={{marginLeft: 20, alignSelf: 'flex-start'}}
+						onPress={this.state.inVotingEvent ? this.votingButtonPressed.bind(this) : null}>
+						{this.state.inVotingEvent ? <Image source={require('./Assets/vote.png')} style={styles.settingsButtonImage}/> : <View style={{width: 30}}/>}
+					</TouchableHighlight>
+
 					{/* DALI image*/}
-					<Image source={require('./Assets/DALI_whiteLogo.png')} style={[styles.daliImage, {width: window.width - 100, marginLeft: 50}]}/>
+					<Image source={require('./Assets/DALI_whiteLogo.png')} style={[styles.daliImage, {width: window.width - 100}]}/>
 
 					{/* Settings button*/}
 					<TouchableHighlight
@@ -422,7 +422,7 @@ class Main extends Component {
 
 				{/* Location label. More complicated terniary*/}
 				{this.props.user != null ?
-					<Text style={styles.locationText}>{this.state.inTimsOffice ? "You are in Tim's Office" : (this.state.inDALI ? "You are in DALI now" : (this.state.inDALI != null ? "You are not in DALI now" : "Loading location..."))}</Text>
+					<Text style={styles.locationText}>{this.state.locationText}</Text>
 					: <View style={{alignItems: 'center'}}>
 							<TouchableHighlight onPress={() => {
 										Linking.openURL("http://maps.apple.com/?address=5,Maynard+St,Hanover,New+Hampshire");

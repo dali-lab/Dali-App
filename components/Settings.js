@@ -262,8 +262,7 @@ class Settings extends Component {
 										return (<Text style={styles.navBarTitleText}>Settings</Text>);
 									}
                }}
-               style={{backgroundColor: 'rgb(33, 122, 136)'}}
-             />
+               style={{backgroundColor: 'rgb(33, 122, 136)'}}/>
           }
         renderScene={(route, navigator) =>
 						<ListView
@@ -273,8 +272,7 @@ class Settings extends Component {
 							renderFooter={this.renderFooter.bind(this)}
 	            renderRow={this.renderRow.bind(this)}/>
         }
-        style={{paddingTop: 65}}
-      />
+        style={{paddingTop: 65}}/>
     )
   }
 }

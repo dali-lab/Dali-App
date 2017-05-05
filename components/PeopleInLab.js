@@ -179,8 +179,7 @@ class PeopleInLab extends Component {
 								 Title: (route, navigator, index, navState) =>
 									 { return (<Text style={styles.navBarTitleText}>People In The Lab</Text>); },
 							 }}
-							 style={{backgroundColor: 'rgb(33, 122, 136)'}}
-						 />
+							 style={{backgroundColor: 'rgb(33, 122, 136)'}}/>
 					}
 				renderScene={(route, navigator) =>
 						<ListView
@@ -190,8 +189,7 @@ class PeopleInLab extends Component {
 							renderSectionHeader={this.renderSectionHeader.bind(this)}
 							renderRow={this.renderRow.bind(this)}/>
 				}
-				style={{paddingTop: 65}}
-			/>
+				style={{paddingTop: 65}}/>
 		)
 	}
 }

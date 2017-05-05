@@ -21,6 +21,11 @@ const StorageController = require('./StorageController').default
 const GlobalFunctions = require('./GlobalFunctions').default
 let env = require('./Environment');
 
+const outOfLabPriority = 1;
+const inLabPriority = 2;
+const timsOfficePriority = 3;
+const votingEventPriority = 4;
+
 /**
  Controlls the location data in the background of the app.
 
@@ -47,6 +52,7 @@ class BeaconController {
 		if (Platform.OS == 'ios') {
 			// iOS has its own way of doing things...
 			// For one, Android doesn't ask for permission from the user
+			Beacons.requestWhenInUseAuthorization();
 			Beacons.requestAlwaysAuthorization();
 
 			this.authorization = null;
@@ -61,6 +67,7 @@ class BeaconController {
 			// For the other iOS only requires the object { identifier: "Some ID", uuid: "long-string-ofcharacters" }
 			Beacons.startMonitoringForRegion(env.labRegion);
 			Beacons.startMonitoringForRegion(env.checkInRegion);
+			Beacons.startMonitoringForRegion(env.votingRegion);
 			Beacons.startUpdatingLocation();
 		}else{
 			// Android needs explicit declaration of type of beacon detected
@@ -74,30 +81,43 @@ class BeaconController {
 			env.checkInRegion.major = 1
 			env.checkInRegion.minor = 1
 
+			env.votingRegion.major = 1
+			env.votingRegion.minor = 1
+
 			// Android may fail!
 			Beacons.startMonitoringForRegion(env.labRegion).then(()=> {
 				console.log("Started monitoring", env.labRegion)
 			}).catch((error) => {
-				console.log(error)
+				console.log("Failed to start monitoring!", error)
 			});
 			Beacons.startMonitoringForRegion(env.checkInRegion).then(()=> {
 				console.log("Started monitoring", env.checkInRegion)
 			}).catch((error) => {
-				console.log(error)
+				console.log("Failed to start monitoring!", error)
+			});
+			Beacons.startMonitoringForRegion(env.votingRegion).then(() => {
+				console.log("Started monitoring", env.votingRegion);
+			}).catch((error) => {
+				console.log("Failed to start monitoring!", error);
 			});
 		}
 
 		// Store the current thought of where the device is in relation to DALI
 		this.inDALI = false;
+		this.inVotingEvent = false;
+		this.locationTextCurrentPriority = 0;
 
 		// Listeners for the various events I monitor
 		this.enterExitListeners = [];
 		this.beaconRangeListeners = [];
 		this.timsOfficeListeners = [];
 		this.checkInListeners = [];
+		this.votingRegionListeners = [];
+		this.locationInformationListeners = [];
 
 		// To make sure I don't set up Tim's Office region twice
 		this.setUpTimsOffice = false;
+		// To give the Main screen something to look at in case I already have the data
 		this.rangedDALI = false;
 
 		// Now that setup is complete I can save this controller as the active controller
@@ -179,6 +199,35 @@ class BeaconController {
 		}
 	}
 
+	startRangingVotingBeacons() {
+		// To track the number of times I get beacons before I force cancel ranging
+		// Helped a bit towards infinite ranging problem
+		this.numRanged = 0
+
+		// Again Android does things differently
+		if (Platform.OS == 'ios') {
+			Beacons.startUpdatingLocation();
+			Beacons.startRangingBeaconsInRegion(env.votingRegion);
+		}else{
+			Beacons.startRangingBeaconsInRegion(env.votingRegion.identifier, env.votingRegion.uuid).then(() => {
+				console.log("Started ranging")
+			}).catch((error) => {
+				console.log("Failed to range")
+				console.log(error)
+				// Failed to range, report not in the lab
+				BeaconController.performCallbacks(this.votingRegionListeners, false);
+			})
+		}
+
+		if (this.rangingListener != null) {
+			this.stopRanging()
+		}
+
+		if (this.voteRangingListener == null) {
+			this.voteRangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.votingBeaconsDidRange.bind(this));
+		}
+	}
+
 	/**
 	 * Stop ranging
 	 */
@@ -187,6 +236,10 @@ class BeaconController {
 		if (this.rangingListener != null) {
 			this.rangingListener.remove();
 			this.rangingListener = null;
+		}
+		if (this.voteRangingListener != null) {
+			this.voteRangingListener.remove();
+			this.voteRangingListener = null;
 		}
 	}
 
@@ -207,6 +260,23 @@ class BeaconController {
 		// Check for Tim's office
 		if (exitRegion.region == env.timsOfficeRegion.identifier || exitRegion.identifier == env.timsOfficeRegion.identifier) {
 			BeaconController.performCallbacks(this.timsOfficeListeners, false);
+			if (this.locationTextCurrentPriority == timsOfficePriority) {
+				BeaconController.performCallbacks(this.locationInformationListeners, "Loading location...");
+				this.locationTextCurrentPriority = 0;
+				this.startRanging();
+			}
+			return
+		}
+
+		// Check for Voting event
+		if (exitRegion.region == env.votingRegion.identifier || exitRegion.identifier == env.votingRegion.identifier) {
+			this.inVotingEvent = false;
+			BeaconController.performCallbacks(this.votingRegionListeners, false);
+			if (this.locationTextCurrentPriority == votingEventPriority) {
+				BeaconController.performCallbacks(this.locationInformationListeners, "Loading location...");
+				this.locationTextCurrentPriority = 0;
+				this.startRanging();
+			}
 			return
 		}
 
@@ -230,6 +300,11 @@ class BeaconController {
 		// Save and notify
 		this.rangedDALI = true;
 		this.inDALI = false;
+
+		if (this.locationTextCurrentPriority <= inLabPriority) {
+			BeaconController.performCallbacks(this.locationInformationListeners, "Not in DALI Lab");
+			this.locationTextCurrentPriority = outOfLabPriority
+		}
 
 		this.setUpBackgroundUpdates(this.inDALI);
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
@@ -269,6 +344,28 @@ class BeaconController {
 		// Check for Tim's office
 		if (enterRegion.region == env.timsOfficeRegion.identifier || enterRegion.identifier == env.timsOfficeRegion.identifier) {
 			BeaconController.performCallbacks(this.timsOfficeListeners, true);
+			if (this.locationTextCurrentPriority < timsOfficePriority) {
+				BeaconController.performCallbacks(this.locationInformationListeners, "In Tim's Office");
+				this.locationTextCurrentPriority = timsOfficePriority;
+			}
+			return
+		}
+
+		// Check for Voting events
+		if (enterRegion.region == env.votingRegion.identifier || enterRegion.identifier == env.votingRegion.identifier) {
+			this.inVotingEvent = true;
+			BeaconController.performCallbacks(this.votingRegionListeners, true);
+
+			if (this.locationTextCurrentPriority < votingEventPriority) {
+				ServerCommunicator.current.getEventNow().then((event) => {
+					if (event == null) {
+						return
+					}
+
+					BeaconController.performCallbacks(this.locationInformationListeners, "At " + event.name);
+					this.locationTextCurrentPriority = votingEventPriority;
+				});
+			}
 			return
 		}
 
@@ -291,8 +388,38 @@ class BeaconController {
 		this.rangedDALI = true;
 		this.inDALI = true;
 
+		if (this.locationTextCurrentPriority < inLabPriority) {
+			BeaconController.performCallbacks(this.locationInformationListeners, "In DALI Lab");
+			this.locationTextCurrentPriority = inLabPriority
+		}
+
 		this.setUpBackgroundUpdates(this.inDALI);
 		BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
+	}
+
+	votingBeaconsDidRange(data) {
+		// An attempt to stop the ranging if it gets out of controll
+		if (this.numRanged > 5) {
+			this.stopRanging()
+			return
+		}
+		this.numRanged+=1
+
+		if ((Platform.OS == "ios" ? data.region.identifier : data.identifier) == env.votingRegion.identifier) {
+			this.inVotingEvent = data.beacons.count > 0;
+			BeaconController.performCallbacks(this.votingRegionListeners, data.beacons.count > 0);
+			this.stopRanging();
+			if (data.beacons.count > 0 && this.locationTextCurrentPriority < votingEventPriority) {
+				ServerCommunicator.current.getEventNow().then((event) => {
+					if (event == null) {
+						return
+					}
+
+					BeaconController.performCallbacks(this.locationInformationListeners, "At " + event.name);
+					this.locationTextCurrentPriority = votingEventPriority;
+				})
+			}
+		}
 	}
 
 	/**
@@ -313,6 +440,7 @@ class BeaconController {
 			The order of this is:
 				- DALI lab
 				- Check in
+				- Voting events
 				- Tim's Office (only if user is Tim)
 
 			The order of the if statements is actually the reverse of this,
@@ -324,15 +452,18 @@ class BeaconController {
 			// Get tim
 			if (GlobalFunctions.userIsTim()) {
 				BeaconController.performCallbacks(this.timsOfficeListeners, data.beacons.count > 0);
+				if (data.beacons.count > 0 && this.locationTextCurrentPriority < timsOfficePriority) {
+					BeaconController.performCallbacks(this.locationInformationListeners, "In Tim's Office");
+					this.locationTextCurrentPriority = timsOfficePriority;
+				}
 			}
 			// Since this is to be the last in the chain
 			this.stopRanging();
 			this.setUpBackgroundUpdates(data.beacons.count > 0);
 
-		// Check to see if this region is a event checkin
-		}else if (Platform.OS != "ios" ? (data.identifier == env.checkInRegion.identifier) : (data.region.identifier == env.checkInRegion.identifier)) {
-			// Doing the same thing but for check-in beacons
-			BeaconController.performCallbacks(this.checkInListeners, data.beacons.count > 0);
+		// Check to see if this region is a voting region
+		}else if (Platform.OS != "ios" ? (data.identifier == env.votingRegion.identifier) : (data.region.identifier == env.votingRegion.identifier)) {
+			this.votingBeaconsDidRange(data);
 
 			// Starts the next (Tim's Office) only if user is Tim
 			if (GlobalFunctions.userIsTim()) {
@@ -346,12 +477,31 @@ class BeaconController {
 				this.stopRanging();
 			}
 
+		// Check to see if this region is a event checkin
+		}else if (Platform.OS != "ios" ? (data.identifier == env.checkInRegion.identifier) : (data.region.identifier == env.checkInRegion.identifier)) {
+			// Doing the same thing but for check-in beacons
+			BeaconController.performCallbacks(this.checkInListeners, data.beacons.count > 0);
+
+			// Start the next region (Voting events)
+			if (Platform.OS != "ios") {
+				Beacons.startRangingBeaconsInRegion(env.votingRegion.identifier, env.votingRegion.uuid);
+			}else{
+				Beacons.startRangingBeaconsInRegion(env.votingRegion);
+			}
+
 		// Last possible case: it is DALI
 		}else{
 			// Keeping track of wheter I'm in DALI or not
 			this.inDALI = data.beacons.length > 0;
 			this.rangedDALI = true;
 			BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
+			if (data.beacons.count > 0 && this.locationTextCurrentPriority < inLabPriority) {
+				BeaconController.performCallbacks(this.locationInformationListeners, "In DALI Lab");
+				this.locationTextCurrentPriority = inLabPriority;
+			}else if (this.locationTextCurrentPriority < outOfLabPriority){
+				BeaconController.performCallbacks(this.locationInformationListeners, "Not in DALI Lab");
+				this.locationInformationListeners = outOfLabPriority;
+			}
 
 			this.setUpBackgroundUpdates(this.inDALI);
 
@@ -446,6 +596,20 @@ class BeaconController {
 	}
 
 	/**
+	 * Adds the given function to the listeners for beacons
+	 * 	listener: (inRange) => {
+	 *		//...
+	 *  }
+	 */
+	addVotingRegionListener(listener) {
+		this.votingRegionListeners.push(listener);
+	}
+
+	addLocationInformationListener(listener) {
+		this.locationInformationListeners.push(listener);
+	}
+
+	/**
 	 * Removes the indicated listener from the enter exit listeners
 	 *  listener: Function
 	 * Returns:
@@ -469,6 +633,17 @@ class BeaconController {
 	removeTimsOfficeListener(listener) {
 		return BeaconController.removeCallback(listener, this.timsOfficeListeners);
 	}
+
+	// Same as previous
+	removeVotingRegionListener(listener) {
+		return BeaconController.removeCallback(listener, this.votingRegionListeners);
+	}
+
+	removeLocationInformationListener(listener) {
+		return BeaconController.removeCallback(listener, this.locationInformationListeners);
+	}
+
+
 
 	// Removes the given callback from the given list of callbacks
 	// Takes a callback and a list of callbacks
