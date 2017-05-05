@@ -1,10 +1,10 @@
 /**
- ServerCommunicator.js
- Deals with connecting to the internet, getting data from it, parsing it, and filtering it for the rest of the application.
- Also sets up listeners for checkin's, enter, exit, and tim's office, sending relevant information to the server
+ServerCommunicator.js
+Deals with connecting to the internet, getting data from it, parsing it, and filtering it for the rest of the application.
+Also sets up listeners for checkin's, enter, exit, and tim's office, sending relevant information to the server
 
- AUTHOR: John Kotz
- */
+AUTHOR: John Kotz
+*/
 
 import {Platform, NativeModules} from 'react-native';
 const { RNGoogleSignin } = NativeModules;
@@ -17,24 +17,29 @@ let StorageController = require('./StorageController').default;
 let GlobalFunctions = require('./GlobalFunctions').default;
 
 let days = ['SU','MO','TU','WE','TH','FR','SA'];
+const debugging = true
+
+function DifferenceInDays(firstDate, secondDate) {
+   return Math.round((secondDate-firstDate)/(1000*60*60*24));
+}
 
 
 /**
- This class will control all server comunication.
- It will also take a beaconController and set up listeners for check in and enterExit,
-    and when called will deal with these server communicatons
+This class will control all server comunication.
+It will also take a beaconController and set up listeners for check in and enterExit,
+and when called will deal with these server communicatons
 
- STATIC:
- - current: Reference to the current ServerCommunicator object
+STATIC:
+- current: Reference to the current ServerCommunicator object
 
- TODO:
- - Fully test awaitingUser system
- */
+TODO:
+- Fully test awaitingUser system
+*/
 class ServerCommunicator {
    static current = null;
 
    constructor(beaconController) {
-     if (ServerCommunicator.current != null) {
+      if (ServerCommunicator.current != null) {
          throw "Can't create more than one instance of ServerCommunicator at a time"
          return
       }
@@ -49,10 +54,10 @@ class ServerCommunicator {
       this.beaconController.addEnterExitListener(this.enterExitDALI);
 
       // Set up Tim if user is Tim
-     if (GlobalFunctions.userIsTim()) {
+      if (GlobalFunctions.userIsTim()) {
          this.beaconController.addTimsOfficeListener(this.timsOfficeListener);
          this.beaconController.addBeaconDidRangeListener(() => {
-           this.postForTim("DALI", this.beaconController.inDALI)
+            this.postForTim("DALI", this.beaconController.inDALI)
          });
       }
 
@@ -151,24 +156,33 @@ class ServerCommunicator {
 
    /// Calls getLabHours and filters it by those still tonight
    getTonightsLabHours() {
+      const prefix = "> getTonightsLabHours: ";
+      if (debugging) {console.log("Running getTonightsLabHours...");}
+
       return new Promise((resolve, reject) => {
          this.getLabHours().then((hours) => {
+            if (debugging) {console.log(prefix + "Got back:", hours);}
             let now = new Date();
             let midnight = new Date();
             midnight.setHours(23, 59, 59);
             var taHours = hours.filter((hour) => {
+               const innerPrefix = "==" + prefix + hour.name + ": "
                if (hour.status != "confirmed") {
                   return false;
                }
 
+
                // This method worked for the first week, but no longer!
                // Because we only get one event for each that recurrs
                if (hour.recurrence == undefined || hour.recurrence.length == 0) {
+                  if (debugging) {console.log(innerPrefix + "No recurrence");
+                  console.log(innerPrefix + "Should show:", (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight);}
                   return (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight;
                }
 
                // This new method should determine what day of the week the
-               let numDaysDiff = now.getDate() - hour.startDate.getDate();
+               let numDaysDiff = DifferenceInDays(hour.startDate, now);
+               if (debugging) {console.log(innerPrefix + "Num days diff:", numDaysDiff);}
 
                let recurrence = hour.recurrence[0];
                let parts = recurrence.replace("RRULE:", "").split(';');
@@ -181,19 +195,26 @@ class ServerCommunicator {
 
                if (now > lastDuplicate) {
                   // The last occurence of this event has passed
+
+                  if (debugging) {console.log(innerPrefix + "Past expiration");}
                   return false;
                }else if (days[now.getDay()] != day){
                   // Not the right day of the week
+                  if (debugging) {console.log(innerPrefix + "Not today!");}
                   return false;
                }else{
                   // Right day of week. Check time
-                  let thisWeeksStartTime = new Date(hour.start.dateTime);
-                  thisWeeksStartTime.setDate(thisWeeksStartTime.getDate() + numDaysDiff);
+                  if (debugging) {console.log(innerPrefix + "Correct day");}
 
                   let thisWeeksEndTime = new Date(hour.end.dateTime);
                   thisWeeksEndTime.setDate(thisWeeksEndTime.getDate() + numDaysDiff);
 
-                  return thisWeeksStartTime > now || thisWeeksEndTime > now && thisWeeksStartTime < now;
+                  if (debugging) {console.log(innerPrefix + "Now is:", now);
+                  console.log(innerPrefix + "Ends at:", thisWeeksEndTime);}
+
+                  let shouldShow = thisWeeksEndTime > now
+                  if (debugging) {console.log(innerPrefix + "Should show:", shouldShow);}
+                  return shouldShow;
                }
             });
 
@@ -203,13 +224,15 @@ class ServerCommunicator {
 
             resolve(taHours)
          }).catch((error) => {
-   			reject(error)
-   		});
+            reject(error)
+         });
       })
    }
 
    // Gets the lab hours listed on the Google Calendar
    getLabHours() {
+      const prefix = "==> getLabHours: ";
+      if (debugging) {console.log("Running getLabHours");}
       return GoogleSignin.currentUserAsync().then((user) => {
          if (user == null){
             return new Promise(function(resolve, reject) {
@@ -222,54 +245,63 @@ class ServerCommunicator {
          return new Promise(function(resolve, reject) {
             // There is some wierd accessToken stuff on Android, so I will check if I have it...
             this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken
+            if (debugging) {console.log(prefix + "Access token?", this.accessToken);}
 
             if (this.accessToken == undefined) {
+               if (debugging) {console.log(prefix + "Nope...");}
                // If not, I will request it...
                RNGoogleSignin.getAccessToken(user).then((token) => {
                   // Save it...
                   this.accessToken = token
+
+                  if (debugging) {console.log(prefix + "New one?", this.accessToken);
                   // And start the function over
+                  console.log(prefix + "Starting over...");}
                   this.getLabHours().then(() => {
                      resolve.apply(null, arguments);
                   }).catch(() => {
                      reject.apply(null, arguments);
                   })
                }).catch(() => {
-                reject.apply(null, arguments);
+                  reject.apply(null, arguments);
                })
             }
 
+            if (debugging) {console.log(prefix + "Yup!");}
+
             // Now that I have the token...
             let accessToken = this.accessToken
+            if (debugging) {console.log(prefix + "Fetching calendar...");}
             fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.taCalendarId + "/events", {
                method: "GET",
                headers: {
                   'Authorization': "Bearer " + accessToken
                }
             }).then((response) => response.json())
-               .then((responseJson) => {
+            .then((responseJson) => {
+               if (debugging) {console.log(prefix + "Got it:", responseJson);}
 
-                  // Handle no data
-                  if (responseJson == null || responseJson.items == null) {
-                     console.log(responseJson);
-                     reject("No data!");
-                     return;
-                  }
+               // Handle no data
+               if (responseJson == null || responseJson.items == null) {
+                  console.log(responseJson);
+                  reject("No data!");
+                  return;
+               }
 
-                  // Parse data into machine readable info
-                  responseJson.items.forEach((hour) => {
-                        hour.startDate = new Date(hour.start.dateTime);
-                        hour.endDate = new Date(hour.end.dateTime);
-                        hour.name = hour.summary;
-                        hour.skills = hour.description;
-                  });
-
-                  // Return data
-                  resolve(responseJson.items);
-               }).catch((error) => {
-                  console.log(error);
-                  reject(error);
+               // Parse data into machine readable info
+               responseJson.items.forEach((hour) => {
+                  hour.startDate = new Date(hour.start.dateTime);
+                  hour.endDate = new Date(hour.end.dateTime);
+                  hour.name = hour.summary;
+                  hour.skills = hour.description;
                });
+
+               // Return data
+               resolve(responseJson.items);
+            }).catch((error) => {
+               console.log(error);
+               reject(error);
+            });
          });
       });
    }
@@ -306,107 +338,107 @@ class ServerCommunicator {
                   'Authorization': "Bearer " + accessToken
                } : null
             }).then((response) => response.json())
-               .then((responseJson) => {
-                  // Handle no data
-                  if (responseJson.items == null) {
-                     failure();
-                     console.log("Failed!", responseJson);
-                     return;
+            .then((responseJson) => {
+               // Handle no data
+               if (responseJson.items == null) {
+                  failure();
+                  console.log("Failed!", responseJson);
+                  return;
+               }
+
+               // Get today...
+               let now = new Date();
+               // ... aka the beginning of today
+
+               // Get next week
+               let weekFromNow = new Date();
+               weekFromNow.setDate(now.getDate() + 6);
+               // At the end of the day
+               weekFromNow.setHours(23, 59, 59);
+
+               let weekend = new Date();
+               weekend.setDate(now.getDate() + (7 - now.getDay()))
+               weekend.setHours(23, 59, 59);
+
+               let midnight = new Date();
+               midnight.setHours(23, 59, 59);
+
+               // Filter events so they fit between those days
+               var events = responseJson.items.filter((event) => {
+                  if (event.status != "confirmed") {
+                     return false
                   }
 
-                  // Get today...
-                  let now = new Date();
-                  // ... aka the beginning of today
+                  event.startDate = new Date(event.start.dateTime);
+                  event.endDate = new Date(event.end.dateTime);
 
-                  // Get next week
-                  let weekFromNow = new Date();
-                  weekFromNow.setDate(now.getDate() + 6);
-                  // At the end of the day
-                  weekFromNow.setHours(23, 59, 59);
+                  if (event.recurrence == undefined || event.recurrence.length == 0) {
+                     event.nextWeek = event.startDate > weekend;
+                     event.today = event.startDate > now && event.startDate < midnight;
+                     return event.startDate > now && event.startDate < weekFromNow;
+                  }
 
-                  let weekend = new Date();
-                  weekend.setDate(now.getDate() + (7 - now.getDay()))
-                  weekend.setHours(23, 59, 59);
+                  let numDaysDiff = now.getDate() - event.startDate.getDate();
 
-                  let midnight = new Date();
-                  midnight.setHours(23, 59, 59);
+                  let recurrence = event.recurrence[0];
+                  let parts = recurrence.replace("RRULE:", "").split(';');
 
-                  // Filter events so they fit between those days
-                  var events = responseJson.items.filter((event) => {
-                     if (event.status != "confirmed") {
-                        return false
-                     }
+                  let obj = {}
 
-                     event.startDate = new Date(event.start.dateTime);
-                     event.endDate = new Date(event.end.dateTime);
+                  parts.forEach((part) => {
+                     let strings = part.split("=");
+                     // Now I will parse the information the best I can
 
-                     if (event.recurrence == undefined || event.recurrence.length == 0) {
-                        event.nextWeek = event.startDate > weekend;
-                        event.today = event.startDate > now && event.startDate < midnight;
-                        return event.startDate > now && event.startDate < weekFromNow;
-                     }
+                     if (strings[0] == "COUNT") {
+                        let count = parseInt(strings[1]);
+                        let lastDuplicate = new Date(event.start.dateTime);
+                        lastDuplicate.setDate(event.startDate.getDate() + 7 * count);
 
-                     let numDaysDiff = now.getDate() - event.startDate.getDate();
+                        obj.lastDuplicate = lastDuplicate;
+                     }else if (strings[0] == "FREQ") {
+                        obj.frequency = strings[1];
+                     }else if (strings[0] == "UNTIL") {
+                        let year = strings[1].substring(0,4);
+                        let month = strings[1].substring(4,6);
+                        let day = strings[1].substring(6,8);
 
-                     let recurrence = event.recurrence[0];
-                     let parts = recurrence.replace("RRULE:", "").split(';');
-
-                     let obj = {}
-
-                     parts.forEach((part) => {
-                        let strings = part.split("=");
-                        // Now I will parse the information the best I can
-
-                        if (strings[0] == "COUNT") {
-                           let count = parseInt(strings[1]);
-                           let lastDuplicate = new Date(event.start.dateTime);
-                           lastDuplicate.setDate(event.startDate.getDate() + 7 * count);
-
-                           obj.lastDuplicate = lastDuplicate;
-                        }else if (strings[0] == "FREQ") {
-                           obj.frequency = strings[1];
-                        }else if (strings[0] == "UNTIL") {
-                           let year = strings[1].substring(0,4);
-                           let month = strings[1].substring(4,6);
-                           let day = strings[1].substring(6,8);
-
-                           obj.lastDuplicate = new Date(year, month-1, day);
-                           obj.lastDuplicate.setHours(event.startDate.getHours(), event.startDate.getMinutes());
-                        }else if (strings[0] == "BYDAY") {
-                           obj.day = strings[1];
-                        }else{
-                           obj[strings[0]] = strings[1];
-                        }
-                     })
-
-                     if (now > obj.lastDuplicate) {
-                        // The last occurence of this event has passed
-                        return false;
+                        obj.lastDuplicate = new Date(year, month-1, day);
+                        obj.lastDuplicate.setHours(event.startDate.getHours(), event.startDate.getMinutes());
+                     }else if (strings[0] == "BYDAY") {
+                        obj.day = strings[1];
                      }else{
-                        // Before end. Check time
-                        event.startDate.setDate(event.startDate.getDate() + 7 * Math.ceil(numDaysDiff / 7));
-
-                        event.today = event.startDate > now && event.startDate < midnight;
-                        event.nextWeek = event.startDate > weekend;
-
-                        return event.startDate > now && event.startDate < weekFromNow;
+                        obj[strings[0]] = strings[1];
                      }
-                  });
+                  })
 
-                  // Sort by date (soonest first)
-                  events.sort((event1, event2) => {
-                     return event1.startDate > event2.startDate ? 1 : -1
-                  });
+                  if (now > obj.lastDuplicate) {
+                     // The last occurence of this event has passed
+                     return false;
+                  }else{
+                     // Before end. Check time
+                     event.startDate.setDate(event.startDate.getDate() + 7 * Math.ceil(numDaysDiff / 7));
 
-                  // Return them
-                  success(events);
-               }).catch((error) => {
-                  console.log(error);
-                  failure(error);
+                     event.today = event.startDate > now && event.startDate < midnight;
+                     event.nextWeek = event.startDate > weekend;
+
+                     return event.startDate > now && event.startDate < weekFromNow;
+                  }
+               });
+
+               // Sort by date (soonest first)
+               events.sort((event1, event2) => {
+                  return event1.startDate > event2.startDate ? 1 : -1
+               });
+
+               // Return them
+               success(events);
+            }).catch((error) => {
+               console.log(error);
+               failure(error);
             });
          }).catch((error) => {
-   			console.log(error);
-   		});
+            console.log(error);
+         });
       });
    }
 
@@ -414,9 +446,9 @@ class ServerCommunicator {
    getTimLocation() {
       if (this.user != null) {
          return fetch(env.timLocationInfoURL, {method: "GET"})
-            .then((response) => response.json()).catch((error) => {
-               console.log(error);
-            })
+         .then((response) => response.json()).catch((error) => {
+            console.log(error);
+         })
       }
    }
 
@@ -424,9 +456,9 @@ class ServerCommunicator {
    getSharedMembersInLab() {
       if (this.user != null) {
          return fetch(env.sharedLabURL, {method: "GET"})
-            .then((response) => response.json()).catch((error) => {
-               console.log(error);
-            })
+         .then((response) => response.json()).catch((error) => {
+            console.log(error);
+         })
       }
    }
 
@@ -456,8 +488,8 @@ class ServerCommunicator {
             inDALI: inDALI,
             share: share
          }).catch((error) => {
-   			console.log(error);
-   		});;
+            console.log(error);
+         });;
       }).then((response) => {
          // Done
          console.log(response);
@@ -482,7 +514,7 @@ class ServerCommunicator {
    postForTim(location, enter) {
       if (this.user != null && GlobalFunctions.userIsTim()) {
          this.post(env.timLocationInfoURL, {location: location, enter: enter})
-            .then((response) => response.json()).then((responseJson) => {
+         .then((response) => response.json()).then((responseJson) => {
 
          }).catch((error) => {
             // Failed...

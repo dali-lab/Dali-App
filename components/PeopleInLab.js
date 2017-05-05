@@ -1,9 +1,9 @@
 /**
- PeopleInLab.js
- Defines a component for showing the people who are in the lab
+PeopleInLab.js
+Defines a component for showing the people who are in the lab
 
- AUTHOR: John Kotz
- */
+AUTHOR: John Kotz
+*/
 
 import React, { Component } from 'react';
 import {
@@ -14,30 +14,30 @@ import {
 	TouchableHighlight,
 	ListView,
 	Image,
-  Navigator,
+	Navigator,
 	Alert
 } from 'react-native';
 let ServerCommunicator = require('./ServerCommunicator').default;
 
 /**
- A component for showing the people who are in the lab
+A component for showing the people who are in the lab
 
- PROPS:
- - dismiss: Function to call to dismiss the modal
- */
+PROPS:
+- dismiss: Function to call to dismiss the modal
+*/
 class PeopleInLab extends Component {
-  propTypes: {
-    dismiss: ReactNative.PropTypes.func.isRequired,
-  }
+	propTypes: {
+		dismiss: ReactNative.PropTypes.func.isRequired,
+	}
 
-  constructor(props) {
+	constructor(props) {
 		super(props)
 
 		// Data source for the list view
 		const dataSource = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2,
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-    });
+			rowHasChanged: (r1, r2) => r1 !== r2,
+			sectionHeaderHasChanged: (s1, s2) => s1 !== s2
+		});
 
 		// I need to alert the user if I can't connect, but I only want to do it once
 		this.alerted = false
@@ -130,121 +130,121 @@ class PeopleInLab extends Component {
 				<Text style={styles.timNameText}>Tim Tregubov</Text>
 				<View style={{flex:1}}/>
 				<Text style={styles.timLocationText}>{locKnown ? locationString : "Location Unknown"}</Text>
-			</View>)
-		}else{
-			return (
-				<View style={styles.personRow}>
+				</View>)
+			}else{
+				return (
+					<View style={styles.personRow}>
 					<Text style={styles.personNameText}>{data.name}</Text>
-				</View>
-			)
+					</View>
+				)
+			}
 		}
-	}
 
-	/// Render the header
-	renderSectionHeader(data, sectionName) {
-		if (sectionName == "tim") {
-			return (
-				<View/>
-			)
-		}else if (sectionName == "others") {
-			return (
-				<View style={styles.sectionHeader}>
-	        <Text style={styles.sectionHeaderText}>IN DALI NOW</Text>
-	      </View>
-			)
+		/// Render the header
+		renderSectionHeader(data, sectionName) {
+			if (sectionName == "tim") {
+				return (
+					<View/>
+				)
+			}else if (sectionName == "others") {
+				return (
+					<View style={styles.sectionHeader}>
+					<Text style={styles.sectionHeaderText}>IN DALI NOW</Text>
+					</View>
+				)
+			}
 		}
-	}
 
-	/// Render the view
-	render() {
-		return (
-			<Navigator
+		/// Render the view
+		render() {
+			return (
+				<Navigator
 				navigationBar={
-						 <Navigator.NavigationBar
-							 routeMapper={{
-								 LeftButton: (route, navigator, index, navState) =>
-									{ return (null); },
-								 RightButton: (route, navigator, index, navState) =>
-									 { return (
-											<TouchableHighlight
-												underlayColor="rgba(0,0,0,0)"
-												style={styles.navBarDoneButton}
-												onPress={() => {
-													this.dismissed = true
-													this.props.dismiss()
-												}}>
-												<Text style={styles.navBarDoneText}>Done</Text>
-											</TouchableHighlight>
-										);},
-								 Title: (route, navigator, index, navState) =>
-									 { return (<Text style={styles.navBarTitleText}>People In The Lab</Text>); },
-							 }}
-							 style={{backgroundColor: 'rgb(33, 122, 136)'}}/>
-					}
+					<Navigator.NavigationBar
+					routeMapper={{
+						LeftButton: (route, navigator, index, navState) =>
+						{ return (null); },
+						RightButton: (route, navigator, index, navState) =>
+						{ return (
+							<TouchableHighlight
+							underlayColor="rgba(0,0,0,0)"
+							style={styles.navBarDoneButton}
+							onPress={() => {
+								this.dismissed = true
+								this.props.dismiss()
+							}}>
+							<Text style={styles.navBarDoneText}>Done</Text>
+							</TouchableHighlight>
+						);},
+						Title: (route, navigator, index, navState) =>
+						{ return (<Text style={styles.navBarTitleText}>People In The Lab</Text>); },
+					}}
+					style={{backgroundColor: 'rgb(33, 122, 136)'}}/>
+				}
 				renderScene={(route, navigator) =>
-						<ListView
-							style={styles.listView}
-							dataSource={this.state.dataSource}
-							enableEmptySections={true}
-							renderSectionHeader={this.renderSectionHeader.bind(this)}
-							renderRow={this.renderRow.bind(this)}/>
+					<ListView
+					style={styles.listView}
+					dataSource={this.state.dataSource}
+					enableEmptySections={true}
+					renderSectionHeader={this.renderSectionHeader.bind(this)}
+					renderRow={this.renderRow.bind(this)}/>
 				}
 				style={{paddingTop: 65}}/>
-		)
+			)
+		}
 	}
-}
 
-const styles = StyleSheet.create({
-	navBarTitleText: {
-		color: 'white',
-		fontFamily: 'Avenir Next',
-		fontSize: 18,
-		fontWeight: '500',
-		marginTop: 15
-	},
-	navBarDoneText: {
-		color: 'rgb(89, 229, 205)',
-		fontFamily: 'Avenir Next',
-		fontSize: 18,
-		fontWeight: '500',
-	},
-	navBarDoneButton: {
-		marginTop: 10,
-		marginRight: 10
-	},
-	listView: {
-		backgroundColor: 'rgb(238, 238, 238)',
-	},
-	sectionHeader: {
-		backgroundColor: 'rgb(238, 238, 238)',
-		paddingTop: 20
-	},
-	sectionHeaderText: {
-		color: 'grey',
-		marginLeft: 10,
-		marginBottom: 5,
-		fontSize: 12
-	},
-	timRow: {
-		backgroundColor: 'white',
-		flexDirection: 'row',
-		padding: 15
-	},
-	timNameText: {
-		fontSize: 16
-	},
-	timLocationText: {
-		marginRight: 15,
-		fontSize: 14
-	},
-	personRow: {
-		backgroundColor: 'white',
-		flexDirection: 'row',
-		padding: 15
-	},
-	personNameText: {
-		fontSize: 16
-	}
-})
+	const styles = StyleSheet.create({
+		navBarTitleText: {
+			color: 'white',
+			fontFamily: 'Avenir Next',
+			fontSize: 18,
+			fontWeight: '500',
+			marginTop: 15
+		},
+		navBarDoneText: {
+			color: 'rgb(89, 229, 205)',
+			fontFamily: 'Avenir Next',
+			fontSize: 18,
+			fontWeight: '500',
+		},
+		navBarDoneButton: {
+			marginTop: 10,
+			marginRight: 10
+		},
+		listView: {
+			backgroundColor: 'rgb(238, 238, 238)',
+		},
+		sectionHeader: {
+			backgroundColor: 'rgb(238, 238, 238)',
+			paddingTop: 20
+		},
+		sectionHeaderText: {
+			color: 'grey',
+			marginLeft: 10,
+			marginBottom: 5,
+			fontSize: 12
+		},
+		timRow: {
+			backgroundColor: 'white',
+			flexDirection: 'row',
+			padding: 15
+		},
+		timNameText: {
+			fontSize: 16
+		},
+		timLocationText: {
+			marginRight: 15,
+			fontSize: 14
+		},
+		personRow: {
+			backgroundColor: 'white',
+			flexDirection: 'row',
+			padding: 15
+		},
+		personNameText: {
+			fontSize: 16
+		}
+	})
 
-module.exports = PeopleInLab
+	module.exports = PeopleInLab

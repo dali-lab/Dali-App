@@ -1,11 +1,11 @@
 /**
- BeaconController.js
- Deals with ALL the location information, and provides listener options for this data
+BeaconController.js
+Deals with ALL the location information, and provides listener options for this data
 
- REALLY IMPORANT FILE
+REALLY IMPORANT FILE
 
- AUTHOR: John Kotz
- */
+AUTHOR: John Kotz
+*/
 import Beacons from 'react-native-beacons-manager';
 import PushNotification from 'react-native-push-notification';
 import BackgroundTimer from 'react-native-background-timer';
@@ -27,15 +27,15 @@ const timsOfficePriority = 3;
 const votingEventPriority = 4;
 
 /**
- Controlls the location data in the background of the app.
+Controlls the location data in the background of the app.
 
- STATIC:
- - current: Reference to the application's current BeaconController object
- - inDALI: Function that returns Bool of if device is in DALI lab
+STATIC:
+- current: Reference to the application's current BeaconController object
+- inDALI: Function that returns Bool of if device is in DALI lab
 
-  TODO:
-	- Debug background missing entry/exit
- */
+TODO:
+- Debug background missing entry/exit
+*/
 class BeaconController {
 	static current = null;
 	static inDALI() {
@@ -54,6 +54,7 @@ class BeaconController {
 			// For one, Android doesn't ask for permission from the user
 			Beacons.requestWhenInUseAuthorization();
 			Beacons.requestAlwaysAuthorization();
+			Beacons.requestWhenInUseAuthorization();
 
 			this.authorization = null;
 			Beacons.getAuthorizationStatus(function(authorization) {
@@ -138,13 +139,13 @@ class BeaconController {
 			// (required) Called when a remote or local notification is opened or received
 			onNotification: function(notification) {
 				/*Remote notification in this form:
-				 * {
-				 *  foreground: false, // BOOLEAN: If the notification was received in foreground or not
-				 *  userInteraction: false, // BOOLEAN: If the notification was opened by the user from the notification area or not
-				 *  message: 'My Notification Message', // STRING: The notification message
-				 *  data: {}, // OBJECT: The push data
-				 * }
-				 */
+				* {
+				*  foreground: false, // BOOLEAN: If the notification was received in foreground or not
+				*  userInteraction: false, // BOOLEAN: If the notification was opened by the user from the notification area or not
+				*  message: 'My Notification Message', // STRING: The notification message
+				*  data: {}, // OBJECT: The push data
+				* }
+				*/
 				console.log( 'NOTIFICATION:', notification );
 			},
 
@@ -163,17 +164,17 @@ class BeaconController {
 			popInitialNotification: true,
 
 			/**
-			  * (optional) default: true
-			  * - Specified if permissions (ios) and token (android and ios) will requested or not,
-			  * - if not, you must call PushNotificationsHandler.requestPermissions() later
-			  */
+			* (optional) default: true
+			* - Specified if permissions (ios) and token (android and ios) will requested or not,
+			* - if not, you must call PushNotificationsHandler.requestPermissions() later
+			*/
 			requestPermissions: true,
 		});
 	}
 
 	/**
-	 * Enable beacon ranging
-	 */
+	* Enable beacon ranging
+	*/
 	startRanging() {
 		// To track the number of times I get beacons before I force cancel ranging
 		// Helped a bit towards infinite ranging problem
@@ -229,8 +230,8 @@ class BeaconController {
 	}
 
 	/**
-	 * Stop ranging
-	 */
+	* Stop ranging
+	*/
 	stopRanging() {
 		// So far I have not found a great way to stop ranging beacons, so I just remove the listener
 		if (this.rangingListener != null) {
@@ -244,8 +245,8 @@ class BeaconController {
 	}
 
 	/**
-	 Called when the device exits a montiored region
-	 */
+	Called when the device exits a montiored region
+	*/
 	didExitRegion(exitRegion) {
 		console.log("Exited region");
 		console.log(exitRegion);
@@ -311,9 +312,9 @@ class BeaconController {
 	}
 
 	/**
-	 Presents a notification to the user that they have been checked in
-	 Called by the ServerCommunicator when it has successfully checked in the user
-	 */
+	Presents a notification to the user that they have been checked in
+	Called by the ServerCommunicator when it has successfully checked in the user
+	*/
 	checkInComplete() {
 		if (GoogleSignin.currentUser() != null) {
 			StorageController.getCheckinNotifPreference().then((value) => {
@@ -328,9 +329,9 @@ class BeaconController {
 	}
 
 	/**
-	 Handles entering a region.
-	 Called by the didEnterRegion listener I set up
-	 */
+	Handles entering a region.
+	Called by the didEnterRegion listener I set up
+	*/
 	didEnterRegion(enterRegion) {
 		console.log("Entered region");
 		console.log(enterRegion);
@@ -423,9 +424,9 @@ class BeaconController {
 	}
 
 	/**
-	 Handles beacons that have been ranged.
-	 Called by beaconsDidRange listener
-	 */
+	Handles beacons that have been ranged.
+	Called by beaconsDidRange listener
+	*/
 	beaconsDidRange(data) {
 		// An attempt to stop the ranging if it gets out of controll
 		if (this.numRanged > 5) {
@@ -435,16 +436,16 @@ class BeaconController {
 		this.numRanged+=1
 
 		/*
-			Since I cannot actually range multiple regions at the same time,
-				I am staggering them, such that when one finishes it will start the next.
-			The order of this is:
-				- DALI lab
-				- Check in
-				- Voting events
-				- Tim's Office (only if user is Tim)
+		Since I cannot actually range multiple regions at the same time,
+		I am staggering them, such that when one finishes it will start the next.
+		The order of this is:
+		- DALI lab
+		- Check in
+		- Voting events
+		- Tim's Office (only if user is Tim)
 
-			The order of the if statements is actually the reverse of this,
-				but it is the best way to default to DALI Lab region if it is an unhandled region
+		The order of the if statements is actually the reverse of this,
+		but it is the best way to default to DALI Lab region if it is an unhandled region
 		*/
 
 		// Check to see if this region is Tim's Office
@@ -461,7 +462,7 @@ class BeaconController {
 			this.stopRanging();
 			this.setUpBackgroundUpdates(data.beacons.count > 0);
 
-		// Check to see if this region is a voting region
+			// Check to see if this region is a voting region
 		}else if (Platform.OS != "ios" ? (data.identifier == env.votingRegion.identifier) : (data.region.identifier == env.votingRegion.identifier)) {
 			this.votingBeaconsDidRange(data);
 
@@ -477,7 +478,7 @@ class BeaconController {
 				this.stopRanging();
 			}
 
-		// Check to see if this region is a event checkin
+			// Check to see if this region is a event checkin
 		}else if (Platform.OS != "ios" ? (data.identifier == env.checkInRegion.identifier) : (data.region.identifier == env.checkInRegion.identifier)) {
 			// Doing the same thing but for check-in beacons
 			BeaconController.performCallbacks(this.checkInListeners, data.beacons.count > 0);
@@ -489,7 +490,7 @@ class BeaconController {
 				Beacons.startRangingBeaconsInRegion(env.votingRegion);
 			}
 
-		// Last possible case: it is DALI
+			// Last possible case: it is DALI
 		}else{
 			// Keeping track of wheter I'm in DALI or not
 			this.inDALI = data.beacons.length > 0;
@@ -540,14 +541,14 @@ class BeaconController {
 	}
 
 	/**
-	 This listener will be a function that takes a Boolean value indicating inDALI
-	 */
+	This listener will be a function that takes a Boolean value indicating inDALI
+	*/
 	addEnterExitListener(listener) {
 		this.enterExitListeners.push(listener);
 	}
 
 	/**
-		If the user is Tim, adds the given listener to the listeners
+	If the user is Tim, adds the given listener to the listeners
 	*/
 	addTimsOfficeListener(listener) {
 		// Only if it's Tim
@@ -576,31 +577,31 @@ class BeaconController {
 	}
 
 	/**
-	 * Adds the given function to the listeners for checking in
-	 * 	listener: () => {
-	 *		//...
-	 *  }
-	 */
+	* Adds the given function to the listeners for checking in
+	* 	listener: () => {
+	*		//...
+	*  }
+	*/
 	addCheckInListener(listener) {
 		this.checkInListeners.push(listener);
 	}
 
 	/**
-	 * Adds the given function to the listeners for beacons
-	 * 	listener: (beacons) => {
-	 *		//...
-	 *  }
-	 */
+	* Adds the given function to the listeners for beacons
+	* 	listener: (beacons) => {
+	*		//...
+	*  }
+	*/
 	addBeaconDidRangeListener(listener) {
 		this.beaconRangeListeners.push(listener);
 	}
 
 	/**
-	 * Adds the given function to the listeners for beacons
-	 * 	listener: (inRange) => {
-	 *		//...
-	 *  }
-	 */
+	* Adds the given function to the listeners for beacons
+	* 	listener: (inRange) => {
+	*		//...
+	*  }
+	*/
 	addVotingRegionListener(listener) {
 		this.votingRegionListeners.push(listener);
 	}
@@ -610,11 +611,11 @@ class BeaconController {
 	}
 
 	/**
-	 * Removes the indicated listener from the enter exit listeners
-	 *  listener: Function
-	 * Returns:
-	 *  Bool: (success)
-	 */
+	* Removes the indicated listener from the enter exit listeners
+	*  listener: Function
+	* Returns:
+	*  Bool: (success)
+	*/
 	removeEnterExitListener(listener) {
 		return BeaconController.removeCallback(listener, this.enterExitListeners);
 	}
