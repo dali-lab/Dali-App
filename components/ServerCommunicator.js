@@ -17,7 +17,7 @@ let StorageController = require('./StorageController').default;
 let GlobalFunctions = require('./GlobalFunctions').default;
 
 let days = ['SU','MO','TU','WE','TH','FR','SA'];
-const debugging = true
+const debugging = false
 
 function DifferenceInDays(firstDate, secondDate) {
    return Math.round((secondDate-firstDate)/(1000*60*60*24));
@@ -136,6 +136,12 @@ class ServerCommunicator {
       })
    }
 
+   getEventNow() {
+      return new Promise(function(resolve, reject) {
+         resolve({name:"The Pitch"});
+      });
+   }
+
    /// Simple convenience post method
    post(path, params, method) {
       if (this.user != null) {
@@ -165,6 +171,11 @@ class ServerCommunicator {
             let now = new Date();
             let midnight = new Date();
             midnight.setHours(23, 59, 59);
+            if (now.getHours() < 4) {
+               now.setDate(now.getDate() - 1);
+               now.setHours(23, 59, 59);
+               midnight.setDate(midnight.getDate() - 1);
+            }
             var taHours = hours.filter((hour) => {
                const innerPrefix = "==" + prefix + hour.name + ": "
                if (hour.status != "confirmed") {
