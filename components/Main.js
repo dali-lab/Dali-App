@@ -35,7 +35,7 @@ let ServerCommunicator = require('./ServerCommunicator').default;
 let BeaconController = require('./BeaconController').default;
 let Settings = require('./Settings');
 let PeopleInLab = require('./PeopleInLab');
-let EventVote = require('./EventVote');
+let EventVote = require('./NewEventVote');
 let StorageController = require('./StorageController').default;
 let GlobalFunctions = require('./GlobalFunctions').default;
 
@@ -389,288 +389,294 @@ render() {
 		{this.state.settingsVisible ? <Settings
 			user={this.props.user}
 			onLogout={this.logout.bind(this)}
-			dismiss={this.hideModals.bind(this)}/> : null}
-			{this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)}/> : null}
-			{this.state.votingVisibile ? <EventVote dismiss={this.hideModals.bind(this)}/> : null}
-			</Modal>
+			dismiss={this.hideModals.bind(this)}/> : null
+		}
+		{this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)}/> : null}
+		{this.state.votingVisibile ? <EventVote dismiss={this.hideModals.bind(this)}/> : null}
+		</Modal>
 
-			<View style={{
-				width: window.width,
-				alignItems: 'center',
-				flexDirection: 'row',
-				marginTop: 20 + (Platform.OS == "ios" ? 10 : 0)
-			}}>
-			{/* Voting button*/}
-			<TouchableHighlight
-			underlayColor="rgba(0,0,0,0)"
-			style={{marginLeft: 20, alignSelf: 'flex-start'}}
-			onPress={this.state.inVotingEvent ? this.votingButtonPressed.bind(this) : null}>
-			{this.state.inVotingEvent ? <Image source={require('./Assets/vote.png')} style={styles.settingsButtonImage}/> : <View style={{width: 30}}/>}
+		<View style={{
+			width: window.width,
+			alignItems: 'center',
+			flexDirection: 'row',
+			marginTop: 20 + (Platform.OS == "ios" ? 10 : 0)
+		}}>
+		{/* Voting button*/}
+		<TouchableHighlight
+		underlayColor="rgba(0,0,0,0)"
+		style={{marginLeft: 20, alignSelf: 'flex-start'}}
+		onPress={this.state.inVotingEvent ? this.votingButtonPressed.bind(this) : null}>
+		{this.state.inVotingEvent ? <Image source={require('./Assets/vote.png')} style={styles.settingsButtonImage}/> : <View style={{width: 30}}/>}
+		</TouchableHighlight>
+
+		{/* DALI image*/}
+		<Image source={require('./Assets/DALI_whiteLogo.png')} style={[styles.daliImage, {width: window.width - 100}]}/>
+
+		{/* Settings button*/}
+		<TouchableHighlight
+		underlayColor="rgba(0,0,0,0)"
+		style={{marginRight: 20, alignSelf: 'flex-start'}}
+		onPress={this.settingsButtonPressed.bind(this)}>
+		<Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage}/>
+		</TouchableHighlight>
+		</View>
+
+		{/* Location label. More complicated terniary*/}
+		{this.props.user != null ?
+			<Text style={styles.locationText}>{this.state.locationText}</Text>
+			: <View style={{alignItems: 'center'}}>
+			<TouchableHighlight onPress={() => {
+				Linking.openURL("http://maps.apple.com/?address=5,Maynard+St,Hanover,New+Hampshire");
+			}}
+			underlayColor="rgba(0,0,0,0)">
+			<Text style={[styles.locationText, {textDecorationLine: "underline", marginBottom: 0}]}>Open in Maps</Text>
 			</TouchableHighlight>
-
-			{/* DALI image*/}
-			<Image source={require('./Assets/DALI_whiteLogo.png')} style={[styles.daliImage, {width: window.width - 100}]}/>
-
-			{/* Settings button*/}
-			<TouchableHighlight
-			underlayColor="rgba(0,0,0,0)"
-			style={{marginRight: 20, alignSelf: 'flex-start'}}
-			onPress={this.settingsButtonPressed.bind(this)}>
-			<Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage}/>
+			<TouchableHighlight onPress={() => {
+				Linking.openURL("https://dali.dartmouth.edu");
+			}}
+			underlayColor="rgba(0,0,0,0)">
+			<Text style={[styles.locationText, {textDecorationLine: "underline"}]}>Website</Text>
 			</TouchableHighlight>
 			</View>
+		}
 
-			{/* Location label. More complicated terniary*/}
-			{this.props.user != null ?
-				<Text style={styles.locationText}>{this.state.locationText}</Text>
-				: <View style={{alignItems: 'center'}}>
-				<TouchableHighlight onPress={() => {
-					Linking.openURL("http://maps.apple.com/?address=5,Maynard+St,Hanover,New+Hampshire");
-				}}
-				underlayColor="rgba(0,0,0,0)">
-				<Text style={[styles.locationText, {textDecorationLine: "underline", marginBottom: 0}]}>Open in Maps</Text>
+		{/* A view to rull all views (actually not all, as the Modal and LinearGradient aren't controlled by this)*/}
+		<View style={styles.internalView}>
+		{/* An animated view allows me to use both basic CSS and pointers to changing Animated values*/}
+		<Animated.View style={[
+			styles.topView,
+			{height: this.state.officeHoursAnimationValue}
+		]}>
+		{/* Now we enter the office hours section*/}
+
+		{/* A top seperator*/}
+		<View style={styles.separatorThick}/>
+		{/* The text for office hours, which is selectable so the user can expand and contract it*/}
+		<TouchableHighlight
+		underlayColor="rgba(0,0,0,0)"
+		onPress={this.toggleSectionGrow.bind(this, 'officeHoursSelected')}>
+		<Text style={styles.titleText}>{
+			this.props.user != null ?
+			((this.state.officeHours == null ?
+				"Loading TA office hours..." :
+				(this.state.officeHours.length > 0 ?
+					"TA office hours tonight!" :
+					"No TA office hours tonight"
+				))
+				: "Description"
+			)
+		}
+		</Text>
+		</TouchableHighlight>
+
+		{/* Another separator*/}
+		<View style={styles.separatorThin}/>
+
+		{/* Here is where it gets interesting! This is the actual list view, but most of it's rendering is done in renderRow*/}
+		{this.props.user != null ?
+			<ListView
+			enableEmptySections={true}
+			style={styles.listView}
+			dataSource={this.state.officeHoursDataSource}
+			renderRow={this.renderOfficeHoursRow.bind(this)}/>
+			: <Text style={styles.daliDescText}>We design and build technology tools to help our partners change behavior, enhance understanding and even create delight.  DALI uses mindful design to create solutions to a wide variety of problems.</Text>
+		}
+		</Animated.View>
+
+		{/* Moving on to the events section*/}
+		{/* This one actually doesnt need to animate.
+			It seems to grow and shrink, as it is pushed and pulled down and up behind the toolbar below,
+			but nothing more than a cleverly hidden opaque toolbar view is needed for this effect.
+			I just use a terniary operator to switch between large and normal height*/
+		}
+		<View style={[styles.bottomView, this.state.eventsSelected ? {height: eventsExpanded} : null]}>
+
+		{/* I swear, this is the last seperator*/}
+		<View style={styles.separatorThick}/>
+		{/* Again, touchable text*/}
+		<TouchableHighlight
+		underlayColor="rgba(0,0,0,0)"
+		onPress={this.toggleSectionGrow.bind(this, 'eventsSelected')}>
+		<Text style={styles.titleText}>Upcoming Events</Text>
+		</TouchableHighlight>
+		{/* Sike! One more seperator*/}
+		<View style={styles.separatorThin}/>
+
+		{/* The other list view*/}
+		<ListView
+		enableEmptySections={true}
+		style={styles.listView}
+		dataSource={this.state.eventsDataSource}
+		renderRow={this.renderEventRow.bind(this)}/>
+		</View>
+		</View>
+
+		{/* Aforementioned cleverly hidden opaque toolbar view.
+			Instead of trying to perfect the timing on another animation for the events list view or making a hideus solid toolbar,
+			I just created another gradient that ends on the color where the view ends and starts at the color where the view starts.
+			In effect creating an opaque but seemingly nonexistant background!*/
+		}
+		{this.props.user != null ?
+			<LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
+
+			{false ? <View>
+				<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
+				{/* Empty and clear view to make the buttons equidistant*/}
+
+				{/* Food button*/}
+				<TouchableHighlight
+				underlayColor="rgba(0,0,0,0)"
+				onPress={() => {}}>
+				<Image source={require('./Assets/food.png')} style={styles.settingsButtonImage}/>
 				</TouchableHighlight>
-				<TouchableHighlight onPress={() => {
-					Linking.openURL("https://dali.dartmouth.edu");
-				}}
-				underlayColor="rgba(0,0,0,0)">
-				<Text style={[styles.locationText, {textDecorationLine: "underline"}]}>Website</Text>
+				</View>: null}
+
+				{/* Empty and clear view to make the buttons equidistant*/}
+				<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
+
+				{/* People button*/}
+				<TouchableHighlight
+				underlayColor="rgba(0,0,0,0)"
+				onPress={this.peopleInLabPressed.bind(this)}>
+				<Image source={require('./Assets/people.png')} style={styles.settingsButtonImage}/>
 				</TouchableHighlight>
-				</View>
+
+				{/* Empty and clear view to make the buttons equidistant*/}
+				<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
+				</LinearGradient> : null
 			}
+			</LinearGradient>
+		)
+	}
+}
 
-			{/* A view to rull all views (actually not all, as the Modal and LinearGradient aren't controlled by this)*/}
-			<View style={styles.internalView}>
-			{/* An animated view allows me to use both basic CSS and pointers to changing Animated values*/}
-			<Animated.View style={[
-				styles.topView,
-				{height: this.state.officeHoursAnimationValue}
-			]}>
-			{/* Now we enter the office hours section*/}
+// This a huge list of styles! Not gonna comment it
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	daliDescText: {
+		marginTop: 15,
+		marginRight: 40,
+		marginLeft: 40,
+		backgroundColor: 'rgba(0,0,0,0)',
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontSize: 15,
+		flex: 1
+	},
+	separatorThick: {
+		backgroundColor: 'white',
+		height: 2,
+		width: window.width - 83
+	},
+	separatorThin: {
+		backgroundColor: 'white',
+		height: 0.3,
+		width: window.width - 83
+	},
+	locationText: {
+		backgroundColor: 'rgba(0,0,0,0)',
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontSize: 16,
+		marginTop: 10,
+		marginBottom: 15,
+	},
+	internalView: {
+		flex: 1
+	},
+	topView: {
+		height: window.height/2 - 110,
+		alignItems: 'center'
+	},
+	titleText: {
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontWeight: '600',
+		fontSize: 19,
+		marginTop: 14,
+		marginBottom: 14,
+		backgroundColor: 'rgba(0,0,0,0)'
+	},
+	bottomView: {
+		alignItems: 'center',
+		height: eventsDefault
+	},
+	listView: {
+		flex: 1,
+	},
+	leftRowText: {
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontWeight: '700',
+		fontSize: 14,
+		marginRight: 20,
+		width: 110
+	},
+	rightRowView: {
+		flex: 1
+	},
+	rowTitle: {
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontWeight: '600',
+		fontSize: 15
+	},
+	detailText: {
+		color: 'white',
+		fontFamily: 'Avenir Next',
+		fontStyle: 'italic',
+		fontSize: 11,
+		fontWeight: '500'
+	},
+	weekSeperator: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		paddingTop: 5,
+	},
+	weekSeperatorLine: {
+		flex: 1,
+		height: 1.5,
+		marginRight: 5,
+		marginLeft: 5,
+		backgroundColor: 'white'
+	},
+	weekSeperatorText: {
+		marginRight: 5,
+		fontFamily: 'Avenir Next',
+		marginLeft: 5,
+		fontWeight: '700',
+		backgroundColor: 'rgba(0,0,0,0)',
+		color: 'white'
+	},
+	row: {
+		paddingTop: 10,
+		backgroundColor: 'rgba(0, 0, 0, 0)',
+		width: window.width - 83,
+		marginBottom: 5,
+		marginTop: 5,
+		flexDirection: 'row'
+	},
+	settingsButtonImage: {
+		width: 30,
+		height: 30,
+		resizeMode: 'contain'
+	},
+	toolbarView: {
+		width: window.width,
+		flexDirection: 'row',
+		paddingTop: 15,
+		paddingBottom: 15,
+	},
+	daliImage: {
+		height: 50,
+		width: 100,
+		resizeMode: 'contain'
+	}
+});
 
-			{/* A top seperator*/}
-			<View style={styles.separatorThick}/>
-			{/* The text for office hours, which is selectable so the user can expand and contract it*/}
-			<TouchableHighlight
-			underlayColor="rgba(0,0,0,0)"
-			onPress={this.toggleSectionGrow.bind(this, 'officeHoursSelected')}>
-			<Text style={styles.titleText}>{
-				this.props.user != null ?
-				(this.state.officeHours == null ?
-					"Loading TA office hours..." :
-					(this.state.officeHours.length > 0 ?
-						"TA office hours tonight!" :
-						"No TA office hours tonight"
-					))
-					: "Description"
-				}</Text>
-				</TouchableHighlight>
-
-				{/* Another separator*/}
-				<View style={styles.separatorThin}/>
-
-				{/* Here is where it gets interesting! This is the actual list view, but most of it's rendering is done in renderRow*/}
-				{this.props.user != null ?
-					<ListView
-					enableEmptySections={true}
-					style={styles.listView}
-					dataSource={this.state.officeHoursDataSource}
-					renderRow={this.renderOfficeHoursRow.bind(this)}/>
-					: <Text style={styles.daliDescText}>We design and build technology tools to help our partners change behavior, enhance understanding and even create delight.  DALI uses mindful design to create solutions to a wide variety of problems.</Text>
-				}
-				</Animated.View>
-
-				{/* Moving on to the events section*/}
-				{/* This one actually doesnt need to animate.
-					It seems to grow and shrink, as it is pushed and pulled down and up behind the toolbar below,
-					but nothing more than a cleverly hidden opaque toolbar view is needed for this effect.
-					I just use a terniary operator to switch between large and normal height*/}
-					<View style={[styles.bottomView, this.state.eventsSelected ? {height: eventsExpanded} : null]}>
-
-					{/* I swear, this is the last seperator*/}
-					<View style={styles.separatorThick}/>
-					{/* Again, touchable text*/}
-					<TouchableHighlight
-					underlayColor="rgba(0,0,0,0)"
-					onPress={this.toggleSectionGrow.bind(this, 'eventsSelected')}>
-					<Text style={styles.titleText}>Upcoming Events</Text>
-					</TouchableHighlight>
-					{/* Sike! One more seperator*/}
-					<View style={styles.separatorThin}/>
-
-					{/* The other list view*/}
-					<ListView
-					enableEmptySections={true}
-					style={styles.listView}
-					dataSource={this.state.eventsDataSource}
-					renderRow={this.renderEventRow.bind(this)}/>
-					</View>
-					</View>
-
-					{/* Aforementioned cleverly hidden opaque toolbar view.
-						Instead of trying to perfect the timing on another animation for the events list view or making a hideus solid toolbar,
-						I just created another gradient that ends on the color where the view ends and starts at the color where the view starts.
-						In effect creating an opaque but seemingly nonexistant background!*/}
-						{this.props.user != null ?
-							<LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
-
-							{false ? <View>
-								<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
-								{/* Empty and clear view to make the buttons equidistant*/}
-
-								{/* Food button*/}
-								<TouchableHighlight
-								underlayColor="rgba(0,0,0,0)"
-								onPress={() => {}}>
-								<Image source={require('./Assets/food.png')} style={styles.settingsButtonImage}/>
-								</TouchableHighlight>
-								</View>: null}
-
-								{/* Empty and clear view to make the buttons equidistant*/}
-								<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
-
-								{/* People button*/}
-								<TouchableHighlight
-								underlayColor="rgba(0,0,0,0)"
-								onPress={this.peopleInLabPressed.bind(this)}>
-								<Image source={require('./Assets/people.png')} style={styles.settingsButtonImage}/>
-								</TouchableHighlight>
-
-								{/* Empty and clear view to make the buttons equidistant*/}
-								<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
-								</LinearGradient> : null}
-								</LinearGradient>
-							)
-						}
-					}
-
-					// This a huge list of styles! Not gonna comment it
-					const styles = StyleSheet.create({
-						container: {
-							flex: 1,
-							alignItems: 'center',
-							justifyContent: 'center',
-						},
-						daliDescText: {
-							marginTop: 15,
-							marginRight: 40,
-							marginLeft: 40,
-							backgroundColor: 'rgba(0,0,0,0)',
-							color: 'white',
-							fontFamily: 'Avenir Next',
-							fontSize: 15,
-							flex: 1
-						},
-						separatorThick: {
-							backgroundColor: 'white',
-							height: 2,
-							width: window.width - 83
-						},
-						separatorThin: {
-							backgroundColor: 'white',
-							height: 0.3,
-							width: window.width - 83
-						},
-						locationText: {
-							backgroundColor: 'rgba(0,0,0,0)',
-							color: 'white',
-							fontFamily: 'Avenir Next',
-							fontSize: 16,
-							marginTop: 10,
-							marginBottom: 15,
-						},
-						internalView: {
-							flex: 1
-						},
-						topView: {
-							height: window.height/2 - 110,
-							alignItems: 'center'
-						},
-						titleText: {
-							color: 'white',
-							fontFamily: 'Avenir Next',
-							fontWeight: '600',
-							fontSize: 19,
-							marginTop: 14,
-							marginBottom: 14,
-							backgroundColor: 'rgba(0,0,0,0)'
-						},
-						bottomView: {
-							alignItems: 'center',
-							height: eventsDefault
-						},
-						listView: {
-							flex: 1,
-						},
-						leftRowText: {
-							color: 'white',
-							fontFamily: 'Avenir Next',
-							fontWeight: '700',
-							fontSize: 14,
-							marginRight: 20,
-							width: 110
-						},
-						rightRowView: {
-							flex: 1
-						},
-						rowTitle: {
-							color: 'white',
-							fontFamily: 'Avenir Next',
-							fontWeight: '600',
-							fontSize: 15
-						},
-						detailText: {
-							color: 'white',
-							fontFamily: 'Avenir Next',
-							fontStyle: 'italic',
-							fontSize: 11,
-							fontWeight: '500'
-						},
-						weekSeperator: {
-							flexDirection: 'row',
-							justifyContent: 'center',
-							alignItems: 'center',
-							paddingTop: 5,
-						},
-						weekSeperatorLine: {
-							flex: 1,
-							height: 1.5,
-							marginRight: 5,
-							marginLeft: 5,
-							backgroundColor: 'white'
-						},
-						weekSeperatorText: {
-							marginRight: 5,
-							fontFamily: 'Avenir Next',
-							marginLeft: 5,
-							fontWeight: '700',
-							backgroundColor: 'rgba(0,0,0,0)',
-							color: 'white'
-						},
-						row: {
-							paddingTop: 10,
-							backgroundColor: 'rgba(0, 0, 0, 0)',
-							width: window.width - 83,
-							marginBottom: 5,
-							marginTop: 5,
-							flexDirection: 'row'
-						},
-						settingsButtonImage: {
-							width: 30,
-							height: 30,
-							resizeMode: 'contain'
-						},
-						toolbarView: {
-							width: window.width,
-							flexDirection: 'row',
-							paddingTop: 15,
-							paddingBottom: 15,
-						},
-						daliImage: {
-							height: 50,
-							width: 100,
-							resizeMode: 'contain'
-						}
-					});
-
-					module.exports = Main
+module.exports = Main
