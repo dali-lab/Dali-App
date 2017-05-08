@@ -110,7 +110,7 @@ class Main extends Component {
 			officeHours: null,
 			locationText: "Loading location...",
 			inVotingEvent: false || __DEV__,
-			votingVisibile: false || __DEV__,
+			votingVisibile: false,
 			// The current state of the application (background or foreground)
 			// Will come in handy when reloading data on re-entry to the app
 			appState: AppState.currentState,
@@ -172,18 +172,14 @@ class Main extends Component {
 
 		ServerCommunicator.current.getUpcomingEvents().then((events) => {
 			var i = 0;
-			var foundWeek = false;
-			var foundToday = false;
 			while (i < events.length) {
 				let event = events[i];
-				if (event.today && !foundToday) {
+				if (event.today && i == 0) {
 					events.splice(i, 0, "TODAY SEPERATOR")
 					i++;
-					foundToday = true
-				}else if (!foundWeek && !event.nextWeek) {
+				}else if (!event.nextWeek && !event.today && events[i-1].today) {
 					events.splice(i, 0, "THIS WEEK SEPERATOR");
 					i++;
-					foundWeek = true;
 				}else if (event.nextWeek) {
 					events.splice(i, 0, "NEXT WEEK SEPERATOR");
 					break;
@@ -221,9 +217,11 @@ class Main extends Component {
 		});
 
 		BeaconController.current.addVotingRegionListener((enter) => {
-			this.setState({
-				inVotingEvent: enter
-			});
+			if (__DEV__) {
+				this.setState({
+					inVotingEvent: enter
+				});
+			}
 		});
 	}
 
@@ -456,13 +454,14 @@ render() {
 		underlayColor="rgba(0,0,0,0)"
 		onPress={this.toggleSectionGrow.bind(this, 'officeHoursSelected')}>
 		<Text style={styles.titleText}>{
-			this.props.user != null ?
-			((this.state.officeHours == null ?
-				"Loading TA office hours..." :
-				(this.state.officeHours.length > 0 ?
-					"TA office hours tonight!" :
-					"No TA office hours tonight"
-				))
+			(this.props.user != null ?
+				(this.state.officeHours == null ?
+					"Loading TA office hours..." :
+					(this.state.officeHours.length > 0 ?
+						"TA office hours tonight!" :
+						"No TA office hours tonight"
+					)
+				)
 				: "Description"
 			)
 		}

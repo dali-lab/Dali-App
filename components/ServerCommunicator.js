@@ -387,6 +387,11 @@ class ServerCommunicator {
 
                let midnight = new Date();
                midnight.setHours(23, 59, 59);
+               if (now.getHours() < 4) {
+                  now.setDate(now.getDate() - 1);
+                  now.setHours(23, 59, 59);
+                  midnight.setDate(midnight.getDate() - 1);
+               }
 
                // Filter events so they fit between those days
                var events = responseJson.items.filter((event) => {
@@ -403,7 +408,7 @@ class ServerCommunicator {
                      return event.startDate > now && event.startDate < weekFromNow;
                   }
 
-                  let numDaysDiff = now.getDate() - event.startDate.getDate();
+                  let numDaysDiff = DifferenceInDays(event.startDate, now);
 
                   let recurrence = event.recurrence[0];
                   let parts = recurrence.replace("RRULE:", "").split(';');
@@ -442,6 +447,7 @@ class ServerCommunicator {
                   }else{
                      // Before end. Check time
                      event.startDate.setDate(event.startDate.getDate() + 7 * Math.ceil(numDaysDiff / 7));
+                     event.endDate.setDate(event.endDate.getDate() + 7 * Math.ceil(numDaysDiff / 7));
 
                      event.today = event.startDate > now && event.startDate < midnight;
                      event.nextWeek = event.startDate > weekend;
