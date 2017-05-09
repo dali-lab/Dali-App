@@ -243,6 +243,7 @@ class BeaconController {
 		}
 
 		// Check for Voting event
+		console.log(exitRegion);
 		if (exitRegion.region == env.votingRegion.identifier || exitRegion.identifier == env.votingRegion.identifier) {
 			this.inVotingEvent = false;
 			this.votingEventMajor = null;
@@ -265,6 +266,7 @@ class BeaconController {
 			// Only if they are logged in and they want to receive these notifications...
 			if (value) {
 				// Send a notification
+				console.log("Notifying...");
 				PushNotification.localNotification({
 					title: "Exited DALI",
 					message: "See you next time!"
@@ -293,6 +295,7 @@ class BeaconController {
 		if (GoogleSignin.currentUser() != null) {
 			StorageController.getCheckinNotifPreference().then((value) => {
 				if (value) {
+					console.log("Notifying...");
 					PushNotification.localNotification({
 						title:"Checked In",
 						message: "Just checked you into this event. Have fun!"
@@ -327,6 +330,7 @@ class BeaconController {
 		}
 
 		// Check for Voting events
+		console.log(enterRegion);
 		if (enterRegion.region == env.votingRegion.identifier || enterRegion.identifier == env.votingRegion.identifier) {
 			this.inVotingEvent = true;
 			this.startRanging();
@@ -340,6 +344,11 @@ class BeaconController {
 
 					BeaconController.performCallbacks(this.locationInformationListeners, "At " + event.name);
 					this.locationTextCurrentPriority = votingEventPriority;
+
+					PushNotification.localNotification({
+						title: event.name,
+						message: "Welcome to " + event.name + "!"
+					});
 				});
 			}
 			return
@@ -354,6 +363,7 @@ class BeaconController {
 		}).then((value) => {
 			// If both are valid, we send
 			if (value) {
+				console.log("Notifying...");
 				PushNotification.localNotification({
 					title: "Entered DALI",
 					message: "Welcome back to DALI lab!"
@@ -375,7 +385,7 @@ class BeaconController {
 
 	votingBeaconsDidRange(data) {
 		this.inVotingEvent = data.beacons.length > 0;
-		this.votingEventMajor = data.beacons[0].major;
+		this.votingEventMajor = data.beacons.length > 0 ? data.beacons[0].major : null;
 		BeaconController.performCallbacks(this.votingRegionListeners, data.beacons.length > 0);
 		this.stopRanging();
 		if (data.beacons.length > 0 && this.locationTextCurrentPriority < votingEventPriority) {
