@@ -35,7 +35,7 @@ let ServerCommunicator = require('./ServerCommunicator').default;
 let BeaconController = require('./BeaconController').default;
 let Settings = require('./Settings');
 let PeopleInLab = require('./PeopleInLab');
-let EventVote = require('./NewEventVote');
+let EventVote = require('./EventVote');
 let StorageController = require('./StorageController').default;
 let GlobalFunctions = require('./GlobalFunctions').default;
 
@@ -120,21 +120,38 @@ class Main extends Component {
 		}
 
 		// Initialize the value of the office hours list to its default
-		this.state.officeHoursAnimationValue.setValue(officeHoursDefault)
+		this.state.officeHoursAnimationValue.setValue(officeHoursDefault);
+
+		BeaconController.current.addLocationInformationListener((locationText) => {
+			this.setState({
+				locationText: locationText
+			});
+		});
+
+		BeaconController.current.addVotingRegionListener((enter) => {
+			this.setState({
+				inVotingEvent: enter && __DEV__
+			});
+		});
 	}
 
 	componentDidMount() {
 		// Sets up a listener that will be triggered when the the app switches between background and foreground (or vise versa)
-		AppState.addEventListener('change', this._handleAppStateChange.bind(this));
+		AppState.addEventListener('change', this._handleAppStateChange);
 
 		// Get the data to be shown
-		this.refreshData()
+		this.refreshData();
+	}
+
+	componentWillUnmount() {
+		AppState.removeEventListener('change', this._handleAppStateChange);
 	}
 
 	_handleAppStateChange = (nextAppState) => {
 		// Refresh data if the app is coming into the foreground
 		if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-			this.refreshData()
+			console.log('App has come to the foreground!');
+			this.refreshData();
 		}
 		this.setState({appState: nextAppState});
 	}
@@ -147,9 +164,11 @@ class Main extends Component {
 	- Current location (ie. in lab or not)
 	*/
 	refreshData() {
+		console.log("Refreshing...");
 		// Retrieve office hours
 		if (this.props.user != null) {
 			ServerCommunicator.current.getTonightsLabHours().then((officeHours) => {
+				console.log("Got office hours...");
 				this.setState({
 					officeHours: officeHours,
 					// In order to update the list view I tell to to clone the previous dataSource with the new data
@@ -171,13 +190,14 @@ class Main extends Component {
 		}
 
 		ServerCommunicator.current.getUpcomingEvents().then((events) => {
+			console.log("Got events...");
 			var i = 0;
 			while (i < events.length) {
 				let event = events[i];
 				if (event.today && i == 0) {
 					events.splice(i, 0, "TODAY SEPERATOR")
 					i++;
-				}else if (!event.nextWeek && !event.today && events[i-1].today) {
+				}else if (!event.nextWeek && !event.today && (i > 0 ? events[i-1].today : true)) {
 					events.splice(i, 0, "THIS WEEK SEPERATOR");
 					i++;
 				}else if (event.nextWeek) {
@@ -209,20 +229,7 @@ class Main extends Component {
 		}).catch((error) => {
 			console.log(error);
 		});
-
-		BeaconController.current.addLocationInformationListener((locationText) => {
-			this.setState({
-				locationText: locationText
-			});
-		});
-
-		BeaconController.current.addVotingRegionListener((enter) => {
-			if (__DEV__) {
-				this.setState({
-					inVotingEvent: enter
-				});
-			}
-		});
+		BeaconController.current.startRanging();
 	}
 
 	/**
@@ -330,7 +337,7 @@ class Main extends Component {
 			]);
 			return
 		}
-		
+
 		console.log("Voting now visible");
 		this.setState({
 			votingVisibile: true

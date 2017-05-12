@@ -50,6 +50,7 @@
   // $ curl http://localhost:8081/index.ios.bundle -o main.jsbundle
 
   if ([[NSUserDefaults standardUserDefaults] valueForKey:@"ENABLE_FABRIC"]) {
+    NSLog(@"Enabling fabric");
     [Fabric with:@[[Crashlytics class]]];
   }
   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];

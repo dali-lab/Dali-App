@@ -229,7 +229,6 @@ const styles = StyleSheet.create({
    },
    headerText: {
       fontFamily: "Avenir Next",
-
    },
    container: {
       flex: 1

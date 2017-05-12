@@ -68,7 +68,7 @@ class BeaconController {
 			// For the other iOS only requires the object { identifier: "Some ID", uuid: "long-string-ofcharacters" }
 			Beacons.startMonitoringForRegion(env.labRegion);
 			Beacons.startMonitoringForRegion(env.checkInRegion);
-			Beacons.startMonitoringForRegion(env.votingRegion);
+			// Beacons.startMonitoringForRegion(env.votingRegion);
 			Beacons.startUpdatingLocation();
 		}else{
 			// Android needs explicit declaration of type of beacon detected
@@ -96,11 +96,11 @@ class BeaconController {
 			}).catch((error) => {
 				console.log("Failed to start monitoring!", error)
 			});
-			Beacons.startMonitoringForRegion(env.votingRegion).then(() => {
-				console.log("Started monitoring", env.votingRegion);
-			}).catch((error) => {
-				console.log("Failed to start monitoring!", error);
-			});
+			// Beacons.startMonitoringForRegion(env.votingRegion).then(() => {
+			// 	console.log("Started monitoring", env.votingRegion);
+			// }).catch((error) => {
+			// 	console.log("Failed to start monitoring!", error);
+			// });
 		}
 
 		// Store the current thought of where the device is in relation to DALI
@@ -448,7 +448,7 @@ class BeaconController {
 			// Check to see if this region is a voting region
 		}else if (Platform.OS != "ios" ? (data.identifier == env.votingRegion.identifier) : (data.region.identifier == env.votingRegion.identifier)) {
 			console.log("Voting");
-			this.votingBeaconsDidRange(data);
+			// this.votingBeaconsDidRange(data);
 
 
 
@@ -489,12 +489,13 @@ class BeaconController {
 			this.inDALI = data.beacons.length > 0;
 			this.rangedDALI = true;
 			BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
+			ServerCommunicator.current.enterExitDALI(this.inDALI);
 			if (data.beacons.length > 0 && this.locationTextCurrentPriority < inLabPriority) {
 				BeaconController.performCallbacks(this.locationInformationListeners, "In DALI Lab");
 				this.locationTextCurrentPriority = inLabPriority;
 			}else if (data.beacons.length == 0 && this.locationTextCurrentPriority < outOfLabPriority){
 				BeaconController.performCallbacks(this.locationInformationListeners, "Not in DALI Lab");
-				this.locationInformationListeners = outOfLabPriority;
+				this.locationTextCurrentPriority = outOfLabPriority;
 			}
 
 			this.setUpBackgroundUpdates(this.inDALI);

@@ -395,6 +395,7 @@ class ServerCommunicator {
 
                // Filter events so they fit between those days
                var events = responseJson.items.filter((event) => {
+                  event.today = false;
                   if (event.status != "confirmed") {
                      return false
                   }
