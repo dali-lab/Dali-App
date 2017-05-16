@@ -106,6 +106,7 @@ class Main extends Component {
 			officeHoursSelected: false,
 			// Indicates whether the events list view is currently expanded (Read more: toggleSectionGrow)
 			eventsSelected: false,
+			votingDone: false,
 			// Holds the data I will get about the office hours
 			officeHours: null,
 			locationText: "Loading location...",
@@ -118,6 +119,16 @@ class Main extends Component {
 			// (Read more: toggleSectionGrow)
 			officeHoursAnimationValue: new Animated.Value()
 		}
+
+		ServerCommunicator.current.getEventNow().then((event) => {
+			if (event) {
+				StorageController.getVoteDone(event).then((value) => {
+					this.setState({
+						votingDone: value
+					});
+				});
+			}
+		});
 
 		// Initialize the value of the office hours list to its default
 		this.state.officeHoursAnimationValue.setValue(officeHoursDefault);
@@ -410,7 +421,7 @@ class Main extends Component {
 			underlayColor="rgba(0,0,0,0)"
 			style={{marginLeft: 20, alignSelf: 'flex-start'}}
 			onPress={this.state.inVotingEvent ? this.votingButtonPressed.bind(this) : null}>
-			{this.state.inVotingEvent ? <Image source={require('./Assets/vote.png')} style={styles.settingsButtonImage}/> : <View style={{width: 30}}/>}
+			{this.state.inVotingEvent ? <Image source={this.state.votingDone ? require('./Assets/voteDone.png') : require('./Assets/vote.png')} style={styles.settingsButtonImage}/> : <View style={{width: 30}}/>}
 			</TouchableHighlight>
 
 			{/* DALI image*/}
