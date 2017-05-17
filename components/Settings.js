@@ -24,6 +24,7 @@ import {GoogleSignin} from 'react-native-google-signin'
 const StorageController = require('./StorageController').default;
 const GlobalFunctions = require('./GlobalFunctions').default;
 let ServerCommunicator = require('./ServerCommunicator').default;
+const VotingEventSettings = require('./VotingEventSettings');
 
 
 /**
@@ -152,12 +153,32 @@ class Settings extends Component {
 			}
 		]
 
+		var votingEventSetupRows = [
+			{
+				title: "Voting Event",
+				action: () => {
+					this.navagator.push({
+						name: 'VotingEventSettings', // Matches route.name
+					});
+				}
+			}
+		]
+
 		if (GlobalFunctions.userIsTim()) {
 			return {
 				user: [signOutRow],
 				notifications: notificationsRows
 			}
 		}else if (this.props.user != null){
+			if (GlobalFunctions.userIsTheo()) {
+				return {
+					user: [signOutRow],
+					notifications: notificationsRows,
+					location: locationRows,
+					voting: votingEventSetupRows
+				}
+			}
+
 			return {
 				user: [signOutRow],
 				notifications: notificationsRows,
@@ -174,7 +195,7 @@ class Settings extends Component {
 	Renders the rows
 	*/
 	renderRow(data, section, row) {
-		if (section == 'user') {
+		if (section == 'user' || section == 'voting') {
 			// The user cells are different
 			return (
 				<TouchableHighlight onPress={data.action}>
@@ -234,6 +255,20 @@ class Settings extends Component {
 		)
 	}
 
+	renderScene(route, navigator) {
+		this.navigator = navagator;
+		if (route.name == 'Settings') {
+			<ListView
+			style={styles.listView}
+			dataSource={this.state.dataSource}
+			renderSectionHeader={this.renderSectionHeader.bind(this)}
+			renderFooter={this.renderFooter.bind(this)}
+			renderRow={this.renderRow.bind(this)}/>
+		}else if (route.name == 'VotingEventSettings') {
+			<VotingEventSettings/>;
+		}
+	}
+
 	/**
 	Render the view
 	*/
@@ -241,6 +276,7 @@ class Settings extends Component {
 		// The navagator class is powerfull, and allows navigation bars
 		return (
 			<Navigator
+			initialRoute={{ name: 'Settings' }}
 			navigationBar={
 				<Navigator.NavigationBar
 				routeMapper={{
@@ -264,14 +300,7 @@ class Settings extends Component {
 				}}
 				style={{backgroundColor: 'rgb(33, 122, 136)'}}/>
 			}
-			renderScene={(route, navigator) =>
-				<ListView
-				style={styles.listView}
-				dataSource={this.state.dataSource}
-				renderSectionHeader={this.renderSectionHeader.bind(this)}
-				renderFooter={this.renderFooter.bind(this)}
-				renderRow={this.renderRow.bind(this)}/>
-			}
+			renderScene={this.renderScene.bind(this)}
 			style={{paddingTop: 65}}/>
 		)
 	}

@@ -157,6 +157,12 @@ class ServerCommunicator {
       });
    }
 
+   getVotingResults() {
+      return new Promise(function(resolve, reject) {
+         resolve(null);
+      });
+   }
+
    /// Simple convenience post method
    post(path, params, method) {
       if (this.user != null) {

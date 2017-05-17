@@ -12,6 +12,10 @@ class GlobalFunctions {
    static userIsTim() {
       return GoogleSignin.currentUser().email == env.tim// || __DEV__
    }
+
+   static userIsTheo() {
+      return GoogleSignin.currentUser().email == env.theo || __DEV__
+   }
 }
 
 export default GlobalFunctions;

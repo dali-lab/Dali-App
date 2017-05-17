@@ -10,18 +10,18 @@ import {
    Alert,
    Dimensions,
 } from 'react-native';
-let ServerCommunicator = require('./ServerCommunicator').default;
+let ServerCommunicator = require('../ServerCommunicator').default;
 
 const window = Dimensions.get('window')
 
-class EventVote extends Component {
+class VoteSelection extends Component {
    propTypes: {
       voteComplete: ReactNative.PropTypes.func.isRequired,
    }
 
    constructor(props) {
       super(props)
-
+      console.log("IM here!!");
       // The list view dataSource
       const dataSource = new ListView.DataSource({
          rowHasChanged: (prev, next) => {
@@ -55,6 +55,10 @@ class EventVote extends Component {
             dataSource: dataSource.cloneWithRowsAndSections(this.getData(event.options))
          });
       });
+   }
+
+   donePressed() {
+      // Deal with stuff
    }
 
    getData(opts, currSect, newSelected, newSelectedSectionID) {
@@ -129,7 +133,7 @@ class EventVote extends Component {
          <View style={[styles.row, (selectedInOthers ? styles.rowDisabled : null)]}>
          <View style={styles.rowInnerContainer}>
          <Text style={styles.rowText}>{option.name}</Text>
-         {option == this.state[sectionID + " Selected"]? <Image source={require("./Assets/checkmark.png")} style={styles.rowSelectionImage}/> : null}
+         {option == this.state[sectionID + " Selected"]? <Image source={require("../Assets/checkmark.png")} style={styles.rowSelectionImage}/> : null}
          </View>
          <View style={styles.seperator}/>
          </View>
@@ -162,6 +166,7 @@ class EventVote extends Component {
    }
 
    render() {
+      console.log("On voting...");
       return (
          <View style={styles.container}>
          <View style={styles.headerView}>
@@ -226,4 +231,4 @@ const styles = StyleSheet.create({
    }
 })
 
-module.exports = EventVote
+module.exports = VoteSelection

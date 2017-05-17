@@ -11,11 +11,11 @@ import {
    Dimensions,
    Navigator
 } from 'react-native';
-let ServerCommunicator = require('./ServerCommunicator').default;
+let ServerCommunicator = require('../ServerCommunicator').default;
 const VoteSelection = require('./VoteSelection');
 const VoteWait = require('./VoteWait');
 const VoteResults = require('./VoteResults');
-let StorageController = require('./StorageController').default;
+let StorageController = require('../StorageController').default;
 
 class VoteMain extends Component {
    propTypes: {
@@ -31,7 +31,7 @@ class VoteMain extends Component {
          event: null,
       };
 
-      ServerCommunicator.getEventNow().then((event) => {
+      ServerCommunicator.current.getEventNow().then((event) => {
          this.setState({
             event: event
          });
@@ -57,7 +57,7 @@ class VoteMain extends Component {
    }
 
    updateResults() {
-      ServerCommunicator.getVotingResults().then((results) => {
+      ServerCommunicator.current.getVotingResults().then((results) => {
          this.setState({
             results: results
          });
@@ -74,18 +74,18 @@ class VoteMain extends Component {
       var internalView = <VoteSelection voteComplete={() => {
          this.updateResults();
          this.setState({
-            hasVoted: true;
+            hasVoted: true
          });
          StorageController.setVoteDone(this.event);
-      }}/>;
+      }}
+      ref={(voteSelection) => { this.voteSelection = voteSelection; }} />/>;
 
       if (this.state.hasVoted) {
          internalView = <VoteWait/>;
          if (this.state.results != null) {
-            internalView = <VoteResults results=this.state.results/>;
+            internalView = <VoteResults results={this.state.results}/>;
          }
       }
-
 
       return (
          <Navigator
@@ -93,27 +93,44 @@ class VoteMain extends Component {
             <Navigator.NavigationBar
             routeMapper={{
                LeftButton: (route, navigator, index, navState) => {
-                  return (null);
+                  if (this.state.hasVoted) {
+                     return null;
+                  }else{
+                     return (
+                        <TouchableHighlight
+                        underlayColor="rgba(0,0,0,0)"
+                        style={styles.navBarCancelButton}
+                        onPress={this.props.dismiss}>
+                        <Text style={styles.navBarCancelText}>Cancel</Text>
+                        </TouchableHighlight>
+                     );
+                  }
                },
                RightButton: (route, navigator, index, navState) => {
                   // Done Button
-                  return (
-                     <TouchableHighlight
-                     underlayColor="rgba(0,0,0,0)"
-                     style={styles.navBarDoneButton}
-                     onPress={this.props.dismiss}>
-                     <Text style={styles.navBarDoneText}>Done</Text>
-                     </TouchableHighlight>
-                  );
+                  if (this.state.hasVoted) {
+                     return null;
+                  }else{
+                     return (
+                        <TouchableHighlight
+                        underlayColor="rgba(0,0,0,0)"
+                        style={styles.navBarDoneButton}
+                        onPress={this.voteSelection.donePressed}>
+                        <Text style={styles.navBarDoneText}>Done</Text>
+                        </TouchableHighlight>
+                     );
+                  }
                },
                Title: (route, navigator, index, navState) => {
-                  return (<Text style={styles.navBarTitleText}>Voting for {this.state.eventData == null ? 'Event...' : this.state.eventData.name}</Text>);
+                  return (<Text style={styles.navBarTitleText}>Voting for {this.state.event == null ? 'Event...' : this.state.event.name}</Text>);
                }
             }}
             style={{backgroundColor: 'rgb(33, 122, 136)'}}/>
          }
          renderScene={(route, navigator) =>
+            <View style={{flex: 1}}>
             {internalView}
+            </View>
          }
          style={{paddingTop: 65}}/>
       );
@@ -126,7 +143,7 @@ const styles = StyleSheet.create({
       fontFamily: 'Avenir Next',
       fontSize: 18,
       fontWeight: '500',
-      marginTop: 15
+      marginTop: 10
    },
    navBarDoneText: {
       color: 'rgb(89, 229, 205)',
@@ -134,9 +151,19 @@ const styles = StyleSheet.create({
       fontSize: 18,
       fontWeight: '500',
    },
+   navBarCancelText: {
+      color: 'rgb(89, 229, 205)',
+      fontFamily: 'Avenir Next',
+      fontSize: 18,
+      fontWeight: '300',
+   },
    navBarDoneButton: {
       marginTop: 10,
-      marginRight: 10
+      marginRight: 10,
+   },
+   navBarCancelButton: {
+      marginTop: 10,
+      marginLeft: 10,
    }
 });
 
