@@ -140,7 +140,6 @@ class ServerCommunicator {
       return new Promise(function(resolve, reject) {
          resolve({
             name: "The Pitch",
-            votingOpen: true,
             id: 1,
             resultsReleased: false,
             description: "You have now seen many pitches, so now please choose the three that you think showed the most merit in your opinion.",

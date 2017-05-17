@@ -21,7 +21,6 @@ class VoteSelection extends Component {
 
    constructor(props) {
       super(props)
-      console.log("IM here!!");
       // The list view dataSource
       const dataSource = new ListView.DataSource({
          rowHasChanged: (prev, next) => {
@@ -166,7 +165,6 @@ class VoteSelection extends Component {
    }
 
    render() {
-      console.log("On voting...");
       return (
          <View style={styles.container}>
          <View style={styles.headerView}>
