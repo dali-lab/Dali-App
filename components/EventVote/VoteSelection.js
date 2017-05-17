@@ -9,7 +9,6 @@ import {
    Image,
    Alert,
    Dimensions,
-   Navigator
 } from 'react-native';
 let ServerCommunicator = require('./ServerCommunicator').default;
 
@@ -17,7 +16,7 @@ const window = Dimensions.get('window')
 
 class EventVote extends Component {
    propTypes: {
-      dismiss: ReactNative.PropTypes.func.isRequired,
+      voteComplete: ReactNative.PropTypes.func.isRequired,
    }
 
    constructor(props) {
@@ -95,7 +94,8 @@ class EventVote extends Component {
       const getSelectedForSection = (sectionID) => {
          return (newSelectedSectionID != null && newSelectedSectionID == sectionID ?
             newSelected :
-            this.state[sectionID + " Selected"])
+            this.state[sectionID + " Selected"]
+         )
       }
 
       return {
@@ -163,65 +163,24 @@ class EventVote extends Component {
 
    render() {
       return (
-         <Navigator
-         navigationBar={
-            <Navigator.NavigationBar
-            routeMapper={{
-               LeftButton: (route, navigator, index, navState) => {
-                  return (null);
-               },
-               RightButton: (route, navigator, index, navState) => {
-                  // Done Button
-                  return (
-                     <TouchableHighlight
-                     underlayColor="rgba(0,0,0,0)"
-                     style={styles.navBarDoneButton}
-                     onPress={this.props.dismiss}>
-                     <Text style={styles.navBarDoneText}>Done</Text>
-                     </TouchableHighlight>
-                  );
-               },
-               Title: (route, navigator, index, navState) => {
-                  return (<Text style={styles.navBarTitleText}>Voting for {this.state.eventData == null ? 'Event...' : this.state.eventData.name}</Text>);
-               }
-            }}
-            style={{backgroundColor: 'rgb(33, 122, 136)'}}/>
-         }
-         renderScene={(route, navigator) =>
-            <View style={styles.container}>
-            <View style={styles.headerView}>
-            <Text style={styles.headerText}>{this.state.eventData == null ? "Loading..." : this.state.eventData.description}</Text>
-            </View>
-            <View style={styles.headerSeperator}></View>
-            <ListView
-            style={styles.listView}
-            dataSource={this.state.dataSource}
-            renderSectionHeader={this.renderSectionHeader.bind(this)}
-            renderRow={this.renderRow.bind(this)}/>
-            </View>
-         }
-         style={{paddingTop: 65}}/>
+         <View style={styles.container}>
+         <View style={styles.headerView}>
+         <Text style={styles.headerText}>{this.state.eventData == null ? "Loading..." : this.state.eventData.description}</Text>
+         </View>
+         <View style={styles.headerSeperator}></View>
+         <ListView
+         style={styles.listView}
+         dataSource={this.state.dataSource}
+         renderSectionHeader={this.renderSectionHeader.bind(this)}
+         renderRow={this.renderRow.bind(this)}/>
+         </View>
       );
    }
 }
 
 const styles = StyleSheet.create({
-   navBarTitleText: {
-      color: 'white',
-      fontFamily: 'Avenir Next',
-      fontSize: 18,
-      fontWeight: '500',
-      marginTop: 15
-   },
-   navBarDoneText: {
-      color: 'rgb(89, 229, 205)',
-      fontFamily: 'Avenir Next',
-      fontSize: 18,
-      fontWeight: '500',
-   },
-   navBarDoneButton: {
-      marginTop: 10,
-      marginRight: 10
+   container: {
+      flex: 1
    },
    headerView: {
       padding: 10,
@@ -229,9 +188,6 @@ const styles = StyleSheet.create({
    },
    headerText: {
       fontFamily: "Avenir Next",
-   },
-   container: {
-      flex: 1
    },
    row: {
       marginLeft: 10,
