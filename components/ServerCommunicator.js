@@ -141,6 +141,7 @@ class ServerCommunicator {
          resolve({
             name: "The Pitch",
             id: 1,
+            image: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F30750478%2F73808776949%2F1%2Foriginal.jpg?w=1000&rect=38%2C0%2C1824%2C912&s=068ff06280148aa18a9075a68ad6e060",
             resultsReleased: false,
             description: "You have now seen many pitches, so now please choose the three that you think showed the most merit in your opinion.",
             options: [
@@ -156,15 +157,29 @@ class ServerCommunicator {
       });
    }
 
+   submitNewEvent(event) {
+      return new Promise(function(resolve, reject) {
+         setTimeout(function () {
+            resolve();
+         }, 1000 * 5);
+      });
+   }
+
    getVotingResults() {
       return new Promise(function(resolve, reject) {
          resolve(null);
       });
    }
 
+   submitVotes(first, second, third) {
+      return new Promise(function(resolve, reject) {
+         resolve(null);
+      });
+   }
+
    /// Simple convenience post method
-   post(path, params, method) {
-      if (this.user != null) {
+   post(path, params, method, allowNoUser) {
+      if (this.user != null || allowNoUser) {
          console.log("Posting to: " + path);
          return fetch(path, {
             method: method || 'POST',

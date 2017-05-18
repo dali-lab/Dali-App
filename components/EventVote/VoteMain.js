@@ -26,7 +26,7 @@ class VoteMain extends Component {
       super(props);
 
       this.state = {
-         hasVoted: false,
+         hasVoted: true,
          results: null,
          event: null,
       };
@@ -45,7 +45,7 @@ class VoteMain extends Component {
          }else{
             return StorageController.getVoteDone(event).then((value) => {
                this.setState({
-                  hasVoted: value && !event.resultsReleased
+                  hasVoted: value && !event.resultsReleased || __DEV__
                });
 
                if (event.resultsReleased) {
@@ -65,7 +65,8 @@ class VoteMain extends Component {
          if (results == null) {
             setTimeout(() => {
                this.updateResults();
-            }, 1000 * 60); // One minute
+               console.log("Reloading...");
+            }, 1000 * 30); // One minute
          }
       });
    }
@@ -78,10 +79,10 @@ class VoteMain extends Component {
          });
          StorageController.setVoteDone(this.event);
       }}
-      ref={(voteSelection) => { this.voteSelection = voteSelection; }} />/>;
+      ref={(voteSelection) => { this.voteSelection = voteSelection; }}/>;
 
       if (this.state.hasVoted) {
-         internalView = <VoteWait/>;
+         internalView = <VoteWait event={this.state.event}/>;
          if (this.state.results != null) {
             internalView = <VoteResults results={this.state.results}/>;
          }
@@ -108,18 +109,14 @@ class VoteMain extends Component {
                },
                RightButton: (route, navigator, index, navState) => {
                   // Done Button
-                  if (this.state.hasVoted) {
-                     return null;
-                  }else{
-                     return (
-                        <TouchableHighlight
-                        underlayColor="rgba(0,0,0,0)"
-                        style={styles.navBarDoneButton}
-                        onPress={this.voteSelection.donePressed}>
-                        <Text style={styles.navBarDoneText}>Done</Text>
-                        </TouchableHighlight>
-                     );
-                  }
+                  return (
+                     <TouchableHighlight
+                     underlayColor="rgba(0,0,0,0)"
+                     style={styles.navBarDoneButton}
+                     onPress={!this.state.hasVoted ? this.voteSelection.donePressed : this.props.dismiss}>
+                     <Text style={styles.navBarDoneText}>Done</Text>
+                     </TouchableHighlight>
+                  );
                },
                Title: (route, navigator, index, navState) => {
                   return (<Text style={styles.navBarTitleText}>Voting for {this.state.event == null ? 'Event...' : this.state.event.name}</Text>);
@@ -132,7 +129,7 @@ class VoteMain extends Component {
             {internalView}
             </View>
          }
-         style={{paddingTop: 65}}/>
+         style={{paddingTop: 64}}/>
       );
    }
 }

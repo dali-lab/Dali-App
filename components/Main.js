@@ -99,7 +99,7 @@ class Main extends Component {
 			// The data source for the events list view
 			eventsDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
 			// Indicates whether the Settings component is currently presented over the Main
-			settingsVisible: false,
+			settingsVisible: __DEV__,
 			// Indicates whether the PeopleInLab component is currently presented over the Main
 			peopleInLabVisible: false,
 			// Indicates whether the office hours list view is currently expanded (Read more: toggleSectionGrow)
@@ -124,7 +124,7 @@ class Main extends Component {
 			if (event) {
 				StorageController.getVoteDone(event).then((value) => {
 					this.setState({
-						votingDone: value
+						votingDone: value || __DEV__
 					});
 				});
 			}

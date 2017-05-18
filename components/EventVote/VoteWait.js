@@ -7,7 +7,9 @@ import {
    TouchableHighlight,
    ListView,
    Image,
+   Dimensions
 } from 'react-native';
+let ServerCommunicator = require('../ServerCommunicator').default;
 import LinearGradient from 'react-native-linear-gradient';
 
 class VoteWait extends Component {
@@ -15,7 +17,8 @@ class VoteWait extends Component {
    render() {
       return (
          <LinearGradient colors={['#2696a9', 'rgb(146, 201, 210)']} style={styles.container}>
-         <Text>Thank you for voting. Waiting for results to be released</Text>
+         <Image source={require("../Assets/pitchLightBulb.png")} style={styles.image}/>
+         <Text style={styles.text}>Thank you for voting. Waiting for results to be released...</Text>
          </LinearGradient>
       );
    }
@@ -24,6 +27,18 @@ class VoteWait extends Component {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
+      alignItems: "center",
+   },
+   text: {
+      color: "white",
+      padding: 10,
+      fontFamily: "Futura",
+      fontSize: 24,
+      textAlign: "center"
+   },
+   image: {
+      width: Dimensions.get('window').width,
+      resizeMode: "cover"
    }
 });
 

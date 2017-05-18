@@ -58,6 +58,21 @@ class VoteSelection extends Component {
 
    donePressed() {
       // Deal with stuff
+      const first = this.state["1st Choice Selected"]
+      const second = this.state["2nd Choice Selected"]
+      const third = this.state["3rd Choice Selected"]
+
+      if (first == null || second == null || third == null) {
+         Alert.alert("Select Top 3", "You must select 3 options: 1st - 3rd");
+         return;
+      }
+
+      ServerCommunicator.submitVotes(first, second, third)
+      .then(this.props.voteComplete)
+      .catch((error) => {
+         Alert.alert("Encountered an error", "Encountered an error submitting your votes: " + error.message);
+         console.log(error);
+      });
    }
 
    getData(opts, currSect, newSelected, newSelectedSectionID) {

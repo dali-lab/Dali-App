@@ -25,6 +25,7 @@ const StorageController = require('./StorageController').default;
 const GlobalFunctions = require('./GlobalFunctions').default;
 let ServerCommunicator = require('./ServerCommunicator').default;
 const VotingEventSettings = require('./VotingEventSettings');
+const CreateVotingEventSettings = require('./CreateVotingEventSettings');
 
 
 /**
@@ -157,8 +158,8 @@ class Settings extends Component {
 			{
 				title: "Voting Event",
 				action: () => {
-					this.navagator.push({
-						name: 'VotingEventSettings', // Matches route.name
+					this.navigator.push({
+						name: 'Voting Event Subsettings', // Matches route.name
 					});
 				}
 			}
@@ -256,16 +257,23 @@ class Settings extends Component {
 	}
 
 	renderScene(route, navigator) {
-		this.navigator = navagator;
+		this.navigator = navigator;
 		if (route.name == 'Settings') {
-			<ListView
-			style={styles.listView}
-			dataSource={this.state.dataSource}
-			renderSectionHeader={this.renderSectionHeader.bind(this)}
-			renderFooter={this.renderFooter.bind(this)}
-			renderRow={this.renderRow.bind(this)}/>
-		}else if (route.name == 'VotingEventSettings') {
-			<VotingEventSettings/>;
+			console.log(route);
+			return (
+				<ListView
+				style={styles.listView}
+				dataSource={this.state.dataSource}
+				renderSectionHeader={this.renderSectionHeader.bind(this)}
+				renderFooter={this.renderFooter.bind(this)}
+				renderRow={this.renderRow.bind(this)}/>
+			)
+		}else if (route.name == 'Voting Event Subsettings') {
+			return <VotingEventSettings navigator={navigator}/>;
+		}else if (route.name == 'Create Voting Event Subsettings') {
+			return <CreateVotingEventSettings
+			ref={(createEventView) => { this.createEventView = createEventView; }}
+			navigator={navigator}/>;
 		}
 	}
 
@@ -281,6 +289,18 @@ class Settings extends Component {
 				<Navigator.NavigationBar
 				routeMapper={{
 					LeftButton: (route, navigator, index, navState) => {
+						if (route.name.toLowerCase().includes("subsettings")) {
+							return (
+								<TouchableHighlight
+								underlayColor="rgba(0,0,0,0)"
+								style={styles.navBarBackButton}
+								onPress={() => {
+									navigator.pop();
+								}}>
+								<Text style={styles.navBarBackText}>{route.name != 'Create Voting Event Subsettings' ? "< Back" : "Cancel"}</Text>
+								</TouchableHighlight>
+							);
+						}
 						return (null);
 					},
 					RightButton: (route, navigator, index, navState) => {
@@ -289,13 +309,19 @@ class Settings extends Component {
 							<TouchableHighlight
 							underlayColor="rgba(0,0,0,0)"
 							style={styles.navBarDoneButton}
-							onPress={this.props.dismiss}>
-							<Text style={styles.navBarDoneText}>Done</Text>
+							onPress={() => {
+								if (route.name == 'Create Voting Event Subsettings') {
+									this.createEventView.createEvent()
+								}else{
+									this.props.dismiss()
+								}
+							}}>
+							<Text style={styles.navBarDoneText}>{route.name != 'Create Voting Event Subsettings' ? "Done" : "Create"}</Text>
 							</TouchableHighlight>
 						);
 					},
 					Title: (route, navigator, index, navState) => {
-						return (<Text style={styles.navBarTitleText}>Settings</Text>);
+						return (<Text style={styles.navBarTitleText}>{route.name.replace(' Subsettings', '')}</Text>);
 					}
 				}}
 				style={{backgroundColor: 'rgb(33, 122, 136)'}}/>
@@ -323,9 +349,15 @@ const styles = StyleSheet.create({
 		fontFamily: 'Avenir Next',
 		fontSize: 18,
 		fontWeight: '500',
-		marginTop: 15
+		marginTop: 10
 	},
 	navBarDoneText: {
+		color: 'rgb(89, 229, 205)',
+		fontFamily: 'Avenir Next',
+		fontSize: 18,
+		fontWeight: '600',
+	},
+	navBarBackText: {
 		color: 'rgb(89, 229, 205)',
 		fontFamily: 'Avenir Next',
 		fontSize: 18,
@@ -334,6 +366,10 @@ const styles = StyleSheet.create({
 	navBarDoneButton: {
 		marginTop: 10,
 		marginRight: 10
+	},
+	navBarBackButton: {
+		marginTop: 10,
+		marginLeft: 10,
 	},
 	listView: {
 		flex: 1,
