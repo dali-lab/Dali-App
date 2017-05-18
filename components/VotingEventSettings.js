@@ -31,7 +31,7 @@ class VotingEventSettings extends Component {
    }
 
    createPressed() {
-      this.props.navigator.push({name: "Create Voting Event Subsettings"});
+      this.props.navigator.push({name:  "Create Voting Event Subsettings"});
    }
 
    render() {

@@ -26,7 +26,7 @@ class VoteMain extends Component {
       super(props);
 
       this.state = {
-         hasVoted: true,
+         hasVoted: false,
          results: null,
          event: null,
       };
@@ -45,7 +45,7 @@ class VoteMain extends Component {
          }else{
             return StorageController.getVoteDone(event).then((value) => {
                this.setState({
-                  hasVoted: value && !event.resultsReleased || __DEV__
+                  hasVoted: value && !event.resultsReleased
                });
 
                if (event.resultsReleased) {
@@ -113,7 +113,7 @@ class VoteMain extends Component {
                      <TouchableHighlight
                      underlayColor="rgba(0,0,0,0)"
                      style={styles.navBarDoneButton}
-                     onPress={!this.state.hasVoted ? this.voteSelection.donePressed : this.props.dismiss}>
+                     onPress={!this.state.hasVoted && this.voteSelection != null ? this.voteSelection.donePressed : this.props.dismiss}>
                      <Text style={styles.navBarDoneText}>Done</Text>
                      </TouchableHighlight>
                   );

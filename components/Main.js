@@ -99,7 +99,7 @@ class Main extends Component {
 			// The data source for the events list view
 			eventsDataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
 			// Indicates whether the Settings component is currently presented over the Main
-			settingsVisible: __DEV__,
+			settingsVisible: false,
 			// Indicates whether the PeopleInLab component is currently presented over the Main
 			peopleInLabVisible: false,
 			// Indicates whether the office hours list view is currently expanded (Read more: toggleSectionGrow)
@@ -111,7 +111,7 @@ class Main extends Component {
 			officeHours: null,
 			locationText: "Loading location...",
 			inVotingEvent: false || __DEV__,
-			votingVisibile: false,
+			votingVisibile: __DEV__,
 			// The current state of the application (background or foreground)
 			// Will come in handy when reloading data on re-entry to the app
 			appState: AppState.currentState,
