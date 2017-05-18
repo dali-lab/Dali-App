@@ -15,9 +15,6 @@ let ServerCommunicator = require('../ServerCommunicator').default;
 const window = Dimensions.get('window')
 
 class VoteSelection extends Component {
-   propTypes: {
-      voteComplete: ReactNative.PropTypes.func.isRequired,
-   }
 
    constructor(props) {
       super(props)
@@ -73,9 +70,18 @@ class VoteSelection extends Component {
       });
    }
 
-   donePressed() {
+   nextPressed(navigator) {
       // Deal with stuff
+      if (this.state.numSelected != 3) {
+         Alert.alert("Select the top 3 to continue");
+         return;
+      }
 
+      var selected = this.state.options.filter((option) => {
+         return option.selected;
+      });
+
+      navigator.push({name: "VoteOrder", selectedOptions: selected});
    }
 
    renderRow(option) {
@@ -103,6 +109,7 @@ class VoteSelection extends Component {
          <View style={styles.headerView}>
          <Text style={styles.headerText}>{this.state.eventData == null ? "Loading..." : this.state.eventData.description}</Text>
          </View>
+         <Text style={styles.headerText}>Choose 3 of the following...</Text>
          <View style={styles.headerSeperator}></View>
          <ListView
          style={styles.listView}
@@ -115,7 +122,8 @@ class VoteSelection extends Component {
 
 const styles = StyleSheet.create({
    container: {
-      flex: 1
+      flex: 1,
+      backgroundColor: 'rgb(238, 238, 238)'
    },
    headerView: {
       padding: 10,

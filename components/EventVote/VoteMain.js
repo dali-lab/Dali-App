@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 let ServerCommunicator = require('../ServerCommunicator').default;
 const VoteSelection = require('./VoteSelection');
+const VoteOrder = require('./VoteOrder');
 const VoteWait = require('./VoteWait');
 const VoteResults = require('./VoteResults');
 let StorageController = require('../StorageController').default;
@@ -71,15 +72,20 @@ class VoteMain extends Component {
       });
    }
 
-   render() {
-      var internalView = <VoteSelection voteComplete={() => {
-         this.updateResults();
-         this.setState({
-            hasVoted: true
-         });
-         StorageController.setVoteDone(this.event);
-      }}
-      ref={(voteSelection) => { this.voteSelection = voteSelection; }}/>;
+   renderInternal(route, navigator) {
+      var internalView = <VoteSelection ref={(voteSelection) => { this.voteSelection = voteSelection; }}/>;
+
+      if (route.name == "VoteOrder") {
+         internalView = <VoteOrder voteComplete={() => {
+            this.updateResults();
+            this.setState({
+               hasVoted: true
+            });
+            StorageController.setVoteDone(this.event);
+         }}
+         selectedOptions={route.selectedOptions}
+         ref={(voteOrder) => { this.voteOrder = voteOrder; }}/>
+      }
 
       if (this.state.hasVoted) {
          internalView = <VoteWait event={this.state.event}/>;
@@ -88,14 +94,29 @@ class VoteMain extends Component {
          }
       }
 
+      return internalView;
+   }
+
+   render() {
+
       return (
          <Navigator
+         initialRoute={{name: "VoteSelection"}}
          navigationBar={
             <Navigator.NavigationBar
             routeMapper={{
                LeftButton: (route, navigator, index, navState) => {
                   if (this.state.hasVoted) {
                      return null;
+                  }else if (route.name == "VoteOrder"){
+                     return (
+                        <TouchableHighlight
+                        underlayColor="rgba(0,0,0,0)"
+                        style={styles.navBarCancelButton}
+                        onPress={navigator.pop}>
+                        <Text style={styles.navBarCancelText}>{"< Back"}</Text>
+                        </TouchableHighlight>
+                     );
                   }else{
                      return (
                         <TouchableHighlight
@@ -109,12 +130,24 @@ class VoteMain extends Component {
                },
                RightButton: (route, navigator, index, navState) => {
                   // Done Button
+
                   return (
                      <TouchableHighlight
                      underlayColor="rgba(0,0,0,0)"
                      style={styles.navBarDoneButton}
-                     onPress={!this.state.hasVoted && this.voteSelection != null ? this.voteSelection.donePressed : this.props.dismiss}>
-                     <Text style={styles.navBarDoneText}>Done</Text>
+                     onPress={() => {
+                        if (!this.state.hasVoted && this.voteSelection != null) {
+                           // Then we have not yet moved on from voting
+                           if (route.name == "VoteSelection") {
+                              this.voteSelection.nextPressed(navigator);
+                           }else{
+                              this.voteOrder.donePressed();
+                           }
+                        }else{
+                           this.props.dismiss();
+                        }
+                     }}>
+                     <Text style={styles.navBarDoneText}>{route.name != "VoteSelection" ? "Done" : "Next"}</Text>
                      </TouchableHighlight>
                   );
                },
@@ -126,7 +159,7 @@ class VoteMain extends Component {
          }
          renderScene={(route, navigator) =>
             <View style={{flex: 1}}>
-            {internalView}
+            {this.renderInternal(route, navigator)}
             </View>
          }
          style={{paddingTop: 64}}/>
