@@ -25,7 +25,11 @@ You will need the following things installed:
 ```
 - react-native-cli
 ```bash
-brew install react-native-cli
+npm install -g react-native-cli
+```
+
+```bash
+brew install watchman
 ```
 
 #### Installation
