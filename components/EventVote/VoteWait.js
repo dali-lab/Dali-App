@@ -37,7 +37,8 @@ const styles = StyleSheet.create({
       textAlign: "center"
    },
    image: {
-      width: Dimensions.get('window').width,
+      flex: 1,
+      width: Dimensions.get("window").width,
       resizeMode: "cover"
    }
 });
