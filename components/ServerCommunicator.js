@@ -138,26 +138,36 @@ class ServerCommunicator {
 
    getEventNow() {
       return new Promise(function(resolve, reject) {
-         resolve({
-            name: "The Pitch",
-            id: 1,
-            image: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F30750478%2F73808776949%2F1%2Foriginal.jpg?w=1000&rect=38%2C0%2C1824%2C912&s=068ff06280148aa18a9075a68ad6e060",
-            resultsReleased: false,
-            description: "You have now seen many pitches, so now please choose the three that you think showed the most merit in your opinion.",
-            options: [
-               {name: "Pitch 1", id: 1},
-               {name: "Pitch 2", id: 2},
-               {name: "Pitch 3", id: 3},
-               {name: "Pitch 4", id: 4},
-               {name: "Pitch 5", id: 5},
-               {name: "Pitch 6", id: 6},
-               {name: "Pitch 7", id: 7},
-            ]
-         });
+         setTimeout(function () {
+            resolve({
+               name: "The Pitch",
+               id: 1,
+               image: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F30750478%2F73808776949%2F1%2Foriginal.jpg?w=1000&rect=38%2C0%2C1824%2C912&s=068ff06280148aa18a9075a68ad6e060",
+               resultsReleased: false,
+               description: "You have now seen many pitches, so now please choose the three that you think showed the most merit in your opinion.",
+               options: [
+                  {name: "Pitch 1", id: 1, score: 10},
+                  {name: "Pitch 2", id: 2, score: 20},
+                  {name: "Pitch 3", id: 3, score: 5},
+                  {name: "Pitch 4", id: 4, score: 40},
+                  {name: "Pitch 5", id: 5, score: 25},
+                  {name: "Pitch 6", id: 6, score: 70},
+                  {name: "Pitch 7", id: 7, score: 1},
+               ]
+            });
+         }, 1000 * 1);
       });
    }
 
    submitNewEvent(event) {
+      return new Promise(function(resolve, reject) {
+         setTimeout(function () {
+            resolve();
+         }, 1000 * 5);
+      });
+   }
+
+   releaseAwards(awards) {
       return new Promise(function(resolve, reject) {
          setTimeout(function () {
             resolve();

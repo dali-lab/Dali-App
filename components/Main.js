@@ -124,7 +124,7 @@ class Main extends Component {
 			if (event) {
 				StorageController.getVoteDone(event).then((value) => {
 					this.setState({
-						votingDone: value || __DEV__
+						votingDone: value
 					});
 				});
 			}

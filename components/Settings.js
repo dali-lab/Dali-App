@@ -259,7 +259,6 @@ class Settings extends Component {
 	renderScene(route, navigator) {
 		this.navigator = navigator;
 		if (route.name == 'Settings') {
-			console.log(route);
 			return (
 				<ListView
 				style={styles.listView}
@@ -269,7 +268,9 @@ class Settings extends Component {
 				renderRow={this.renderRow.bind(this)}/>
 			)
 		}else if (route.name == 'Voting Event Subsettings') {
-			return <VotingEventSettings navigator={navigator}/>;
+			return <VotingEventSettings
+			ref={(votingEventSettings) => { this.votingEventSettings = votingEventSettings; }}
+			 navigator={navigator}/>;
 		}else if (route.name == 'Create Voting Event Subsettings') {
 			return <CreateVotingEventSettings
 			ref={(createEventView) => { this.createEventView = createEventView; }}
@@ -305,18 +306,27 @@ class Settings extends Component {
 					},
 					RightButton: (route, navigator, index, navState) => {
 						// Done Button
+						var text = "Done";
+						if (route.name == 'Create Voting Event Subsettings') {
+							text = "Create";
+						}else if (route.name == 'Voting Event Subsettings') {
+							text = "Release";
+						}
+
 						return (
 							<TouchableHighlight
 							underlayColor="rgba(0,0,0,0)"
 							style={styles.navBarDoneButton}
 							onPress={() => {
 								if (route.name == 'Create Voting Event Subsettings') {
-									this.createEventView.createEvent()
+									this.createEventView.createEvent();
+								}else if (route.name == 'Voting Event Subsettings') {
+									this.votingEventSettings.releasePressed();
 								}else{
-									this.props.dismiss()
+									this.props.dismiss();
 								}
 							}}>
-							<Text style={styles.navBarDoneText}>{route.name != 'Create Voting Event Subsettings' ? "Done" : "Create"}</Text>
+							<Text style={styles.navBarDoneText}>{text}</Text>
 							</TouchableHighlight>
 						);
 					},

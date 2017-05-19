@@ -10,7 +10,8 @@ import {
    TextInput,
    ActivityIndicator,
    Modal,
-   Alert
+   Alert,
+   Linking
 } from 'react-native';
 
 let ServerCommunicator = require('./ServerCommunicator').default;
@@ -76,6 +77,16 @@ class CreateVotingEventSettings extends Component {
             title: "Image",
             type: "entry",
             key: "image"
+         },
+         {
+            title: "Start",
+            type: "entry",
+            key: "startTime"
+         },
+         {
+            title: "End",
+            type: "entry",
+            key: "endTime"
          }
       ]
 
@@ -185,13 +196,25 @@ class CreateVotingEventSettings extends Component {
    Gets a view of a section header
    */
    renderSectionHeader(data, sectionName) {
-      if (sectionName == "user") {
-         return <View/>
-      }
 
       return (
+         <View>
+         {
+            sectionName.toLowerCase() == "options" ?
+            <View>
+            <Text>Start and end time should be generated here (choose ISO): </Text>
+            <TouchableHighlight
+            underlayColor="rgba(110, 73, 189, 0)"
+            onPress={() => Linking.openURL("http://www.timestampgenerator.com")}>
+            <Text style={{color: 'rgb(33, 137, 204)'}}>http://www.timestampgenerator.com</Text>
+            </TouchableHighlight>
+            </View>
+            :
+            null
+         }
          <View style={styles.sectionHeader}>
          <Text style={styles.sectionHeaderText}>{sectionName.toUpperCase()}</Text>
+         </View>
          </View>
       )
    }
