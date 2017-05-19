@@ -1,0 +1,21 @@
+*** node_modules/react-native-google-signin/ios/RNGoogleSignin/RNGoogleSignin.h	2016-07-20 00:19:16.000000000 -0400
+--- node_modules/react-native-google-signin/ios/RNGoogleSignin/RNGoogleSignin.h.new	2017-05-19 00:58:57.000000000 -0400
+***************
+*** 1,8 ****
+  #ifndef RN_GoogleSigning_h
+  #define RN_GoogleSigning_h
+  
+! #import "RCTBridgeModule.h"
+! #import "RCTConvert.h"
+  
+  #import <GoogleSignIn/GoogleSignIn.h>
+  
+--- 1,8 ----
+  #ifndef RN_GoogleSigning_h
+  #define RN_GoogleSigning_h
+  
+! #import <React/RCTBridgeModule.h>
+! #import <React/RCTConvert.h>
+  
+  #import <GoogleSignIn/GoogleSignIn.h>
+  
