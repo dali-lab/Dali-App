@@ -177,7 +177,13 @@ class ServerCommunicator {
 
    getVotingResults() {
       return new Promise(function(resolve, reject) {
-         resolve(null);
+         setTimeout(function () {
+            resolve([
+               {name: "Pitch 1", award: "Best food"},
+               {name: "Pitch 2", award: "Coolest hair"},
+               {name: "Pitch 3", award: "Most working prototpye"},
+            ]);
+         }, 1000 * 5);
       });
    }
 
