@@ -44,8 +44,7 @@ git clone https://github.com/dali-lab/Dali-App.git dali-app
 cd dali-app # change directory into main directory
 npm install # install the packages
 rnpm link # Link all packages to the Xcode project and gradle
-# And in order to fix a small bug for Google :P
-patch -p0 -i GoogleSignInPatch.patch
+patch -p0 -i GoogleSignInPatch.patch # And in order to fix a small bug for Google :P
 ```
 
 #### Building
