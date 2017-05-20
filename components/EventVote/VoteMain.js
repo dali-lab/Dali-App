@@ -149,7 +149,7 @@ class VoteMain extends Component {
                            if (route.name == "VoteSelection") {
                               this.voteSelection.nextPressed(navigator);
                            }else{
-                              this.voteOrder.donePressed();
+                              this.voteOrder.donePressed(navigator);
                            }
                         }else{
                            this.props.dismiss();
