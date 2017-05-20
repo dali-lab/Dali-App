@@ -35,6 +35,8 @@ class VoteSelection extends Component {
       }
 
       ServerCommunicator.current.getEventNow().then((event) => {
+         if (event == null) return;
+
          event.options.forEach((option) => {
             option.selected = false
             option.dirty = false
@@ -67,6 +69,8 @@ class VoteSelection extends Component {
             options: event.options,
             dataSource: this.state.dataSource.cloneWithRows(event.options)
          });
+      }).catch((error) => {
+         return;
       });
    }
 

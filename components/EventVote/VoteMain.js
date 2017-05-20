@@ -54,6 +54,14 @@ class VoteMain extends Component {
                }
             });
          }
+      }).catch((error) => {
+         if (error.code == 404) {
+            setTimeout(() => {
+               Alert.alert("No Current Event", "There is no event going on currently", [
+                  {text: 'OK', onPress: this.props.dismiss}
+               ], { cancelable: false })
+            }, 600);
+         }
       });
    }
 

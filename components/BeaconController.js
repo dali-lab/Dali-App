@@ -349,6 +349,10 @@ class BeaconController {
 						title: event.name,
 						message: "Welcome to " + event.name + "!"
 					});
+				}).catch((error) => {
+					if (error.code == 404) {
+						return;
+					}
 				});
 			}
 			return
@@ -396,6 +400,8 @@ class BeaconController {
 
 				BeaconController.performCallbacks(this.locationInformationListeners, "At " + event.name);
 				this.locationTextCurrentPriority = votingEventPriority;
+			}).catch((error) => {
+				if (error.code == 404) return;
 			})
 		}
 	}

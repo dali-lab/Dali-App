@@ -274,6 +274,7 @@ class Settings extends Component {
 		}else if (route.name == 'Create Voting Event Subsettings') {
 			return <CreateVotingEventSettings
 			ref={(createEventView) => { this.createEventView = createEventView; }}
+			reload={() => this.votingEventSettings.reloadData()}
 			navigator={navigator}/>;
 		}
 	}

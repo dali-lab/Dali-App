@@ -17,25 +17,10 @@ import {
 let ServerCommunicator = require('./ServerCommunicator').default;
 
 
-/*
-name: "The Pitch",
-id: 1,
-image: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F30750478%2F73808776949%2F1%2Foriginal.jpg?w=1000&rect=38%2C0%2C1824%2C912&s=068ff06280148aa18a9075a68ad6e060",
-resultsReleased: false,
-description: "You have now seen many pitches, so now please choose the three that you think showed the most merit in your opinion.",
-options: [
-{name: "Pitch 1", id: 1},
-{name: "Pitch 2", id: 2},
-{name: "Pitch 3", id: 3},
-{name: "Pitch 4", id: 4},
-{name: "Pitch 5", id: 5},
-{name: "Pitch 6", id: 6},
-{name: "Pitch 7", id: 7},
-]*/
-
 class CreateVotingEventSettings extends Component {
    propTypes: {
-      navigator: React.PropTypes.Object.isRequired
+      navigator: React.PropTypes.Object.isRequired,
+      reload: React.PropTypes.Function.isRequired,
    }
 
    constructor(props) {
@@ -133,12 +118,9 @@ class CreateVotingEventSettings extends Component {
          return;
       }
       this.event.description = this.state.description;
-
-      if (this.state.image == ""|| this.state.image == null) {
-         Alert.alert("You need an event image (a url will do)");
-         return;
-      }
       this.event.image = this.state.image;
+      this.event.startTime = this.state.startTime;
+      this.event.endTime = this.state.endTime;
 
       console.log(this.event.options);
       if (this.event.options.length <= 3) {
@@ -146,19 +128,28 @@ class CreateVotingEventSettings extends Component {
          return;
       }
 
+      var options = [];
       this.event.options.forEach((option) => {
          option.name = this.state["option" + option.id];
-         delete option.id;
+         options.push(option.name);
       });
+      this.event.options = options;
 
       this.setState({
          showCoverModal: true
       });
+      console.log(this.event);
       ServerCommunicator.current.submitNewEvent(this.event).then(() => {
          this.props.navigator.pop();
+         this.props.reload();
          this.setState({
             showCoverModal: false
          })
+      }).catch((error) => {
+         this.setState({
+            showCoverModal: false
+         });
+         Alert.alert("Encountered an error", error);
       });
    }
 
@@ -237,6 +228,7 @@ class CreateVotingEventSettings extends Component {
          dataSource={this.state.dataSource}
          renderRow={this.renderRow.bind(this)}
          renderSectionHeader={this.renderSectionHeader.bind(this)}/>
+         <View style={{height: 250}}/>
          </View>
       );
    }

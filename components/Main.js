@@ -120,16 +120,6 @@ class Main extends Component {
 			officeHoursAnimationValue: new Animated.Value()
 		}
 
-		ServerCommunicator.current.getEventNow().then((event) => {
-			if (event) {
-				StorageController.getVoteDone(event).then((value) => {
-					this.setState({
-						votingDone: value
-					});
-				});
-			}
-		});
-
 		// Initialize the value of the office hours list to its default
 		this.state.officeHoursAnimationValue.setValue(officeHoursDefault);
 
@@ -175,6 +165,23 @@ class Main extends Component {
 	- Current location (ie. in lab or not)
 	*/
 	refreshData() {
+		ServerCommunicator.current.getEventNow().then((event) => {
+			if (event) {
+				StorageController.getVoteDone(event).then((value) => {
+					this.setState({
+						votingDone: value
+					});
+				});
+			}
+		}).catch((error) => {
+			if (error.code == 404) {
+				this.setState({
+					votingDone: false,
+					inVotingEvent: false
+				});
+			}
+		});
+
 		console.log("Refreshing...");
 		// Retrieve office hours
 		if (this.props.user != null) {
@@ -241,6 +248,12 @@ class Main extends Component {
 			console.log(error);
 		});
 		BeaconController.current.startRanging();
+
+		if (this.reloadInterval == null) {
+			this.reloadInterval = setInterval(() => {
+				this.refreshData();
+			}, 1000 * 60 * 5);
+		}
 	}
 
 	/**
@@ -258,6 +271,13 @@ class Main extends Component {
 		.catch((err) => {
 			console.log(err);
 		});
+		clearInterval(this.reloadInterval);
+      this.reloadInterval = undefined;
+	}
+
+	componentWillUnmount() {
+		clearInterval(this.reloadInterval);
+      this.reloadInterval = undefined;
 	}
 
 	/// Renders a row for a office hour and returns it

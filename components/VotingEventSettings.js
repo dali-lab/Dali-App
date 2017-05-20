@@ -59,6 +59,8 @@ class VotingEventSettings extends Component {
                   if (this.state.event.options[i].id == event.options[i].id) {
                      event.options[i].award = this.state.event.options[i].award;
                   }
+               }else{
+                  event.options[i].dirty = undefined;
                }
             }
 
@@ -74,7 +76,11 @@ class VotingEventSettings extends Component {
             dataSource: this.state.dataSource.cloneWithRows(event != null ? event.options : [])
          });
       }).catch((error) => {
-         console.log(error);
+         if (error.code == 404) {
+            this.setState({
+               event: null
+            });
+         }
       });
    }
 
@@ -133,6 +139,7 @@ class VotingEventSettings extends Component {
 
    releasePressed() {
       var awards = this.state.event.options.filter((option) => {
+         console.log(option);
          return option.award != null
       });
 
@@ -265,6 +272,8 @@ const styles = StyleSheet.create({
    },
    currentEventText: {
       fontSize: 16,
+      marginLeft: 40,
+      marginRight: 40,
       color: 'gray',
       textAlign: 'center'
    },

@@ -15,6 +15,7 @@ let BeaconController = require('./BeaconController').default;
 let env = require('./Environment');
 let StorageController = require('./StorageController').default;
 let GlobalFunctions = require('./GlobalFunctions').default;
+let ApiUtils = require('./ApiUtils').default;
 
 let days = ['SU','MO','TU','WE','TH','FR','SA'];
 const debugging = false
@@ -137,41 +138,53 @@ class ServerCommunicator {
    }
 
    getEventNow() {
-      return new Promise(function(resolve, reject) {
-         setTimeout(function () {
-            resolve({
-               name: "The Pitch",
-               id: 1,
-               image: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F30750478%2F73808776949%2F1%2Foriginal.jpg?w=1000&rect=38%2C0%2C1824%2C912&s=068ff06280148aa18a9075a68ad6e060",
-               resultsReleased: false,
-               description: "You have now seen many pitches, so now please choose the three that you think showed the most merit in your opinion.",
-               options: [
-                  {name: "Pitch 1", id: 1, score: 10},
-                  {name: "Pitch 2", id: 2, score: 20},
-                  {name: "Pitch 3", id: 3, score: 5},
-                  {name: "Pitch 4", id: 4, score: 40},
-                  {name: "Pitch 5", id: 5, score: 25},
-                  {name: "Pitch 6", id: 6, score: 70},
-                  {name: "Pitch 7", id: 7, score: 1},
-               ]
+      var url = env.voting.currentURL + "?key=" + env.apiKey;
+      console.log(url);
+      return fetch(url, {method: "GET"})
+      .then(ApiUtils.checkStatus)
+      .then((response) => {
+         return new Promise(function(resolve, reject) {
+            response.json().then((responseJson) => {
+               this.event = responseJson;
+               resolve(responseJson);
+            }).catch((error) => {
+               reject(error);
             });
-         }, 1000 * 1);
+         });
       });
+   }
+
+   getEventNowWithScores() {
+      if (this.user == null || !GlobalFunctions.userIsTheo()) {
+         return new Promise(function(resolve, reject) {
+            reject();
+         });
+      }
+
+      return fetch(env.voting.currentResultsURL + "?key=" + env.apiKey, {method: "GET"})
+      .then((response) => response.json());
    }
 
    submitNewEvent(event) {
-      return new Promise(function(resolve, reject) {
-         setTimeout(function () {
-            resolve();
-         }, 1000 * 5);
-      });
+      return this.post(env.voting.createURL + "?key=" + env.apiKey, event, "POST", true);
    }
 
    releaseAwards(awards) {
-      return new Promise(function(resolve, reject) {
-         setTimeout(function () {
-            resolve();
-         }, 1000 * 5);
+      if (this.user == null || !GlobalFunctions.userIsTheo()) {
+         return new Promise(function(resolve, reject) {
+            reject();
+         });
+      }
+
+      console.log(awards);
+      awards.forEach((award) => {
+         award.dirty = undefined;
+         award.name = undefined;
+      });
+
+      return this.post(env.voting.releaseURL + "?key=" + env.apiKey, {
+         event: this.event.id,
+         winners: winners
       });
    }
 
@@ -187,10 +200,15 @@ class ServerCommunicator {
       });
    }
 
+   /// Takes only ids
    submitVotes(first, second, third) {
-      return new Promise(function(resolve, reject) {
-         resolve(null);
-      });
+      return this.post(env.voting.createURL + "?key=" + env.apiKey, {
+         event: this.event.id,
+         first: first,
+         second: second,
+         third: third,
+         user: this.user.email
+      }, "POST", true);
    }
 
    /// Simple convenience post method
