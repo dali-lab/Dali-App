@@ -14,7 +14,8 @@ let ServerCommunicator = require('../ServerCommunicator').default;
 
 class VoteResults extends Component {
   propTypes: {
-    navigator: React.PropTypes.Object.isRequired
+    navigator: React.PropTypes.Object.isRequired,
+    results: React.PropTypes.Object.isRequired,
   }
 
   constructor(props) {
@@ -29,20 +30,8 @@ class VoteResults extends Component {
     });
 
     this.state = {
-      dataSource : dataSource
+      dataSource : dataSource.cloneWithRows(props.results)
     };
-
-    this.reloadData();
-  }
-
-  reloadData() {
-    ServerCommunicator.current.getVotingResults().then((results) => {
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(results)
-      })
-    }).catch((error) => {
-      console.log(error);
-    });
   }
 
   renderRow(option) {

@@ -52,7 +52,8 @@ class VotingEventSettings extends Component {
    }
 
    reloadData() {
-      ServerCommunicator.current.getEventNow().then((newEvent) => {
+      ServerCommunicator.current.getEventNowWithScores().then((newEvent) => {
+         console.log(newEvent);
          if (newEvent != null) {
             var event = this.state.event;
 

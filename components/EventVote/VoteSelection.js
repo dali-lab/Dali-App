@@ -64,6 +64,14 @@ class VoteSelection extends Component {
             }
          });
 
+         event.options = event.options.sort((option1, option2) => {
+            if (option1.name == option2.name) {
+               return 0;
+            }
+
+            return option1.name > option2.name ? 1 : -1
+         });
+
          this.setState({
             eventData: event,
             options: event.options,
@@ -74,7 +82,7 @@ class VoteSelection extends Component {
       });
    }
 
-   nextPressed(navigator) {
+   nextPressed=(navigator) => {
       // Deal with stuff
       if (this.state.numSelected != 3) {
          Alert.alert("Select the top 3 to continue");

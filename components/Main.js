@@ -157,14 +157,7 @@ class Main extends Component {
 		this.setState({appState: nextAppState});
 	}
 
-	/**
-	Refreshes the data that is to be presented.
-	This includes:
-	- Office hours
-	- Upcoming events
-	- Current location (ie. in lab or not)
-	*/
-	refreshData() {
+	refreshVotingData() {
 		ServerCommunicator.current.getEventNow().then((event) => {
 			if (event) {
 				StorageController.getVoteDone(event).then((value) => {
@@ -181,6 +174,17 @@ class Main extends Component {
 				});
 			}
 		});
+	}
+
+	/**
+	Refreshes the data that is to be presented.
+	This includes:
+	- Office hours
+	- Upcoming events
+	- Current location (ie. in lab or not)
+	*/
+	refreshData() {
+		this.refreshVotingData();
 
 		console.log("Refreshing...");
 		// Retrieve office hours
@@ -272,12 +276,12 @@ class Main extends Component {
 			console.log(err);
 		});
 		clearInterval(this.reloadInterval);
-      this.reloadInterval = undefined;
+		this.reloadInterval = undefined;
 	}
 
 	componentWillUnmount() {
 		clearInterval(this.reloadInterval);
-      this.reloadInterval = undefined;
+		this.reloadInterval = undefined;
 	}
 
 	/// Renders a row for a office hour and returns it
@@ -427,7 +431,11 @@ class Main extends Component {
 				dismiss={this.hideModals.bind(this)}/> : null
 			}
 			{this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)}/> : null}
-			{this.state.votingVisibile ? <EventVote dismiss={this.hideModals.bind(this)}/> : null}
+			{this.state.votingVisibile ? <EventVote dismiss={() => {
+				this.refreshVotingData();
+				this.hideModals();
+			}}
+			hasVoted={this.state.votingDone}/> : null}
 			</Modal>
 
 			<View style={{

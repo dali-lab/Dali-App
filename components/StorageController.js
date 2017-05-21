@@ -100,7 +100,7 @@ class StorageController {
    static getServerUpdateInterval() {
       return new Promise((success, failure) => {
          AsyncStorage.getItem(prefix + ':serverUpdateInterval').then((result) => {
-            if (result == null) {
+            if (result == null || result == "null") {
                success(null);
                return;
             }
@@ -110,7 +110,7 @@ class StorageController {
    }
 
    static saveServerUpdateInterval(value) {
-      return AsyncStorage.setItem(prefix + ':serverUpdateInterval', value == null ? value : value.toString());
+      return AsyncStorage.setItem(prefix + ':serverUpdateInterval', value == null ? "null" : value.toString());
    }
 
    static getVoteDone(event) {

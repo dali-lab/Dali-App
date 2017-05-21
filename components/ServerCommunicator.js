@@ -139,7 +139,6 @@ class ServerCommunicator {
 
    getEventNow() {
       var url = env.voting.currentURL + "?key=" + env.apiKey;
-      console.log(url);
       return fetch(url, {method: "GET"})
       .then(ApiUtils.checkStatus)
       .then((response) => {
@@ -162,7 +161,7 @@ class ServerCommunicator {
       }
 
       return fetch(env.voting.currentResultsURL + "?key=" + env.apiKey, {method: "GET"})
-      .then((response) => response.json());
+      .then(ApiUtils.checkStatus).then((response) => response.json());
    }
 
    submitNewEvent(event) {
@@ -189,21 +188,23 @@ class ServerCommunicator {
    }
 
    getVotingResults() {
-      return new Promise(function(resolve, reject) {
-         setTimeout(function () {
-            resolve([
-               {name: "Pitch 1", award: "Best food"},
-               {name: "Pitch 2", award: "Coolest hair"},
-               {name: "Pitch 3", award: "Most working prototpye"},
-            ]);
-         }, 1000 * 5);
-      });
+      // return new Promise(function(resolve, reject) {
+      //    setTimeout(function () {
+      //       resolve([
+      //          {name: "Pitch 1", award: "Best food"},
+      //          {name: "Pitch 2", award: "Coolest hair"},
+      //          {name: "Pitch 3", award: "Most working prototpye"},
+      //       ]);
+      //    }, 1000 * 5);
+      // });
+      return fetch(env.voting.finalResultsURL + "?key=" + env.apiKey, {method: "GET"})
+      .then(ApiUtils.checkStatus).then((response) => response.json())
    }
 
    /// Takes only ids
-   submitVotes(first, second, third) {
-      return this.post(env.voting.createURL + "?key=" + env.apiKey, {
-         event: this.event.id,
+   submitVotes(first, second, third, event) {
+      return this.post(env.voting.submitURL + "?key=" + env.apiKey, {
+         event: event.id,
          first: first,
          second: second,
          third: third,
@@ -222,7 +223,7 @@ class ServerCommunicator {
                'Content-Type': 'application/json',
             },
             body: JSON.stringify(params)
-         });
+         }).then(ApiUtils.checkStatus);
       }
       return new Promise(function(resolve, reject) {
          reject("Can't post if you are not a member");

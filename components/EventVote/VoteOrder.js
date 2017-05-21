@@ -25,19 +25,19 @@ class VoteOrder extends Component {
       }
    }
 
-   donePressed(navigator) {
-      navigator.push({name: 'VoteResults'});
-   }
-
-   renderRow(data) {
-      console.log("Rendering: ", data);
+   renderRow(data, sectionID, rowID) {
+      const row = this.state.order.indexOf(rowID);
+      const choiceNames = ["1st Choice", "2nd Choice", "3rd Choice"];
       return (
          <TouchableHighlight
          underlayColor={'#eee'}
          delayLongPress={20}
-         style={{padding: 25, backgroundColor: '#F8F8F8', borderBottomWidth:1, borderColor: '#eee'}}
+         style={styles.row}
          {...this.props.sortHandlers} >
-         <Text>{data.name}</Text>
+         <View>
+         <Text style={styles.orderLabel}>{choiceNames[row]}</Text>
+         <Text style={styles.optionNameLabel}>{data.name}</Text>
+         </View>
          </TouchableHighlight>
       );
    }
@@ -48,9 +48,11 @@ class VoteOrder extends Component {
          <Text style={styles.headerText}>Order your votes by dragging</Text>
          <View style={styles.headerSeperator}></View>
          <SortableListView
-         style={{flex: 1}}
+         style={styles.tableView}
          data={this.state.selectedOptions}
          order={this.state.order}
+         sortRowStyle={styles.sortRow}
+         rowHasChanged={() => true}
          onRowMoved={e => {
             var order = this.state.order;
             order.splice(e.to, 0, order.splice(e.from, 1)[0]);
@@ -58,10 +60,6 @@ class VoteOrder extends Component {
             this.setState({
                order: order
             });
-         }}
-         onMoveStart={ () => console.log('on move start') }
-         onMoveEnd={ () => {
-            console.log('on move end');
             this.forceUpdate();
          }}
          renderRow={ this.renderRow.bind(this) }
@@ -84,6 +82,32 @@ const styles = StyleSheet.create({
       height: 1,
       backgroundColor: 'rgb(186, 186, 186)',
    },
+   tableView: {
+      flex: 1
+   },
+   row: {
+      paddingBottom: 20,
+      paddingLeft: 10,
+      paddingRight: 20,
+      backgroundColor:'#F8F8F8',
+      borderBottomWidth: 1,
+      borderColor: '#eee'
+   },
+   sortRow: {
+
+   },
+   orderLabel: {
+      color: 'grey',
+      fontFamily: "Avenir Next",
+      fontSize: 12,
+      marginBottom: 5,
+      marginTop: 5,
+   },
+   optionNameLabel: {
+      fontFamily: "Avenir Next",
+      paddingLeft: 10,
+      fontSize: 16
+   }
 });
 
 module.exports = VoteOrder
