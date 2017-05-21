@@ -169,7 +169,7 @@ class ServerCommunicator {
       return this.post(env.voting.createURL + "?key=" + env.apiKey, event, "POST", true);
    }
 
-   releaseAwards(awards) {
+   releaseAwards(awards, event) {
       if (this.user == null || !GlobalFunctions.userIsTheo()) {
          return new Promise(function(resolve, reject) {
             reject();
@@ -183,8 +183,8 @@ class ServerCommunicator {
       });
 
       return this.post(env.voting.releaseURL + "?key=" + env.apiKey, {
-         event: this.event.id,
-         winners: winners
+         event: event.id,
+         winners: awards
       });
    }
 

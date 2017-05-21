@@ -16,6 +16,15 @@ import {
 
 let ServerCommunicator = require('./ServerCommunicator').default;
 
+function findWithAttr(array, attr, value) {
+   for(var i = 0; i < array.length; i += 1) {
+      if(array[i][attr] === value) {
+         return i;
+      }
+   }
+   return -1;
+}
+
 class VotingEventSettings extends Component {
    propTypes: {
       navigator: React.PropTypes.Object.isRequired
@@ -43,8 +52,25 @@ class VotingEventSettings extends Component {
    }
 
    reloadData() {
-      ServerCommunicator.current.getEventNow().then((event) => {
-         if (event != null) {
+      ServerCommunicator.current.getEventNow().then((newEvent) => {
+         if (newEvent != null) {
+            var event = this.state.event;
+
+            if (event == null) {
+               event = newEvent;
+            }else{
+               newEvent.options.forEach((option) => {
+                  const corespondingIndex = findWithAttr(event.options, "id", option);
+                  if (corespondingIndex == -1) {
+                     event.splice(0,0, option);
+                  }else{
+                     var localOption = event.options[corespondingIndex];
+                     localOption.dirty = true;
+                     localOption.score = option.score;
+                  }
+               });
+            }
+
             event.options.sort((first, second) => {
                if (first.score == second.score) {
                   return 0;
@@ -52,17 +78,6 @@ class VotingEventSettings extends Component {
 
                return first.score > second.score ? -1 : 1;
             });
-
-            for (var i = 0; i < event.options.length; i++) {
-               event.options[i].dirty = true;
-               if (this.state.event != null) {
-                  if (this.state.event.options[i].id == event.options[i].id) {
-                     event.options[i].award = this.state.event.options[i].award;
-                  }
-               }else{
-                  event.options[i].dirty = undefined;
-               }
-            }
 
             if (this.reloadInterval == null) {
                this.reloadInterval = setInterval(() => {
@@ -151,7 +166,7 @@ class VotingEventSettings extends Component {
       this.setState({
          showCoverModal: true
       });
-      ServerCommunicator.current.releaseAwards(awards).then(() => {
+      ServerCommunicator.current.releaseAwards(awards, this.state.event).then(() => {
          this.setState({
             showCoverModal: false
          });
