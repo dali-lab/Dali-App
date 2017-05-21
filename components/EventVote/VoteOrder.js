@@ -1,66 +1,76 @@
 import React, { Component } from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  TouchableHighlight,
-  ListView,
-  Image,
+   AppRegistry,
+   StyleSheet,
+   Text,
+   View,
+   TouchableHighlight,
+   ListView,
+   Image,
 } from 'react-native';
 import SortableListView from 'react-native-sortable-listview';
 
-const order = []; // this is ugly
-
 class VoteOrder extends Component {
-  constructor(props) {
-    super(props);
-    order = Object.keys(this.props.selectedOptions); // this is ugly
-  }
+   propTypes: {
+      voteComplete: ReactNative.PropTypes.func.isRequired,
+      selectedOptions: ReactNative.PropTypes.Object.isRequired,
+   }
 
-  propTypes: {
-    voteComplete: ReactNative.PropTypes.func.isRequired,
-    selectedOptions: ReactNative.PropTypes.Object.isRequired,
-  }
+   constructor(props) {
+      super(props);
 
-  donePressed(navigator) {
-    navigator.push({name: 'VoteResults'});
-  }
+      this.state = {
+         order: Object.keys(this.props.selectedOptions),
+         selectedOptions: props.selectedOptions
+      }
+   }
 
-  renderRow(data) {
-    return (
-      <TouchableHighlight
-        underlayColor={'#eee'}
-        delayLongPress={500}
-        style={{padding: 25, backgroundColor: '#F8F8F8', borderBottomWidth:1, borderColor: '#eee'}}
-        {...this.props.sortHandlers} >
-        <Text>{data.name}</Text>
-      </TouchableHighlight>
-    );
-  }
+   donePressed(navigator) {
+      navigator.push({name: 'VoteResults'});
+   }
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.headerText}>Order your votes by dragging</Text>
-        <View style={styles.headerSeperator}></View>
-        <SortableListView
-          style={{flex: 1}}
-          data={this.props.selectedOptions}
-          order={order}
-          onRowMoved={e => {
+   renderRow(data) {
+      console.log("Rendering: ", data);
+      return (
+         <TouchableHighlight
+         underlayColor={'#eee'}
+         delayLongPress={20}
+         style={{padding: 25, backgroundColor: '#F8F8F8', borderBottomWidth:1, borderColor: '#eee'}}
+         {...this.props.sortHandlers} >
+         <Text>{data.name}</Text>
+         </TouchableHighlight>
+      );
+   }
+
+   render() {
+      return (
+         <View style={styles.container}>
+         <Text style={styles.headerText}>Order your votes by dragging</Text>
+         <View style={styles.headerSeperator}></View>
+         <SortableListView
+         style={{flex: 1}}
+         data={this.state.selectedOptions}
+         order={this.state.order}
+         onRowMoved={e => {
+            var order = this.state.order;
             order.splice(e.to, 0, order.splice(e.from, 1)[0]);
+            console.log(order);
+            this.setState({
+               order: order
+            });
+         }}
+         onMoveStart={ () => console.log('on move start') }
+         onMoveEnd={ () => {
+            console.log('on move end');
             this.forceUpdate();
-          }}
-          onMoveStart={ () => console.log('on move start') }
-          onMoveEnd={ () => console.log('on move end') }
-          renderRow={ (row) => this.renderRow(row) }
-        />
-      </View>
-    );
-  }
+         }}
+         renderRow={ this.renderRow.bind(this) }
+         />
+         </View>
+      );
+   }
 }
-          // renderRow={ row => this.renderRow(row) } />
+// renderRow={ row => this.renderRow(row) } />
 
 const styles = StyleSheet.create({
    container: {
