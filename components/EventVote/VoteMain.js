@@ -122,7 +122,7 @@ class VoteMain extends Component {
                         underlayColor="rgba(0,0,0,0)"
                         style={styles.navBarCancelButton}
                         onPress={navigator.pop}>
-                        <Text style={styles.navBarCancelText}>{"< Back"}</Text>
+                        <Text style={styles.navBarCancelText}>{"Back"}</Text>
                         </TouchableHighlight>
                      );
                   }else{
