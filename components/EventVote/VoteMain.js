@@ -122,7 +122,7 @@ class VoteMain extends Component {
                         underlayColor="rgba(0,0,0,0)"
                         style={styles.navBarCancelButton}
                         onPress={navigator.pop}>
-                        <Text style={styles.navBarCancelText}>{"< Back"}</Text>
+                        <Text style={styles.navBarCancelText}>{"Back"}</Text>
                         </TouchableHighlight>
                      );
                   }else{
@@ -149,7 +149,7 @@ class VoteMain extends Component {
                            if (route.name == "VoteSelection") {
                               this.voteSelection.nextPressed(navigator);
                            }else{
-                              this.voteOrder.donePressed();
+                              this.voteOrder.donePressed(navigator);
                            }
                         }else{
                            this.props.dismiss();
