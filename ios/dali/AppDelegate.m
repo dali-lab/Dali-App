@@ -41,8 +41,8 @@
   jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle"];
 #else
   // Run on device with code coming from dev server on PC (change the IP to your PCs IP)
-//  jsCodeLocation = [NSURL URLWithString:@"http://172.20.10.9:8081/index.ios.bundle"];
-  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  jsCodeLocation = [NSURL URLWithString:@"http://10.0.1.141:8081/index.ios.bundle"];
+//  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 #else
   

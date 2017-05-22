@@ -246,12 +246,12 @@ class ServerCommunicator {
                now.setHours(23, 59, 59);
                midnight.setDate(midnight.getDate() - 1);
             }
+
             var taHours = hours.filter((hour) => {
                const innerPrefix = "==" + prefix + hour.name + ": "
                if (hour.status != "confirmed") {
                   return false;
                }
-
 
                // This method worked for the first week, but no longer!
                // Because we only get one event for each that recurrs
@@ -298,6 +298,23 @@ class ServerCommunicator {
                   return shouldShow;
                }
             });
+
+            var i = 0;
+            while (i < taHours.length) {
+               let hour = taHours[i];
+               let otherI = findWithAttr(taHours, "etag", hour.etag);
+
+               if (otherI != -1) {
+                  let otherHour = taHours[otherI];
+                  taHours.splice(otherI, 1);
+
+                  if (otherHour.skills != null) {
+                     hour.skills = otherHour.skills;
+                  }
+                  hour.duplicate = otherHour;
+               }
+               i++;
+            }
 
             taHours.sort((hour1,hour2) => {
                return hour1.startDate > hour2.startDate;
@@ -609,6 +626,15 @@ class ServerCommunicator {
          });
       }
    }
+}
+
+function findWithAttr(array, attr, value) {
+   for(var i = 0; i < array.length; i += 1) {
+      if(array[i][attr] === value) {
+         return i;
+      }
+   }
+   return -1;
 }
 
 export default ServerCommunicator;

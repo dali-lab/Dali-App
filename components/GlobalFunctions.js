@@ -14,7 +14,7 @@ class GlobalFunctions {
    }
 
    static userIsTheo() {
-      return GoogleSignin.currentUser().email == env.theo || __DEV__
+      return GoogleSignin.currentUser().email == env.theo// || __DEV__
    }
 }
 

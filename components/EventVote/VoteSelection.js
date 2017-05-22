@@ -33,6 +33,7 @@ class VoteSelection extends Component {
          dataSource: dataSource,
          numSelected: 0
       }
+      this.visible = true;
 
       ServerCommunicator.current.getEventNow().then((event) => {
          if (event == null) return;
@@ -57,10 +58,12 @@ class VoteSelection extends Component {
                   });
                }
 
-               this.setState({
-                  numSelected: numSelected,
-                  dataSource: this.state.dataSource.cloneWithRows(this.state.options)
-               });
+               if (this.visible) {
+                  this.setState({
+                     numSelected: numSelected,
+                     dataSource: this.state.dataSource.cloneWithRows(this.state.options)
+                  });
+               }
             }
          });
 
@@ -72,11 +75,13 @@ class VoteSelection extends Component {
             return option1.name > option2.name ? 1 : -1
          });
 
-         this.setState({
-            eventData: event,
-            options: event.options,
-            dataSource: this.state.dataSource.cloneWithRows(event.options)
-         });
+         if (this.visible) {
+            this.setState({
+               eventData: event,
+               options: event.options,
+               dataSource: this.state.dataSource.cloneWithRows(event.options)
+            });
+         }
       }).catch((error) => {
          return;
       });

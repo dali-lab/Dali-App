@@ -110,7 +110,7 @@ class Main extends Component {
 			// Holds the data I will get about the office hours
 			officeHours: null,
 			locationText: "Loading location...",
-			inVotingEvent: false || __DEV__,
+			inVotingEvent:  __DEV__,
 			votingVisibile: false,
 			// The current state of the application (background or foreground)
 			// Will come in handy when reloading data on re-entry to the app
@@ -131,7 +131,7 @@ class Main extends Component {
 
 		BeaconController.current.addVotingRegionListener((enter) => {
 			this.setState({
-				inVotingEvent: enter && __DEV__
+				inVotingEvent: enter
 			});
 		});
 	}
@@ -191,6 +191,7 @@ class Main extends Component {
 		if (this.props.user != null) {
 			ServerCommunicator.current.getTonightsLabHours().then((officeHours) => {
 				console.log("Got office hours...");
+				console.log(officeHours);
 				this.setState({
 					officeHours: officeHours,
 					// In order to update the list view I tell to to clone the previous dataSource with the new data

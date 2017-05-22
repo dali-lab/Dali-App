@@ -454,7 +454,7 @@ class BeaconController {
 			// Check to see if this region is a voting region
 		}else if (Platform.OS != "ios" ? (data.identifier == env.votingRegion.identifier) : (data.region.identifier == env.votingRegion.identifier)) {
 			console.log("Voting");
-			// this.votingBeaconsDidRange(data);
+			this.votingBeaconsDidRange(data);
 
 
 

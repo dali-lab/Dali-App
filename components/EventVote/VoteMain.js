@@ -34,6 +34,15 @@ class VoteMain extends Component {
       };
 
       ServerCommunicator.current.getEventNow().then((event) => {
+         if (event == null) {
+            setTimeout(() => {
+               Alert.alert("No Current Event", "There is no event going on currently", [
+                  {text: 'OK', onPress: this.props.dismiss}
+               ], { cancelable: false })
+            }, 600);
+            return;
+         }
+
          event.options = event.options.sort((option1, option2) => {
             if (option1.name == option2.name) {
                return 0;
@@ -46,21 +55,11 @@ class VoteMain extends Component {
             event: event
          });
 
-         if (event == null) {
-            setTimeout(() => {
-               Alert.alert("No Current Event", "There is no event going on currently", [
-                  {text: 'OK', onPress: this.props.dismiss}
-               ], { cancelable: false })
-            }, 600);
-         }else{
-            return StorageController.getVoteDone(event).then((value) => {
-               this.setState({
-                  hasVoted: value
-               });
-
-               this.updateResults();
+         return StorageController.getVoteDone(event).then((value) => {
+            this.setState({
+               hasVoted: value
             });
-         }
+         });
       }).catch((error) => {
          if (error.code == 404) {
             setTimeout(() => {
@@ -70,6 +69,7 @@ class VoteMain extends Component {
             }, 600);
          }
       });
+      this.updateResults();
    }
 
    updateResults() {
@@ -110,10 +110,16 @@ class VoteMain extends Component {
 
       console.log(this.state);
       if (this.state.hasVoted) {
-         internalView = <VoteWait event={this.state.event}/>;
-         if (this.state.results != null) {
-            internalView = <VoteResults results={this.state.results}/>;
+         if (this.voteSelection != null) {
+            this.voteSelection.visible = false;
          }
+         internalView = <VoteWait event={this.state.event}/>;
+      }
+      if (this.state.results != null) {
+         if (this.voteSelection != null) {
+            this.voteSelection.visible = false;
+         }
+         internalView = <VoteResults results={this.state.results}/>;
       }
 
       return internalView;
@@ -155,7 +161,7 @@ class VoteMain extends Component {
             <Navigator.NavigationBar
             routeMapper={{
                LeftButton: (route, navigator, index, navState) => {
-                  if (this.state.hasVoted) {
+                  if (this.state.hasVoted || this.state.results != null) {
                      return null;
                   }else if (route.name == "VoteOrder"){
                      return (
@@ -183,7 +189,7 @@ class VoteMain extends Component {
                   var text = ""
                   var func = () => {}
 
-                  if (!this.state.hasVoted) {
+                  if (!this.state.hasVoted && this.state.results == null) {
                      // We are on Voting selection
                      if (route.name == "VoteSelection") {
                         func = () => this.voteSelection.nextPressed(navigator);
