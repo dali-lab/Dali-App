@@ -155,7 +155,10 @@ class CreateVotingEventSettings extends Component {
    }
 
    getLeftButton() {
-
+      return {
+         text: "Cancel",
+         action: this.props.navigator.pop
+      }
    }
 
    getRightButton() {
