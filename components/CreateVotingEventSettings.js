@@ -20,7 +20,8 @@ let ServerCommunicator = require('./ServerCommunicator').default;
 class CreateVotingEventSettings extends Component {
    propTypes: {
       navigator: React.PropTypes.Object.isRequired,
-      reload: React.PropTypes.Function.isRequired,
+      complete: React.PropTypes.Function.isRequired,
+      rightButtonDisable: React.PropTypes.Function.isRequired
    }
 
    constructor(props) {
@@ -141,7 +142,7 @@ class CreateVotingEventSettings extends Component {
       console.log(this.event);
       ServerCommunicator.current.submitNewEvent(this.event).then(() => {
          this.props.navigator.pop();
-         this.props.reload();
+         this.props.complete();
          this.setState({
             showCoverModal: false
          })
@@ -151,6 +152,21 @@ class CreateVotingEventSettings extends Component {
          });
          Alert.alert("Encountered an error", error);
       });
+   }
+
+   getLeftButton() {
+
+   }
+
+   getRightButton() {
+      return {
+         text: "Create",
+         action: this.createEvent
+      }
+   }
+
+   getNavigationTitle() {
+      return "Create Event"
    }
 
    renderRow(data, section, row) {

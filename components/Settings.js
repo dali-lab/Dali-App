@@ -58,6 +58,7 @@ class Settings extends Component {
 			checkInNotif: true,
 			labAccessNotif: false,
 			inLabLocShare: false,
+			rightButtonDisabled: false
 		}
 
 		// Gets the lab access preference from the storage
@@ -168,24 +169,29 @@ class Settings extends Component {
 		if (GlobalFunctions.userIsTim()) {
 			return {
 				user: [signOutRow],
-				notifications: notificationsRows
+				notifications: notificationsRows,
+				voting: votingEventSetupRows
 			}
 		}else if (this.props.user != null){
+			// This is a regular non-tim user
 			if (GlobalFunctions.userIsTheo()) {
+				// This is theo, so he gets the voting options
 				return {
 					user: [signOutRow],
 					notifications: notificationsRows,
 					location: locationRows,
 					voting: votingEventSetupRows
 				}
-			}
-
-			return {
-				user: [signOutRow],
-				notifications: notificationsRows,
-				location: locationRows
+			}else{
+				// A non-tim non-theo user
+				return {
+					user: [signOutRow],
+					notifications: notificationsRows,
+					location: locationRows
+				}
 			}
 		}else{
+			// A non-user. All they get to do is sign out
 			return {
 				user: [signOutRow]
 			}
@@ -269,14 +275,43 @@ class Settings extends Component {
 			)
 		}else if (route.name == 'Voting Event Subsettings') {
 			return <VotingEventSettings
-			ref={(votingEventSettings) => { this.votingEventSettings = votingEventSettings; }}
-			 navigator={navigator}/>;
+			rightButtonDisable={(bool) => this.setState({ rightButtonDisabled: bool }) }
+			ref={(votingEventSettings) => {
+				if (votingEventSettings == null) {
+					return;
+				}
+
+				if (this.votingEventSettings != votingEventSettings) {
+					this.forceUpdate();
+					console.log("Force updating voting...");
+					this.votingEventSettings = votingEventSettings;
+				}
+			}}
+			navigator={navigator}/>;
 		}else if (route.name == 'Create Voting Event Subsettings') {
 			return <CreateVotingEventSettings
-			ref={(createEventView) => { this.createEventView = createEventView; }}
-			reload={() => this.votingEventSettings.reloadData()}
+			ref={(createEventView) => {
+				if (createEventView == null) {
+					return;
+				}
+
+				if (this.createEventView != createEventView) {
+					this.forceUpdate();
+					console.log("Force updating creating...");
+					this.createEventView = createEventView;
+				}
+			}}
+			complete={() => this.votingEventSettings.reloadData()}
 			navigator={navigator}/>;
 		}
+	}
+
+	getLeftButton() {
+		return null
+	}
+
+	getNavigationTitle() {
+		return "Settings"
 	}
 
 	/**
@@ -291,48 +326,87 @@ class Settings extends Component {
 				<Navigator.NavigationBar
 				routeMapper={{
 					LeftButton: (route, navigator, index, navState) => {
-						if (route.name.toLowerCase().includes("subsettings")) {
+						var currentView = null;
+						if (route.name == "Create Voting Event Subsettings") {
+							currentView = this.createEventView;
+						}else if (route.name == "Voting Event Subsettings") {
+							currentView = this.votingEventSettings;
+						}else{
+							currentView = this;
+						}
+
+						if (currentView != null && currentView.getLeftButton != undefined) {
+							let leftButton = currentView.getLeftButton();
+							if (leftButton == null) {
+								return null;
+							}
+
 							return (
 								<TouchableHighlight
 								underlayColor="rgba(0,0,0,0)"
 								style={styles.navBarBackButton}
-								onPress={() => {
-									navigator.pop();
-								}}>
-								<Text style={styles.navBarBackText}>{route.name != 'Create Voting Event Subsettings' ? "< Back" : "Cancel"}</Text>
+								onPress={leftButton.action}>
+								<Text
+								style={[styles.navBarBackText, leftButton.style]}>
+								{leftButton.text}
+								</Text>
+								</TouchableHighlight>
+							);
+						}else{
+							return (
+								<TouchableHighlight
+								underlayColor="rgba(0,0,0,0)"
+								style={styles.navBarBackButton}
+								onPress={navigator.pop}>
+								<Text style={styles.navBarBackText}>{"< Back"}</Text>
 								</TouchableHighlight>
 							);
 						}
-						return (null);
 					},
 					RightButton: (route, navigator, index, navState) => {
-						// Done Button
-						var text = "Done";
-						if (route.name == 'Create Voting Event Subsettings') {
-							text = "Create";
-						}else if (route.name == 'Voting Event Subsettings') {
-							text = "Release";
+						var currentView = null;
+						if (route.name == "Create Voting Event Subsettings") {
+							currentView = this.createEventView;
+						}else if (route.name == "Voting Event Subsettings") {
+							currentView = this.votingEventSettings;
+						}else{
+							currentView = this;
 						}
 
-						return (
-							<TouchableHighlight
-							underlayColor="rgba(0,0,0,0)"
-							style={styles.navBarDoneButton}
-							onPress={() => {
-								if (route.name == 'Create Voting Event Subsettings') {
-									this.createEventView.createEvent();
-								}else if (route.name == 'Voting Event Subsettings') {
-									this.votingEventSettings.releasePressed();
-								}else{
-									this.props.dismiss();
-								}
-							}}>
-							<Text style={styles.navBarDoneText}>{text}</Text>
-							</TouchableHighlight>
-						);
+						if (currentView != null && currentView.getRightButton != undefined) {
+							let rightButton = currentView.getRightButton();
+							if (rightButton == null) {
+								return null;
+							}
+
+							return (
+								<TouchableHighlight
+								underlayColor="rgba(0,0,0,0)"
+								style={styles.navBarDoneButton}
+								onPress={rightButton.action}>
+								<Text
+								style={[styles.navBarDoneText, rightButton.stlye, this.state.rightButtonDisabled ? styles.navBarDisabled : null]}>
+								{rightButton.text}
+								</Text>
+								</TouchableHighlight>
+							);
+						}else{
+							return (
+								<TouchableHighlight
+								underlayColor="rgba(0,0,0,0)"
+								style={styles.navBarDoneButton}
+								onPress={this.props.dismiss}>
+								<Text style={styles.navBarDoneText}>Done</Text>
+								</TouchableHighlight>
+							);
+						}
 					},
 					Title: (route, navigator, index, navState) => {
-						return (<Text style={styles.navBarTitleText}>{route.name.replace(' Subsettings', '')}</Text>);
+						var text = route.name.replace(' Subsettings', '');
+						if (this.state.currentView != null && this.state.currentView.getNavigationTitle) {
+							text = this.state.currentView.getNavigationTitle();
+						}
+						return (<Text style={styles.navBarTitleText}>{text}</Text>);
 					}
 				}}
 				style={{backgroundColor: 'rgb(33, 122, 136)'}}/>
@@ -381,6 +455,9 @@ const styles = StyleSheet.create({
 	navBarBackButton: {
 		marginTop: 10,
 		marginLeft: 10,
+	},
+	navBarDisabled: {
+		color: 'rgb(0, 0, 0)'
 	},
 	listView: {
 		flex: 1,

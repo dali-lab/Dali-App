@@ -27,7 +27,8 @@ function findWithAttr(array, attr, value) {
 
 class VotingEventSettings extends Component {
    propTypes: {
-      navigator: React.PropTypes.Object.isRequired
+      navigator: React.PropTypes.Object.isRequired,
+      rightButtonDisable: React.PropTypes.Function.isRequired
    }
 
    constructor(props) {
@@ -111,6 +112,17 @@ class VotingEventSettings extends Component {
       this.reloadInterval = undefined;
    }
 
+   getRightButton() {
+      return {
+         text: "Release",
+         action: this.releasePressed.bind(this)
+      }
+   }
+
+   getNavigationTitle() {
+      return "Voting Event Settings"
+   }
+
    editOptionDescription(option) {
       if (option.award == null) {
          this.setState({
@@ -127,9 +139,24 @@ class VotingEventSettings extends Component {
                this.setState({
                   dataSource: this.state.dataSource.cloneWithRows(this.state.event.options)
                })
+               this.updateValid();
             }}
          ], { cancelable: false })
       }
+   }
+
+   updateValid() {
+      this.props.rightButtonDisable(this.inputIsValid());
+   }s
+
+   inputIsValid() {
+      if (this.state.event == null || // There is no event
+         this.state.event.options.length == 0 || // There are no options
+         this.event.options.filter((option) => option.award != null).length == 0 // No awards have been assigned
+      ) {
+         return false;
+      }
+      return true;
    }
 
    renderRow(option) {
@@ -230,7 +257,8 @@ class VotingEventSettings extends Component {
                   showingEditOption: false,
                   modalText: "",
                   dataSource: this.state.dataSource.cloneWithRows(this.state.event.options)
-               })
+               });
+               this.updateValid();
             }}
             style={styles.modalButtons}>
             <Text>Save</Text>
