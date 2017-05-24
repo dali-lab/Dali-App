@@ -18,7 +18,7 @@ let GlobalFunctions = require('./GlobalFunctions').default;
 let ApiUtils = require('./ApiUtils').default;
 
 let days = ['SU','MO','TU','WE','TH','FR','SA'];
-const debugging = false
+const debugging = false;
 
 function DifferenceInDays(firstDate, secondDate) {
    return Math.round((secondDate-firstDate)/(1000*60*60*24));
@@ -302,9 +302,10 @@ class ServerCommunicator {
             var i = 0;
             while (i < taHours.length) {
                let hour = taHours[i];
-               let otherI = findWithAttr(taHours, "etag", hour.etag);
+               let otherI = findWithAttr(taHours, "id", hour.id, i);
 
                if (otherI != -1) {
+                  if (debugging) {console.log(prefix + "Found duplicate", otherI, "to", i)}
                   let otherHour = taHours[otherI];
                   taHours.splice(otherI, 1);
 
@@ -628,9 +629,9 @@ class ServerCommunicator {
    }
 }
 
-function findWithAttr(array, attr, value) {
+function findWithAttr(array, attr, value, not) {
    for(var i = 0; i < array.length; i += 1) {
-      if(array[i][attr] === value) {
+      if(array[i][attr] === value && i !== not) {
          return i;
       }
    }
