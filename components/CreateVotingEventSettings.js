@@ -11,7 +11,10 @@ import {
    ActivityIndicator,
    Modal,
    Alert,
-   Linking
+   Linking,
+   Animated,
+   Keyboard,
+   Easing
 } from 'react-native';
 
 let ServerCommunicator = require('./ServerCommunicator').default;
@@ -40,11 +43,16 @@ class CreateVotingEventSettings extends Component {
          options: []
       }
       this.nextID = 0;
+      this.validInput = false;
 
       this.state = {
          dataSource: dataSource.cloneWithRowsAndSections(this.loadRows()),
-         showCoverModal: false
+         showCoverModal: false,
+         animation: new Animated.Value()
       };
+      setTimeout(() => {
+         this.props.rightButtonDisable(true);
+      }, 10);
    }
 
    loadRows() {
@@ -107,6 +115,46 @@ class CreateVotingEventSettings extends Component {
       }
    }
 
+   componentDidMount() {
+      Keyboard.addListener('keyboardDidShow', this.keyboardDidShow.bind(this));
+      Keyboard.addListener('keyboardDidHide', this.keyboardDidHide.bind(this));
+   }
+
+   keyboardDidShow (e) {
+      console.log('keyboardDidShow');
+      const animationConfig = {
+         duration: 400, // milliseconds
+         delay: 0, // milliseconds
+         easing: Easing.inOut(Easing.ease),
+      };
+
+      this.state.animation.setValue(0);
+      Animated.spring(
+         this.state.animation,
+         {
+            toValue: e.endCoordinates.height
+         }
+      ).start();
+   }
+
+   keyboardDidHide (e) {
+      console.log('keyboardDidHide');
+      const animationConfig = {
+         duration: 400, // milliseconds
+         delay: 0, // milliseconds
+         easing: Easing.inOut(Easing.ease),
+      };
+
+      this.state.animation.setValue(e.startCoordinates.height);
+      Animated.timing(
+         this.state.animation,
+         {
+            ...animationConfig,
+            toValue: 0
+         }
+      ).start();
+   }
+
    createEvent=() => {
       if (this.state.name == "" || this.state.name == null) {
          Alert.alert("You need an event name");
@@ -125,7 +173,7 @@ class CreateVotingEventSettings extends Component {
 
       console.log(this.event.options);
       if (this.event.options.length <= 3) {
-         Alert.alert("You need more than 3 options to choose from");
+         Alert.alert("You need more than 3 options to choose from", "Hint: Scroll Down");
          return;
       }
 
@@ -188,31 +236,18 @@ class CreateVotingEventSettings extends Component {
                this.setState({
                   [data.key]:text
                });
+               this.updateValid(text, data.key);
             }}
             value={this.state[data.key]}/>
             :
             <Image source={require('./Assets/disclosureIndicator.png')} style={styles.disclosureIndicator}/>
          }
          </View>
-         <View style={styles.seperatorSmall}/>
 
-
-         </View>
-         </TouchableHighlight>
-      );
-   }
-
-   /**
-   Gets a view of a section header
-   */
-   renderSectionHeader(data, sectionName) {
-
-      return (
-         <View>
          {
-            sectionName.toLowerCase() == "options" ?
-            <View>
-            <Text>Start and end time should be generated here (choose ISO): </Text>
+            data.title == "Start" || data.title == "End" ?
+            <View style={{paddingLeft: 20, paddingRight: 20}}>
+            <Text style={{fontSize: 12}}>Start and end time should be generated here (choose ISO): </Text>
             <TouchableHighlight
             underlayColor="rgba(110, 73, 189, 0)"
             onPress={() => Linking.openURL("http://www.timestampgenerator.com")}>
@@ -222,11 +257,52 @@ class CreateVotingEventSettings extends Component {
             :
             null
          }
+         <View style={styles.seperatorSmall}/>
+         </View>
+         </TouchableHighlight>
+      );
+   }
+
+   updateValid(text, key) {
+      var val = this.inputIsValid(text, key);
+      console.log(val);
+      if (val != this.validInput) {
+         this.props.rightButtonDisable(!val);
+         this.validInput = val;
+      }
+   }
+
+   inputIsValid(text, key) {
+      var valid = true;
+      if (key == "description") {
+         valid = text != "" && text != undefined && valid;
+      }else{
+         valid = this.state.description != "" && this.state.description != undefined && valid;
+      }
+
+      if (key == "name") {
+         valid = text != "" && text != undefined && valid;
+      }else{
+         valid = this.state.name != "" && this.state.name != undefined && valid;
+      }
+
+      return valid;
+   }
+
+   /**
+   Gets a view of a section header
+   */
+   renderSectionHeader(data, sectionName) {
+
+      return (
          <View style={styles.sectionHeader}>
          <Text style={styles.sectionHeaderText}>{sectionName.toUpperCase()}</Text>
          </View>
-         </View>
       )
+   }
+
+   renderFooter() {
+      return <Animated.View style={{height: this.state.animation}}/>
    }
 
    render() {
@@ -246,8 +322,8 @@ class CreateVotingEventSettings extends Component {
          <ListView
          dataSource={this.state.dataSource}
          renderRow={this.renderRow.bind(this)}
+         renderFooter={this.renderFooter.bind(this)}
          renderSectionHeader={this.renderSectionHeader.bind(this)}/>
-         <View style={{height: 250}}/>
          </View>
       );
    }
@@ -280,7 +356,7 @@ const styles = StyleSheet.create({
    },
    sectionHeader: {
       flex: 1,
-      height: 50,
+      height: 30,
       flexDirection: 'row',
       backgroundColor: 'rgb(238, 238, 238)'
    },

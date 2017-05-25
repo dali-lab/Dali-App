@@ -302,6 +302,7 @@ class Settings extends Component {
 				}
 			}}
 			complete={() => this.votingEventSettings.reloadData()}
+			rightButtonDisable={(bool) => this.setState({ rightButtonDisabled: bool }) }
 			navigator={navigator}/>;
 		}
 	}
@@ -383,7 +384,7 @@ class Settings extends Component {
 								<TouchableHighlight
 								underlayColor="rgba(0,0,0,0)"
 								style={styles.navBarDoneButton}
-								onPress={rightButton.action}>
+								onPress={!this.state.rightButtonDisabled ? rightButton.action : null}>
 								<Text
 								style={[styles.navBarDoneText, rightButton.stlye, this.state.rightButtonDisabled ? styles.navBarDisabled : null]}>
 								{rightButton.text}
@@ -457,7 +458,7 @@ const styles = StyleSheet.create({
 		marginLeft: 10,
 	},
 	navBarDisabled: {
-		color: 'rgb(0, 0, 0)'
+		color: 'rgb(83, 163, 148)'
 	},
 	listView: {
 		flex: 1,

@@ -49,12 +49,14 @@ class VotingEventSettings extends Component {
          showCoverModal: false
       };
 
+      setTimeout(() => {
+         this.updateValid();
+      }, 10);
       this.reloadData();
    }
 
    reloadData() {
       ServerCommunicator.current.getEventNowWithScores().then((newEvent) => {
-         console.log(newEvent);
          if (newEvent != null) {
             var event = this.state.event;
 
@@ -62,9 +64,9 @@ class VotingEventSettings extends Component {
                event = newEvent;
             }else{
                newEvent.options.forEach((option) => {
-                  const corespondingIndex = findWithAttr(event.options, "id", option);
+                  const corespondingIndex = findWithAttr(event.options, "id", option.id);
                   if (corespondingIndex == -1) {
-                     event.splice(0,0, option);
+                     event.options.splice(0,0, option);
                   }else{
                      var localOption = event.options[corespondingIndex];
                      localOption.dirty = true;
@@ -124,35 +126,52 @@ class VotingEventSettings extends Component {
    }
 
    editOptionDescription(option) {
-      if (option.award == null) {
+      if (option.awards == null || option.awards == []) {
+         option.awards = [];
+
          this.setState({
             showingEditOption: true,
             modalText: "",
             editingOption: this.state.event.options.indexOf(option),
          })
       }else{
-         Alert.alert("Remove award?", "Do you want to remove " + option.award + " from this option?", [
-            {text: 'Cancel', onPress: () => {}},
-            {text: 'Do it!', onPress: () => {
-               option.award = null;
-               option.dirty = true;
-               this.setState({
-                  dataSource: this.state.dataSource.cloneWithRows(this.state.event.options)
+         Alert.alert("Add or Remove?", "Add or remove an award?", [
+            { text: 'Add', onPress: () => this.setState({
+               showingEditOption: true,
+               modalText: "",
+               editingOption: this.state.event.options.indexOf(option),
+            }) },
+            { text: 'Remove', onPress: () => {
+               var buttons = option.awards.map((award, index) => {
+                  return { text: award, onPress: () => {
+                     option.awards.splice(index, 1);
+                     option.dirty = true;
+                     this.setState({
+                        dataSource: this.state.dataSource.cloneWithRows(this.state.event.options)
+                     });
+                     this.updateValid();
+                  }}
                })
-               this.updateValid();
-            }}
-         ], { cancelable: false })
+
+               buttons.push({
+                  text: "Cancel",
+                  onPress: () => {}
+               })
+
+               Alert.alert("Which one?", null, buttons);
+            } }
+         ])
       }
    }
 
    updateValid() {
-      this.props.rightButtonDisable(this.inputIsValid());
-   }s
+      this.props.rightButtonDisable(!this.inputIsValid());
+   }
 
    inputIsValid() {
       if (this.state.event == null || // There is no event
          this.state.event.options.length == 0 || // There are no options
-         this.event.options.filter((option) => option.award != null).length == 0 // No awards have been assigned
+         this.state.event.options.filter((option) => option.award != null).length == 0 // No awards have been assigned
       ) {
          return false;
       }
@@ -169,8 +188,10 @@ class VotingEventSettings extends Component {
          <Text style={styles.rowText}>{option.name}</Text>
          <Text style={styles.scoreText}>Score: {option.score}</Text>
          </View>
-         {option.award != null ?
-            <Text style={styles.rowAwardText}>Award: {option.award}</Text>
+         {option.awards != null ?
+            option.awards.map((award) => {
+               return <Text key={award} style={styles.rowAwardText}>Award: {award}</Text>
+            })
             :
             null
          }
@@ -251,8 +272,17 @@ class VotingEventSettings extends Component {
 
             <TouchableHighlight
             onPress={() => {
-               this.state.event.options[this.state.editingOption].award = this.state.modalText;
+               if (this.state.modalText == "") {
+                  Alert.alert("You need some text!");
+                  return;
+               }
+
+               if (this.state.event.options[this.state.editingOption].awards == null) {
+                  this.state.event.options[this.state.editingOption].awards = [];
+               }
+               this.state.event.options[this.state.editingOption].awards.push(this.state.modalText);
                this.state.event.options[this.state.editingOption].dirty = true;
+               console.log(this.state.event.options[this.state.editingOption].awards);
                this.setState({
                   showingEditOption: false,
                   modalText: "",
