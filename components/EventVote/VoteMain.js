@@ -69,7 +69,16 @@ class VoteMain extends Component {
             }, 600);
          }
       });
+
+      this.reloadInterval = setInterval(this.updateResults.bind(this), 1000 * 5);
+
       this.updateResults();
+   }
+
+   componentWillUnmount() {
+      console.log("Clearing");
+      clearInterval(this.reloadInterval);
+      this.reloadInterval = null;
    }
 
    updateResults() {
@@ -78,13 +87,6 @@ class VoteMain extends Component {
          this.setState({
             results: results
          });
-
-         if (results == null) {
-            setTimeout(() => {
-               this.updateResults();
-               console.log("Reloading...");
-            }, 1000 * 30); // One minute
-         }
       }).catch((error) => {
          if (error.code != 400) {
             console.log(error);
@@ -93,33 +95,37 @@ class VoteMain extends Component {
    }
 
    renderInternal(route, navigator) {
-      var internalView = <VoteSelection ref={(voteSelection) => { this.voteSelection = voteSelection; }}/>;
+      var internalView = <VoteWait loading={true}/>
 
-      if (route.name == "VoteOrder") {
-         internalView = <VoteOrder voteComplete={() => {
-            this.updateResults();
-            this.setState({
-               hasVoted: true
-            });
-            StorageController.setVoteDone(this.event).then(() => {});
-            this.updateResults();
-         }}
-         selectedOptions={route.selectedOptions}
-         ref={(voteOrder) => { this.voteOrder = voteOrder; }}/>
-      }
+      if (this.state.event != null) {
+         internalView = <VoteSelection ref={(voteSelection) => { this.voteSelection = voteSelection; }}/>;
 
-      console.log(this.state);
-      if (this.state.hasVoted) {
-         if (this.voteSelection != null) {
-            this.voteSelection.visible = false;
+         if (route.name == "VoteOrder") {
+            internalView = <VoteOrder voteComplete={() => {
+               this.updateResults();
+               this.setState({
+                  hasVoted: true
+               });
+               StorageController.setVoteDone(this.event).then(() => {});
+               this.updateResults();
+            }}
+            selectedOptions={route.selectedOptions}
+            ref={(voteOrder) => { this.voteOrder = voteOrder; }}/>
          }
-         internalView = <VoteWait event={this.state.event}/>;
-      }
-      if (this.state.results != null) {
-         if (this.voteSelection != null) {
-            this.voteSelection.visible = false;
+
+         console.log(this.state);
+         if (this.state.hasVoted) {
+            if (this.voteSelection != null) {
+               this.voteSelection.visible = false;
+            }
+            internalView = <VoteWait event={this.state.event}/>;
          }
-         internalView = <VoteResults results={this.state.results}/>;
+         if (this.state.results != null) {
+            if (this.voteSelection != null) {
+               this.voteSelection.visible = false;
+            }
+            internalView = <VoteResults results={this.state.results}/>;
+         }
       }
 
       return internalView;
@@ -147,7 +153,10 @@ class VoteMain extends Component {
          });
          StorageController.setVoteDone(this.state.event).then(() => {});
       }).catch((error) => {
-         console.log(error.response);
+         if (error.code == 405) {
+            StorageController.setVoteDone(this.state.event).then(() => {});
+         }
+         console.log(error.message);
          Alert.alert("Encountered an error", error.message);
       });
    }
@@ -213,7 +222,7 @@ class VoteMain extends Component {
                   );
                },
                Title: (route, navigator, index, navState) => {
-                  return (<Text style={styles.navBarTitleText}>Voting for {this.state.event == null ? 'Event...' : this.state.event.name}</Text>);
+                  return (<Text style={styles.navBarTitleText}>{this.state.results != null ? "Results" : "Voting"} for {this.state.event == null ? 'Event...' : this.state.event.name}</Text>);
                }
             }}
             style={{backgroundColor: 'rgb(33, 122, 136)'}}/>

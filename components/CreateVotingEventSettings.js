@@ -198,7 +198,7 @@ class CreateVotingEventSettings extends Component {
          this.setState({
             showCoverModal: false
          });
-         Alert.alert("Encountered an error", error);
+         Alert.alert("Encountered an error", error.message);
       });
    }
 

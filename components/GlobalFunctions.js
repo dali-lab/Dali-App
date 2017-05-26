@@ -13,8 +13,12 @@ class GlobalFunctions {
       return GoogleSignin.currentUser().email == env.tim// || __DEV__
    }
 
-   static userIsTheo() {
-      return GoogleSignin.currentUser().email == env.theo// || __DEV__
+   static userIsAdmin() {
+      if (GoogleSignin.currentUser() == null || GoogleSignin.currentUser().email == null || GoogleSignin.currentUser().email == "") {
+         return false
+      }
+
+      return env.admins.includes(GoogleSignin.currentUser().email.toLowerCase());
    }
 }
 

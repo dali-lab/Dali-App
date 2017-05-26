@@ -174,7 +174,7 @@ class Settings extends Component {
 			}
 		}else if (this.props.user != null){
 			// This is a regular non-tim user
-			if (GlobalFunctions.userIsTheo()) {
+			if (GlobalFunctions.userIsAdmin()) {
 				// This is theo, so he gets the voting options
 				return {
 					user: [signOutRow],

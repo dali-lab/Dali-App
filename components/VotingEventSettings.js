@@ -49,9 +49,7 @@ class VotingEventSettings extends Component {
          showCoverModal: false
       };
 
-      setTimeout(() => {
-         this.updateValid();
-      }, 10);
+      this.updateOnReload = true;
       this.reloadData();
    }
 
@@ -71,6 +69,7 @@ class VotingEventSettings extends Component {
                      var localOption = event.options[corespondingIndex];
                      localOption.dirty = true;
                      localOption.score = option.score;
+                     localOption.awards = option.awards;
                   }
                });
             }
@@ -90,6 +89,7 @@ class VotingEventSettings extends Component {
             }
          }
 
+         this.updateOnReload = true;
          this.setState({
             event: event,
             dataSource: this.state.dataSource.cloneWithRows(event != null ? event.options : [])
@@ -101,6 +101,13 @@ class VotingEventSettings extends Component {
             });
          }
       });
+   }
+
+   componentDidUpdate(prevProps, prevState) {
+      if (this.updateOnReload) {
+         this.updateValid();
+         this.updateOnReload = false;
+      }
    }
 
    componentWillUnmount() {
@@ -116,8 +123,18 @@ class VotingEventSettings extends Component {
 
    getRightButton() {
       return {
-         text: "Release",
+         text: this.state.event != null && this.state.event.resultsReleased ? "Released" : "Release",
          action: this.releasePressed.bind(this)
+      }
+   }
+
+   getLeftButton() {
+      return {
+         text: "< Back",
+         action: () => {
+            this.props.navigator.pop();
+            this.componentWillUnmount();
+         }
       }
    }
 
@@ -126,7 +143,7 @@ class VotingEventSettings extends Component {
    }
 
    editOptionDescription(option) {
-      if (option.awards == null || option.awards == []) {
+      if (option.awards == null || option.awards.length == 0) {
          option.awards = [];
 
          this.setState({
@@ -150,16 +167,17 @@ class VotingEventSettings extends Component {
                         dataSource: this.state.dataSource.cloneWithRows(this.state.event.options)
                      });
                      this.updateValid();
+                     this.save();
                   }}
-               })
+               });
 
                buttons.push({
-                  text: "Cancel",
-                  onPress: () => {}
-               })
+                  text: "Cancel"
+               });
 
                Alert.alert("Which one?", null, buttons);
-            } }
+            } },
+            { text: 'Cancel' }
          ])
       }
    }
@@ -169,13 +187,9 @@ class VotingEventSettings extends Component {
    }
 
    inputIsValid() {
-      if (this.state.event == null || // There is no event
-         this.state.event.options.length == 0 || // There are no options
-         this.state.event.options.filter((option) => option.award != null).length == 0 // No awards have been assigned
-      ) {
-         return false;
-      }
-      return true;
+      return this.state.event != null && // There is no event
+         this.state.event.options.length != 0 && // There are no options
+         this.state.event.options.filter((option) => option.awards != null).length != 0 && !this.state.event.resultsReleased;
    }
 
    renderRow(option) {
@@ -201,11 +215,24 @@ class VotingEventSettings extends Component {
       );
    }
 
-   releasePressed() {
-      var awards = this.state.event.options.filter((option) => {
-         console.log(option);
-         return option.award != null
+   getAwards() {
+      var awards = []
+      this.state.event.options.forEach((option) => {
+         if (option.awards != null && option.awards.length != 0) {
+            option.awards.forEach((award) => {
+               awards.push({
+                  award: award,
+                  id: option.id
+               })
+            })
+         }
       });
+
+      return awards;
+   }
+
+   releasePressed() {
+      let awards = this.getAwards();
 
       if (awards.length == 0) {
          Alert.alert("You need to give at least one award, Theo", null, [{text: 'Fine', onPress:() => {}}], {cancelable: false});
@@ -227,6 +254,18 @@ class VotingEventSettings extends Component {
             });
          }}, {cancelable: false});
       })
+   }
+
+   save() {
+      let awards = this.getAwards();
+      console.log("Saving here");
+
+      ServerCommunicator.current.saveAwards(awards, this.state.event).then((result) => {
+         console.log(result);
+      }).catch((error) => {
+         console.log(JSON.stringify(error));
+         this.reloadData();
+      });
    }
 
    render() {
@@ -282,6 +321,7 @@ class VotingEventSettings extends Component {
                }
                this.state.event.options[this.state.editingOption].awards.push(this.state.modalText);
                this.state.event.options[this.state.editingOption].dirty = true;
+               this.save();
                console.log(this.state.event.options[this.state.editingOption].awards);
                this.setState({
                   showingEditOption: false,

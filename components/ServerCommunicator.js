@@ -137,8 +137,12 @@ class ServerCommunicator {
       })
    }
 
+   authString() {
+      return "?key=" + env.apiKey;
+   }
+
    getEventNow() {
-      var url = env.voting.currentURL + "?key=" + env.apiKey;
+      var url = env.voting.currentURL + this.authString();
       return fetch(url, {method: "GET"})
       .then(ApiUtils.checkStatus)
       .then((response) => {
@@ -154,56 +158,57 @@ class ServerCommunicator {
    }
 
    getEventNowWithScores() {
-      if (this.user == null || !GlobalFunctions.userIsTheo()) {
+      if (this.user == null || !GlobalFunctions.userIsAdmin()) {
          return new Promise(function(resolve, reject) {
             reject();
          });
       }
 
-      return fetch(env.voting.currentResultsURL + "?key=" + env.apiKey, {method: "GET"})
+      return fetch(env.voting.currentResultsURL + this.authString(), {method: "GET"})
       .then(ApiUtils.checkStatus).then((response) => response.json());
    }
 
    submitNewEvent(event) {
-      return this.post(env.voting.createURL + "?key=" + env.apiKey, event, "POST", true);
+      return this.post(env.voting.createURL + this.authString(), event, "POST", true);
    }
 
    releaseAwards(awards, event) {
-      if (this.user == null || !GlobalFunctions.userIsTheo()) {
+      if (this.user == null || !GlobalFunctions.userIsAdmin()) {
          return new Promise(function(resolve, reject) {
             reject();
          });
       }
 
       console.log(awards);
-      awards.forEach((award) => {
-         award.dirty = undefined;
-         award.name = undefined;
-      });
 
-      return this.post(env.voting.releaseURL + "?key=" + env.apiKey, {
+      return this.post(env.voting.releaseURL + this.authString(), {
+         event: event.id,
+         winners: awards
+      }).then(ApiUtils.checkStatus);
+   }
+
+   saveAwards(awards, event) {
+      if (this.user == null || !GlobalFunctions.userIsAdmin()) {
+         return new Promise(function(resolve, reject) {
+            reject();
+         });
+      }
+      console.log("Saving", awards);
+
+      return this.post(env.voting.awardsSavingURL + this.authString(), {
          event: event.id,
          winners: awards
       });
    }
 
    getVotingResults() {
-      // return new Promise(function(resolve, reject) {
-      //    setTimeout(function () {
-      //       resolve([
-      //          {name: "Pitch 1", award: "Best food"},
-      //          {name: "Pitch 2", award: "Coolest hair"},
-      //          {name: "Pitch 3", award: "Most working prototpye"},
-      //       ]);
-      //    }, 1000 * 5);
-      // });
-      return fetch(env.voting.finalResultsURL + "?key=" + env.apiKey, {method: "GET"})
+      return fetch(env.voting.finalResultsURL + this.authString(), {method: "GET"})
       .then(ApiUtils.checkStatus).then((response) => response.json())
    }
 
    /// Takes only ids
    submitVotes(first, second, third, event) {
-      return this.post(env.voting.submitURL + "?key=" + env.apiKey, {
+      return this.post(env.voting.submitURL + this.authString(), {
          event: event.id,
          first: first,
          second: second,

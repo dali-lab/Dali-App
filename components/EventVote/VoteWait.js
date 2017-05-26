@@ -13,12 +13,19 @@ let ServerCommunicator = require('../ServerCommunicator').default;
 import LinearGradient from 'react-native-linear-gradient';
 
 class VoteWait extends Component {
+   propTypes: {
+      loading: React.PropTypes.Type.Boolean
+   }
 
    render() {
       return (
          <LinearGradient colors={['#2696a9', 'rgb(146, 201, 210)']} style={styles.container}>
          <Image source={require("../Assets/pitchLightBulb.png")} style={styles.image}/>
-         <Text style={styles.text}>Thank you for voting. Waiting for results to be released...</Text>
+         <Text style={styles.text}>{this.props.loading ?
+            "Thank you for voting. Waiting for results to be released..."
+            :
+            "Loading..."
+         }</Text>
          </LinearGradient>
       );
    }

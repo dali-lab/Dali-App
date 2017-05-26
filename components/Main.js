@@ -6,7 +6,7 @@
 * 	- ListView of Upcoming events
 *
 * AUTHOR: John Kotz
-* Copyright (c) 2017 DALI Lab All Rights Reserved.
+* Copyright (c) 2017 DALI Lab and John Kotz All Rights Reserved.
 */
 
 import React, { Component } from 'react';
@@ -146,6 +146,9 @@ class Main extends Component {
 
 	componentWillUnmount() {
 		AppState.removeEventListener('change', this._handleAppStateChange);
+
+		clearInterval(this.reloadInterval);
+		this.reloadInterval = null
 	}
 
 	_handleAppStateChange = (nextAppState) => {
@@ -153,6 +156,9 @@ class Main extends Component {
 		if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
 			console.log('App has come to the foreground!');
 			this.refreshData();
+		}else{
+			clearInterval(this.reloadInterval);
+			this.reloadInterval = null
 		}
 		this.setState({appState: nextAppState});
 	}
@@ -184,6 +190,13 @@ class Main extends Component {
 	- Current location (ie. in lab or not)
 	*/
 	refreshData() {
+		if (this.reloadInterval == null) {
+			console.log("Making interval");
+			this.reloadInterval = setInterval(() => {
+				this.refreshData();
+			}, 1000 * 60);
+		}
+
 		this.refreshVotingData();
 
 		console.log("Refreshing...");
