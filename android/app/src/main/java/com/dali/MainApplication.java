@@ -3,14 +3,13 @@ package com.dali;
 import android.app.Application;
 import android.util.Log;
 
-
 import com.crashlytics.android.Crashlytics;
 import com.facebook.react.ReactApplication;
-import com.ocetnik.timer.BackgroundTimerPackage;
-import com.BV.LinearGradient.LinearGradientPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.mackentoch.beaconsandroid.BeaconsAndroidPackage;
+import com.ocetnik.timer.BackgroundTimerPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -24,7 +23,6 @@ import java.util.List;
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
-
     @Override
     public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
@@ -34,11 +32,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new BackgroundTimerPackage(),
-            new LinearGradientPackage(),
             new ReactNativePushNotificationPackage(),
+            new LinearGradientPackage(),
             new RNGoogleSigninPackage(),
-            new BeaconsAndroidPackage()
+            new BeaconsAndroidPackage(),
+            new BackgroundTimerPackage()
       );
     }
   };
@@ -49,11 +47,11 @@ public class MainApplication extends Application implements ReactApplication {
   }
 
   @Override
-  public void onCreate() {
-      super.onCreate();
-      if (!BuildConfig.DEBUG) {
-          Fabric.with(this, new Crashlytics());
-      }
-      SoLoader.init(this, /* native exopackage */ false);
+public void onCreate() {
+    super.onCreate();
+    if (!BuildConfig.DEBUG) {
+        Fabric.with(this, new Crashlytics());
+    }
+    SoLoader.init(this, /* native exopackage */ false);
   }
 }
