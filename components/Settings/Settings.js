@@ -132,7 +132,7 @@ class Settings extends Component {
 			}
 		]
 
-		var signOutRow = {
+		var signInOutRow = {
 			title: this.props.user != null ? "Sign Out" : "Sign In",
 			action: this.props.onLogout,
 			image: this.props.user != null ? this.props.user.photo : null
@@ -160,15 +160,16 @@ class Settings extends Component {
 				title: "Voting Event",
 				action: () => {
 					this.navigator.push({
-						name: 'Voting Event Subsettings', // Matches route.name
+						name: 'Voting Event',
 					});
 				}
 			}
 		]
 
 		if (GlobalFunctions.userIsTim()) {
+			// Tim gets automatic access to the voting rows, but because he is already tracked he can't share his information
 			return {
-				user: [signOutRow],
+				user: [signInOutRow],
 				notifications: notificationsRows,
 				voting: votingEventSetupRows
 			}
@@ -177,7 +178,7 @@ class Settings extends Component {
 			if (GlobalFunctions.userIsAdmin()) {
 				// This is theo, so he gets the voting options
 				return {
-					user: [signOutRow],
+					user: [signInOutRow],
 					notifications: notificationsRows,
 					location: locationRows,
 					voting: votingEventSetupRows
@@ -185,15 +186,15 @@ class Settings extends Component {
 			}else{
 				// A non-tim non-theo user
 				return {
-					user: [signOutRow],
+					user: [signInOutRow],
 					notifications: notificationsRows,
 					location: locationRows
 				}
 			}
 		}else{
-			// A non-user. All they get to do is sign out
+			// A non-user. All they get to do is sign in
 			return {
-				user: [signOutRow]
+				user: [signInOutRow]
 			}
 		}
 	}
@@ -262,9 +263,13 @@ class Settings extends Component {
 		)
 	}
 
+	/// Renders the scene in the navigator. This is necessary, as Settings controlls all the subsequent Views.
+	/// Not the best implementation, but there is little time for fancy but simple options
 	renderScene(route, navigator) {
 		this.navigator = navigator;
+
 		if (route.name == 'Settings') {
+			// Settings is a simple Listview that I have been setting up so far
 			return (
 				<ListView
 				style={styles.listView}
@@ -272,45 +277,55 @@ class Settings extends Component {
 				renderSectionHeader={this.renderSectionHeader.bind(this)}
 				renderFooter={this.renderFooter.bind(this)}
 				renderRow={this.renderRow.bind(this)}/>
-			)
-		}else if (route.name == 'Voting Event Subsettings') {
-			return <VotingEventSettings
-			rightButtonDisable={(bool) => this.setState({ rightButtonDisabled: bool }) }
-			ref={(votingEventSettings) => {
-				if (votingEventSettings == null) {
-					return;
-				}
+			);
+		}else if (route.name == 'Voting Event') {
+			// Return the subview with the correct properties
+			return (
+				<VotingEventSettings
+				rightButtonDisable={(bool) => this.setState({ rightButtonDisabled: bool }) }
+				ref={(votingEventSettings) => {
+					if (votingEventSettings == null) return;
 
-				if (this.votingEventSettings != votingEventSettings) {
-					this.forceUpdate();
-					console.log("Force updating voting...");
-					this.votingEventSettings = votingEventSettings;
-				}
-			}}
-			navigator={navigator}/>;
-		}else if (route.name == 'Create Voting Event Subsettings') {
-			return <CreateVotingEventSettings
-			ref={(createEventView) => {
-				if (createEventView == null) {
-					return;
-				}
+					// If the reference has changed then I will reload the whole navigator
+					if (this.votingEventSettings != votingEventSettings) {
+						this.forceUpdate();
+						console.log("Force updating voting...");
+						this.votingEventSettings = votingEventSettings;
+					}
+				}}
+				navigator={navigator}/>
+			);
+		}else if (route.name == 'Create Voting Event') {
+			// Return the subview with the correct properties
+			// I give this view a callback to call when it is done so I can force update the voting event settings view
+			return (
+				<CreateVotingEventSettings
+				rightButtonDisable={(bool) => this.setState({ rightButtonDisabled: bool }) }
+				ref={(createEventView) => {
+					if (createEventView == null) return;
 
-				if (this.createEventView != createEventView) {
-					this.forceUpdate();
-					console.log("Force updating creating...");
-					this.createEventView = createEventView;
-				}
-			}}
-			complete={() => this.votingEventSettings.reloadData()}
-			rightButtonDisable={(bool) => this.setState({ rightButtonDisabled: bool }) }
-			navigator={navigator}/>;
+					// If the reference has changed then I will reload the whole navigator
+					if (this.createEventView != createEventView) {
+						this.forceUpdate();
+						console.log("Force updating creating...");
+						this.createEventView = createEventView;
+					}
+				}}
+				complete={() => this.votingEventSettings.forceUpdate()}
+				navigator={navigator}/>
+			);
+		}else{
+			console.error("Unknown route name: ", route.name);
+			return <View/>
 		}
 	}
 
+	/// Called by the navigator to determine what the left button should be
 	getLeftButton() {
 		return null
 	}
 
+	/// Called by the navigator to get the title of the navigator
 	getNavigationTitle() {
 		return "Settings"
 	}
@@ -327,21 +342,26 @@ class Settings extends Component {
 				<Navigator.NavigationBar
 				routeMapper={{
 					LeftButton: (route, navigator, index, navState) => {
+						// This is pretty cool. First I determine a reference to the view that is currently being displayed
 						var currentView = null;
-						if (route.name == "Create Voting Event Subsettings") {
+						if (route.name == "Create Voting Event") {
 							currentView = this.createEventView;
-						}else if (route.name == "Voting Event Subsettings") {
+						}else if (route.name == "Voting Event") {
 							currentView = this.votingEventSettings;
 						}else{
 							currentView = this;
 						}
 
+
 						if (currentView != null && currentView.getLeftButton != undefined) {
+							// If the current view has a preference on their left button...
 							let leftButton = currentView.getLeftButton();
+							// Get it and check it
 							if (leftButton == null) {
 								return null;
 							}
 
+							// And if they actually want something we'll give it to them
 							return (
 								<TouchableHighlight
 								underlayColor="rgba(0,0,0,0)"
@@ -354,6 +374,8 @@ class Settings extends Component {
 								</TouchableHighlight>
 							);
 						}else{
+							// If we cannot get any information on what view we are on
+							// or what that view wants for a left button, we will assume a back button
 							return (
 								<TouchableHighlight
 								underlayColor="rgba(0,0,0,0)"
@@ -365,21 +387,25 @@ class Settings extends Component {
 						}
 					},
 					RightButton: (route, navigator, index, navState) => {
+						// Very similar to the left button stuff
+						// We get the current view
 						var currentView = null;
-						if (route.name == "Create Voting Event Subsettings") {
+						if (route.name == "Create Voting Event") {
 							currentView = this.createEventView;
-						}else if (route.name == "Voting Event Subsettings") {
+						}else if (route.name == "Voting Event") {
 							currentView = this.votingEventSettings;
 						}else{
 							currentView = this;
 						}
 
 						if (currentView != null && currentView.getRightButton != undefined) {
+							// If the view has a preference
 							let rightButton = currentView.getRightButton();
 							if (rightButton == null) {
 								return null;
 							}
 
+							// Use it...
 							return (
 								<TouchableHighlight
 								underlayColor="rgba(0,0,0,0)"
@@ -392,6 +418,7 @@ class Settings extends Component {
 								</TouchableHighlight>
 							);
 						}else{
+							// Otherwise assume Done button
 							return (
 								<TouchableHighlight
 								underlayColor="rgba(0,0,0,0)"
@@ -403,8 +430,10 @@ class Settings extends Component {
 						}
 					},
 					Title: (route, navigator, index, navState) => {
-						var text = route.name.replace(' Subsettings', '');
+						// Default text will be based one the route name
+						var text = route.name;
 						if (this.state.currentView != null && this.state.currentView.getNavigationTitle) {
+							// There is a preference
 							text = this.state.currentView.getNavigationTitle();
 						}
 						return (<Text style={styles.navBarTitleText}>{text}</Text>);

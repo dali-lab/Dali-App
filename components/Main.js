@@ -33,7 +33,7 @@ import {GoogleSignin} from 'react-native-google-signin';
 // My Components and classes
 let ServerCommunicator = require('./ServerCommunicator').default;
 let BeaconController = require('./BeaconController').default;
-let Settings = require('./Settings');
+let Settings = require('./Settings/Settings');
 let PeopleInLab = require('./PeopleInLab');
 let EventVote = require('./EventVote/VoteMain');
 let StorageController = require('./StorageController').default;
