@@ -137,17 +137,27 @@ class ServerCommunicator {
       })
    }
 
+   /// Returns a string to be added to any voting request that will allow the server to validate the identity of the device
    authString() {
       return "?key=" + env.apiKey;
    }
 
+   /**
+   * Queries the server for the event happening at the mmoment
+   * Rejects with an error object if the server returns an error
+   */
    getEventNow() {
+      // Generating the url
       var url = env.voting.currentURL + this.authString();
+
+      // Get
       return fetch(url, {method: "GET"})
-      .then(ApiUtils.checkStatus)
+      .then(ApiUtils.checkStatus) // This will search the response for error indicators and throw if there are problems
       .then((response) => {
+         // Handle the response
          return new Promise(function(resolve, reject) {
             response.json().then((responseJson) => {
+               // Saving the event in case I need it later
                this.event = responseJson;
                resolve(responseJson);
             }).catch((error) => {
@@ -157,56 +167,76 @@ class ServerCommunicator {
       });
    }
 
+   /**
+   * Queries the server for the event happening now, but it won't strip the scores before returning them
+   * NOTE: Only admins can access scores
+   */
    getEventNowWithScores() {
       if (this.user == null || !GlobalFunctions.userIsAdmin()) {
-         return new Promise(function(resolve, reject) {
-            reject();
-         });
+         // Autoreject
+         return new Promise(function(resolve, reject) { reject() });
       }
 
       return fetch(env.voting.currentResultsURL + this.authString(), {method: "GET"})
       .then(ApiUtils.checkStatus).then((response) => response.json());
    }
 
+   /**
+   * Creates a new event on the server with the given object as a guide
+   */
    submitNewEvent(event) {
-      return this.post(env.voting.createURL + this.authString(), event, "POST", true);
+      return this.post(env.voting.createURL + this.authString(), event, "POST", true)
+      .then(ApiUtils.checkStatus);
    }
 
-   releaseAwards(awards, event) {
+   /**
+   * Release the currently saved awards
+   * NOTE: Only admins may call this function
+   */
+   releaseAwards(event) {
       if (this.user == null || !GlobalFunctions.userIsAdmin()) {
-         return new Promise(function(resolve, reject) {
-            reject();
-         });
+         // Autoreject
+         return new Promise(function(resolve, reject) { reject() });
       }
 
-      console.log(awards);
+      return this.post(
+         env.voting.releaseURL + this.authString(),
+         { event: event.id }
+      )
+      .then(ApiUtils.checkStatus);
+   }
 
-      return this.post(env.voting.releaseURL + this.authString(), {
+   /**
+   * Saves the given set of awards on the server
+   * NOTE: Only admins may call this function.
+   */
+   saveAwards(awards, event) {
+      if (this.user == null || !GlobalFunctions.userIsAdmin()) {
+         // Autoreject
+         return new Promise(function(resolve, reject) { reject() });
+      }
+
+      return this.post(env.voting.awardsSavingURL + this.authString(), {
          event: event.id,
          winners: awards
       }).then(ApiUtils.checkStatus);
    }
 
-   saveAwards(awards, event) {
-      if (this.user == null || !GlobalFunctions.userIsAdmin()) {
-         return new Promise(function(resolve, reject) {
-            reject();
-         });
-      }
-      console.log("Saving", awards);
-
-      return this.post(env.voting.awardsSavingURL + this.authString(), {
-         event: event.id,
-         winners: awards
-      });
-   }
-
+   /**
+   * Pulls the voting results for the current event from the server
+   */
    getVotingResults() {
       return fetch(env.voting.finalResultsURL + this.authString(), {method: "GET"})
       .then(ApiUtils.checkStatus).then((response) => response.json())
    }
 
-   /// Takes only ids
+   /**
+   * Submits the given ids as votes
+   * PARAMETERS:
+   *  - first: First choice (id)
+   *  - second: Second choice (id)
+   *  - third: Third choice (id)
+   */
    submitVotes(first, second, third, event) {
       return this.post(env.voting.submitURL + this.authString(), {
          event: event.id,
@@ -219,6 +249,7 @@ class ServerCommunicator {
 
    /// Simple convenience post method
    post(path, params, method, allowNoUser) {
+      // I allow the caller to pass a flag that bypasses the user check for the given post
       if (this.user != null || allowNoUser) {
          console.log("Posting to: " + path);
          return fetch(path, {

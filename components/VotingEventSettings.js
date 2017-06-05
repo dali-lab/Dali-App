@@ -242,7 +242,7 @@ class VotingEventSettings extends Component {
       this.setState({
          showCoverModal: true
       });
-      ServerCommunicator.current.releaseAwards(awards, this.state.event).then(() => {
+      ServerCommunicator.current.releaseAwards(this.state.event).then(() => {
          this.setState({
             showCoverModal: false
          });
