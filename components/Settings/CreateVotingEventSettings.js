@@ -17,7 +17,7 @@ import {
    Easing
 } from 'react-native';
 
-let ServerCommunicator = require('./ServerCommunicator').default;
+let ServerCommunicator = require('../ServerCommunicator').default;
 
 
 class CreateVotingEventSettings extends Component {
@@ -240,7 +240,7 @@ class CreateVotingEventSettings extends Component {
             }}
             value={this.state[data.key]}/>
             :
-            <Image source={require('./Assets/disclosureIndicator.png')} style={styles.disclosureIndicator}/>
+            <Image source={require('../Assets/disclosureIndicator.png')} style={styles.disclosureIndicator}/>
          }
          </View>
 

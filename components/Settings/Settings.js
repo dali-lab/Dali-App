@@ -21,9 +21,9 @@ import {
 import {GoogleSignin} from 'react-native-google-signin'
 
 // My modules
-const StorageController = require('./StorageController').default;
-const GlobalFunctions = require('./GlobalFunctions').default;
-let ServerCommunicator = require('./ServerCommunicator').default;
+const StorageController = require('../StorageController').default;
+const GlobalFunctions = require('../GlobalFunctions').default;
+let ServerCommunicator = require('../ServerCommunicator').default;
 const VotingEventSettings = require('./VotingEventSettings');
 const CreateVotingEventSettings = require('./CreateVotingEventSettings');
 
@@ -211,7 +211,7 @@ class Settings extends Component {
 				<View style={styles.userRow}>
 				{data.image != null ? <Image source={{uri: data.image}} style={styles.userProfileImage}/> : null}
 				<Text style={styles.userRowTitle}>{data.title}</Text>
-				<Image source={require('./Assets/disclosureIndicator.png')} style={styles.disclosureIndicator}/>
+				<Image source={require('../Assets/disclosureIndicator.png')} style={styles.disclosureIndicator}/>
 				</View>
 				<View style={styles.seperator}/>
 				</View>

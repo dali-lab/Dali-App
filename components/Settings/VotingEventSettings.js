@@ -14,7 +14,7 @@ import {
    ActivityIndicator
 } from 'react-native';
 
-let ServerCommunicator = require('./ServerCommunicator').default;
+let ServerCommunicator = require('../ServerCommunicator').default;
 
 function findWithAttr(array, attr, value) {
    for(var i = 0; i < array.length; i += 1) {
