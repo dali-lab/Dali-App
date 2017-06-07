@@ -2099,6 +2099,7 @@
 				52EFF1191EE8407700D40811 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		52EFF1251EE8408400D40811 /* Build configuration list for PBXNativeTarget "dali Tests" */ = {
 			isa = XCConfigurationList;
@@ -2107,6 +2108,7 @@
 				52EFF1271EE8408400D40811 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "dali" */ = {
 			isa = XCConfigurationList;

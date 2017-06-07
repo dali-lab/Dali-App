@@ -11,6 +11,10 @@ import UIKit
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
   @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var image: UIImageView!
+  @IBOutlet weak var peopleInLabLabel: UILabel!
+  @IBOutlet weak var peopleInLabView: UIView!
+  let wrapLabel = UILabel()
+  
   var events : [ServerCommunicator.Event]?
   
   override func viewDidLoad() {
@@ -22,6 +26,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
       })
       self.tableView.reloadData()
     }
+    
+    let text = self.peopleInLabLabel.text!
+    self.peopleInLabLabel.text = text +  "  -  "
+    wrapLabel.textColor = self.peopleInLabLabel.textColor
+    wrapLabel.font = self.peopleInLabLabel.font
+    wrapLabel.text = text
+    wrapLabel.sizeToFit()
+    peopleInLabLabel.sizeToFit()
+    wrapLabel.frame = CGRect(x: self.peopleInLabLabel.frame.width, y: self.peopleInLabLabel.frame.origin.y, width: wrapLabel.frame.width, height: wrapLabel.frame.height)
+    
+    self.peopleInLabView.addSubview(wrapLabel)
+    
+    self.peopleInLabLabel.sizeToFit()
+    self.animatePeopleInLab()
+  }
+  
+  func animatePeopleInLab() {
+    let peopleInLabStartFrame = self.peopleInLabLabel.frame
+    let wrapLabelStartFrame = self.wrapLabel.frame
+    UIView.animate(withDuration: 12.0, delay: 1, options: ([.curveLinear]), animations: {() -> Void in
+      self.peopleInLabLabel.center = CGPoint(x: 0 - self.peopleInLabLabel.bounds.size.width / 2, y: self.peopleInLabLabel.center.y)
+      self.wrapLabel.center = CGPoint(x: 0 + self.wrapLabel.bounds.size.width / 2, y: self.wrapLabel.center.y)
+    }, completion:  { _ in
+//      self.animatePeopleInLab()
+      self.wrapLabel.frame = wrapLabelStartFrame
+      self.peopleInLabView.frame = peopleInLabStartFrame
+      self.animatePeopleInLab()
+    })
   }
   
   override func didReceiveMemoryWarning() {
