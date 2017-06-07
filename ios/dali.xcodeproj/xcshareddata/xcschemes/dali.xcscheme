@@ -66,6 +66,26 @@
                ReferencedContainer = "container:dali.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "52EFF10F1EE8407700D40811"
+               BuildableName = "dali UITests.xctest"
+               BlueprintName = "dali UITests"
+               ReferencedContainer = "container:dali.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "52EFF11D1EE8408400D40811"
+               BuildableName = "dali Tests.xctest"
+               BlueprintName = "dali Tests"
+               ReferencedContainer = "container:dali.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

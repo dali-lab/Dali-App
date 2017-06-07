@@ -49,6 +49,8 @@
 		52BF8A801E60C3C9000465F8 /* GoogleSymbolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A791E60C3C9000465F8 /* GoogleSymbolUtilities.framework */; };
 		52BF8A811E60C3C9000465F8 /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A7A1E60C3C9000465F8 /* GoogleUtilities.framework */; };
 		52EE3C5D1E4BC7D50089140E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EE3C5C1E4BC7D50089140E /* CoreLocation.framework */; };
+		52EFF1131EE8407700D40811 /* dali_UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EFF1121EE8407700D40811 /* dali_UITests.swift */; };
+		52EFF1211EE8408400D40811 /* dali_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EFF1201EE8408400D40811 /* dali_Tests.swift */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		93B2D79E059E4356BD758EF8 /* libRNBackgroundTimer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F5E13E3B8D94D01B37DC88F /* libRNBackgroundTimer.a */; };
@@ -280,6 +282,20 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = BVLinearGradient;
 		};
+		52EFF1151EE8407700D40811 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = dali;
+		};
+		52EFF1231EE8408400D40811 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = dali;
+		};
 		5E9157321DD0AC6500FF2AA8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */;
@@ -379,6 +395,12 @@
 		52BF8A7A1E60C3C9000465F8 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = GoogleSdk/GoogleUtilities.framework; sourceTree = "<group>"; };
 		52C253DB1E6E63B100C3DA3E /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 		52EE3C5C1E4BC7D50089140E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		52EFF1101EE8407700D40811 /* dali UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "dali UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		52EFF1121EE8407700D40811 /* dali_UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dali_UITests.swift; sourceTree = "<group>"; };
+		52EFF1141EE8407700D40811 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		52EFF11E1EE8408400D40811 /* dali Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "dali Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		52EFF1201EE8408400D40811 /* dali_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dali_Tests.swift; sourceTree = "<group>"; };
+		52EFF1221EE8408400D40811 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		6D29B9663FF7489E9A947ABF /* libRNGoogleSignin.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGoogleSignin.a; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
@@ -444,6 +466,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		525F465E1EE79DE700C5492D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52EFF10D1EE8407700D40811 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52EFF11B1EE8408400D40811 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -666,6 +702,24 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		52EFF1111EE8407700D40811 /* dali UITests */ = {
+			isa = PBXGroup;
+			children = (
+				52EFF1121EE8407700D40811 /* dali_UITests.swift */,
+				52EFF1141EE8407700D40811 /* Info.plist */,
+			);
+			path = "dali UITests";
+			sourceTree = "<group>";
+		};
+		52EFF11F1EE8408400D40811 /* dali Tests */ = {
+			isa = PBXGroup;
+			children = (
+				52EFF1201EE8408400D40811 /* dali_Tests.swift */,
+				52EFF1221EE8408400D40811 /* Info.plist */,
+			);
+			path = "dali Tests";
+			sourceTree = "<group>";
+		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -724,6 +778,8 @@
 			isa = PBXGroup;
 			children = (
 				13B07FAE1A68108700A75B9A /* dali */,
+				52EFF11F1EE8408400D40811 /* dali Tests */,
+				52EFF1111EE8407700D40811 /* dali UITests */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				5266189E1EE759EB00E0E3FF /* DALI Lab Stickers */,
 				525F46471EE79DE600C5492D /* DALI Lab tvOS */,
@@ -745,6 +801,8 @@
 				525F46461EE79DE600C5492D /* DALI Lab tvOS.app */,
 				525F46561EE79DE700C5492D /* DALI Lab tvOSTests.xctest */,
 				525F46611EE79DE700C5492D /* DALI Lab tvOSUITests.xctest */,
+				52EFF1101EE8407700D40811 /* dali UITests.xctest */,
+				52EFF11E1EE8408400D40811 /* dali Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -841,6 +899,42 @@
 			productReference = 5266189D1EE759EB00E0E3FF /* DALI Lab Stickers.appex */;
 			productType = "com.apple.product-type.app-extension.messages-sticker-pack";
 		};
+		52EFF10F1EE8407700D40811 /* dali UITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 52EFF1171EE8407700D40811 /* Build configuration list for PBXNativeTarget "dali UITests" */;
+			buildPhases = (
+				52EFF10C1EE8407700D40811 /* Sources */,
+				52EFF10D1EE8407700D40811 /* Frameworks */,
+				52EFF10E1EE8407700D40811 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				52EFF1161EE8407700D40811 /* PBXTargetDependency */,
+			);
+			name = "dali UITests";
+			productName = "dali UITests";
+			productReference = 52EFF1101EE8407700D40811 /* dali UITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		52EFF11D1EE8408400D40811 /* dali Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 52EFF1251EE8408400D40811 /* Build configuration list for PBXNativeTarget "dali Tests" */;
+			buildPhases = (
+				52EFF11A1EE8408400D40811 /* Sources */,
+				52EFF11B1EE8408400D40811 /* Frameworks */,
+				52EFF11C1EE8408400D40811 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				52EFF1241EE8408400D40811 /* PBXTargetDependency */,
+			);
+			name = "dali Tests";
+			productName = "dali Tests";
+			productReference = 52EFF11E1EE8408400D40811 /* dali Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -880,6 +974,16 @@
 					5266189C1EE759EB00E0E3FF = {
 						CreatedOnToolsVersion = 9.0;
 						DevelopmentTeam = JQ28K6Y7JE;
+					};
+					52EFF10F1EE8407700D40811 = {
+						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = JQ28K6Y7JE;
+						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					52EFF11D1EE8408400D40811 = {
+						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = JQ28K6Y7JE;
+						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 				};
 			};
@@ -967,6 +1071,8 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* dali */,
+				52EFF11D1EE8408400D40811 /* dali Tests */,
+				52EFF10F1EE8407700D40811 /* dali UITests */,
 				5266189C1EE759EB00E0E3FF /* DALI Lab Stickers */,
 				525F46451EE79DE600C5492D /* DALI Lab tvOS */,
 				525F46551EE79DE700C5492D /* DALI Lab tvOSTests */,
@@ -1252,6 +1358,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		52EFF10E1EE8407700D40811 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52EFF11C1EE8408400D40811 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -1321,6 +1441,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		52EFF10C1EE8407700D40811 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				52EFF1131EE8407700D40811 /* dali_UITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52EFF11A1EE8408400D40811 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				52EFF1211EE8408400D40811 /* dali_Tests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1338,6 +1474,16 @@
 			isa = PBXTargetDependency;
 			target = 5266189C1EE759EB00E0E3FF /* DALI Lab Stickers */;
 			targetProxy = 526618A21EE759EB00E0E3FF /* PBXContainerItemProxy */;
+		};
+		52EFF1161EE8407700D40811 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13B07F861A680F5B00A75B9A /* dali */;
+			targetProxy = 52EFF1151EE8407700D40811 /* PBXContainerItemProxy */;
+		};
+		52EFF1241EE8408400D40811 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13B07F861A680F5B00A75B9A /* dali */;
+			targetProxy = 52EFF1231EE8408400D40811 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1690,6 +1836,138 @@
 			};
 			name = Release;
 		};
+		52EFF1181EE8407700D40811 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "dali UITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JohnKotz.DALI.dali-UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = dali;
+			};
+			name = Debug;
+		};
+		52EFF1191EE8407700D40811 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "dali UITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JohnKotz.DALI.dali-UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = dali;
+			};
+			name = Release;
+		};
+		52EFF1261EE8408400D40811 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "dali Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JohnKotz.DALI.dali-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/dali.app/dali";
+			};
+			name = Debug;
+		};
+		52EFF1271EE8408400D40811 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "dali Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JohnKotz.DALI.dali-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/dali.app/dali";
+			};
+			name = Release;
+		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1813,6 +2091,22 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		52EFF1171EE8407700D40811 /* Build configuration list for PBXNativeTarget "dali UITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52EFF1181EE8407700D40811 /* Debug */,
+				52EFF1191EE8407700D40811 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		52EFF1251EE8408400D40811 /* Build configuration list for PBXNativeTarget "dali Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52EFF1261EE8408400D40811 /* Debug */,
+				52EFF1271EE8408400D40811 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "dali" */ = {
 			isa = XCConfigurationList;
