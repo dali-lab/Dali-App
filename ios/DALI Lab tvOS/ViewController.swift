@@ -45,13 +45,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
   func animatePeopleInLab() {
     let peopleInLabStartFrame = self.peopleInLabLabel.frame
     let wrapLabelStartFrame = self.wrapLabel.frame
+//    self.peopleInLabLabel.backgroundColor = UIColor.blue
+//    self.wrapLabel.backgroundColor = UIColor.red
     UIView.animate(withDuration: 12.0, delay: 1, options: ([.curveLinear]), animations: {() -> Void in
       self.peopleInLabLabel.center = CGPoint(x: 0 - self.peopleInLabLabel.bounds.size.width / 2, y: self.peopleInLabLabel.center.y)
       self.wrapLabel.center = CGPoint(x: 0 + self.wrapLabel.bounds.size.width / 2, y: self.wrapLabel.center.y)
     }, completion:  { _ in
 //      self.animatePeopleInLab()
       self.wrapLabel.frame = wrapLabelStartFrame
-      self.peopleInLabView.frame = peopleInLabStartFrame
+      self.peopleInLabLabel.frame = peopleInLabStartFrame
       self.animatePeopleInLab()
     })
   }
