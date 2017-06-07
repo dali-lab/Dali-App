@@ -27,6 +27,16 @@
 		32D489D54703478398FDBC8A /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D29B9663FF7489E9A947ABF /* libRNGoogleSignin.a */; };
 		523585AE1E60C5C5008B9FD9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */; };
 		5252937A1E688677004BFAF5 /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 52BF8A771E60C3C9000465F8 /* GoogleSignIn.bundle */; };
+		525F46491EE79DE600C5492D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F46481EE79DE600C5492D /* AppDelegate.swift */; };
+		525F464B1EE79DE600C5492D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F464A1EE79DE600C5492D /* ViewController.swift */; };
+		525F464E1EE79DE600C5492D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 525F464C1EE79DE600C5492D /* Main.storyboard */; };
+		525F46501EE79DE600C5492D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 525F464F1EE79DE600C5492D /* Assets.xcassets */; };
+		525F465B1EE79DE700C5492D /* DALI_Lab_tvOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F465A1EE79DE700C5492D /* DALI_Lab_tvOSTests.swift */; };
+		525F46661EE79DE700C5492D /* DALI_Lab_tvOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F46651EE79DE700C5492D /* DALI_Lab_tvOSUITests.swift */; };
+		525F46931EE7AF1600C5492D /* ServerCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F46921EE7AF1600C5492D /* ServerCommunicator.swift */; };
+		525F46951EE7AF4600C5492D /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F46941EE7AF4600C5492D /* EventCell.swift */; };
+		526618A01EE759EB00E0E3FF /* Stickers.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5266189F1EE759EB00E0E3FF /* Stickers.xcassets */; };
+		526618A41EE759EB00E0E3FF /* DALI Lab Stickers.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5266189D1EE759EB00E0E3FF /* DALI Lab Stickers.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		526AF3BB1E67E87B00BA1EFE /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3B91E67E87B00BA1EFE /* Fabric.framework */; };
 		526AF3BC1E67E87B00BA1EFE /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */; };
 		5271C2DD1E4D15B7004AFE2F /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2DC1E4D15B7004AFE2F /* libz.tbd */; };
@@ -193,6 +203,27 @@
 			remoteGlobalIDString = 3D3CD9181DE5FBD800167DC4;
 			remoteInfo = "jschelpers-tvOS";
 		};
+		525F46571EE79DE700C5492D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 525F46451EE79DE600C5492D;
+			remoteInfo = "DALI Lab tvOS";
+		};
+		525F46621EE79DE700C5492D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 525F46451EE79DE600C5492D;
+			remoteInfo = "DALI Lab tvOS";
+		};
+		526618A21EE759EB00E0E3FF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5266189C1EE759EB00E0E3FF;
+			remoteInfo = "DALI Lab";
+		};
 		5285641C1E68B7ED00C22D43 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */;
@@ -206,6 +237,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 3D05745F1DE6004600184BB4;
 			remoteInfo = "RCTPushNotification-tvOS";
+		};
+		528649951EE74BCB002D99F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3369739A37647259D3672C3 /* RNBackgroundTimer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 641926921ECB4257009CF731;
+			remoteInfo = "RNBackgroundTimer-tvOS";
 		};
 		529F3FC21EB810C900416D86 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -272,6 +310,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		528649E61EE75533002D99F9 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				526618A41EE759EB00E0E3FF /* DALI Lab Stickers.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = "../node_modules/react-native/Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
@@ -295,10 +347,28 @@
 		2F5E13E3B8D94D01B37DC88F /* libRNBackgroundTimer.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNBackgroundTimer.a; sourceTree = "<group>"; };
 		523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5259642C1E51173B009C970E /* dali.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = dali.entitlements; path = dali/dali.entitlements; sourceTree = "<group>"; };
+		525F46461EE79DE600C5492D /* DALI Lab tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DALI Lab tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		525F46481EE79DE600C5492D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		525F464A1EE79DE600C5492D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		525F464D1EE79DE600C5492D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		525F464F1EE79DE600C5492D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		525F46511EE79DE600C5492D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		525F46561EE79DE700C5492D /* DALI Lab tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DALI Lab tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		525F465A1EE79DE700C5492D /* DALI_Lab_tvOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DALI_Lab_tvOSTests.swift; sourceTree = "<group>"; };
+		525F465C1EE79DE700C5492D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		525F46611EE79DE700C5492D /* DALI Lab tvOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DALI Lab tvOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		525F46651EE79DE700C5492D /* DALI_Lab_tvOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DALI_Lab_tvOSUITests.swift; sourceTree = "<group>"; };
+		525F46671EE79DE700C5492D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		525F46921EE7AF1600C5492D /* ServerCommunicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCommunicator.swift; sourceTree = "<group>"; };
+		525F46941EE7AF4600C5492D /* EventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
+		5266189D1EE759EB00E0E3FF /* DALI Lab Stickers.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "DALI Lab Stickers.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5266189F1EE759EB00E0E3FF /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
+		526618A11EE759EB00E0E3FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		526AF3B91E67E87B00BA1EFE /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		5271C2DC1E4D15B7004AFE2F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
+		528649D51EE75533002D99F9 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
 		52BF8A721E60C3C2000465F8 /* GoogleSdk */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GoogleSdk; sourceTree = "<group>"; };
 		52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppUtilities.framework; path = GoogleSdk/GoogleAppUtilities.framework; sourceTree = "<group>"; };
 		52BF8A751E60C3C9000465F8 /* GoogleAuthUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAuthUtilities.framework; path = GoogleSdk/GoogleAuthUtilities.framework; sourceTree = "<group>"; };
@@ -356,6 +426,27 @@
 				52BF8A811E60C3C9000465F8 /* GoogleUtilities.framework in Frameworks */,
 				F909F7C311ED42EE8F9E6C44 /* libBVLinearGradient.a in Frameworks */,
 				93B2D79E059E4356BD758EF8 /* libRNBackgroundTimer.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		525F46431EE79DE600C5492D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		525F46531EE79DE700C5492D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		525F465E1EE79DE700C5492D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,6 +544,47 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		525F46471EE79DE600C5492D /* DALI Lab tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				525F46481EE79DE600C5492D /* AppDelegate.swift */,
+				525F464A1EE79DE600C5492D /* ViewController.swift */,
+				525F46921EE7AF1600C5492D /* ServerCommunicator.swift */,
+				525F46941EE7AF4600C5492D /* EventCell.swift */,
+				525F464C1EE79DE600C5492D /* Main.storyboard */,
+				525F464F1EE79DE600C5492D /* Assets.xcassets */,
+				525F46511EE79DE600C5492D /* Info.plist */,
+			);
+			path = "DALI Lab tvOS";
+			sourceTree = "<group>";
+		};
+		525F46591EE79DE700C5492D /* DALI Lab tvOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				525F465A1EE79DE700C5492D /* DALI_Lab_tvOSTests.swift */,
+				525F465C1EE79DE700C5492D /* Info.plist */,
+			);
+			path = "DALI Lab tvOSTests";
+			sourceTree = "<group>";
+		};
+		525F46641EE79DE700C5492D /* DALI Lab tvOSUITests */ = {
+			isa = PBXGroup;
+			children = (
+				525F46651EE79DE700C5492D /* DALI_Lab_tvOSUITests.swift */,
+				525F46671EE79DE700C5492D /* Info.plist */,
+			);
+			path = "DALI Lab tvOSUITests";
+			sourceTree = "<group>";
+		};
+		5266189E1EE759EB00E0E3FF /* DALI Lab Stickers */ = {
+			isa = PBXGroup;
+			children = (
+				5266189F1EE759EB00E0E3FF /* Stickers.xcassets */,
+				526618A11EE759EB00E0E3FF /* Info.plist */,
+			);
+			path = "DALI Lab Stickers";
+			sourceTree = "<group>";
+		};
 		5285640D1E68B7ED00C22D43 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -462,10 +594,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		528649751EE74BCA002D99F9 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				A90EE4A3D1BC4D55A7749326 /* libRNiBeacon.a */,
+				6D29B9663FF7489E9A947ABF /* libRNGoogleSignin.a */,
+				280F8AE9ECE348798BBC7670 /* libBVLinearGradient.a */,
+				2F5E13E3B8D94D01B37DC88F /* libRNBackgroundTimer.a */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		529F3FA21EB810C900416D86 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				529F3FC31EB810C900416D86 /* libRNBackgroundTimer.a */,
+				528649961EE74BCB002D99F9 /* libRNBackgroundTimer.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -517,6 +661,7 @@
 				8F4A030D3EE4478E99F0D8B6 /* SafariServices.framework */,
 				9FFE88F972A044E6A4FEABAA /* SystemConfiguration.framework */,
 				20135D497CC642AA9E276B95 /* AddressBook.framework */,
+				528649D51EE75533002D99F9 /* Messages.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -580,8 +725,13 @@
 			children = (
 				13B07FAE1A68108700A75B9A /* dali */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				5266189E1EE759EB00E0E3FF /* DALI Lab Stickers */,
+				525F46471EE79DE600C5492D /* DALI Lab tvOS */,
+				525F46591EE79DE700C5492D /* DALI Lab tvOSTests */,
+				525F46641EE79DE700C5492D /* DALI Lab tvOSUITests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				52EE3C5B1E4BC7D50089140E /* Frameworks */,
+				528649751EE74BCA002D99F9 /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -591,6 +741,10 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* dali.app */,
+				5266189D1EE759EB00E0E3FF /* DALI Lab Stickers.appex */,
+				525F46461EE79DE600C5492D /* DALI Lab tvOS.app */,
+				525F46561EE79DE700C5492D /* DALI Lab tvOSTests.xctest */,
+				525F46611EE79DE700C5492D /* DALI Lab tvOSUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -607,15 +761,85 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				526AF3B81E67E82700BA1EFE /* ShellScript */,
+				528649E61EE75533002D99F9 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				526618A31EE759EB00E0E3FF /* PBXTargetDependency */,
 			);
 			name = dali;
 			productName = "Hello World";
 			productReference = 13B07F961A680F5B00A75B9A /* dali.app */;
 			productType = "com.apple.product-type.application";
+		};
+		525F46451EE79DE600C5492D /* DALI Lab tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 525F468F1EE79DE700C5492D /* Build configuration list for PBXNativeTarget "DALI Lab tvOS" */;
+			buildPhases = (
+				525F46421EE79DE600C5492D /* Sources */,
+				525F46431EE79DE600C5492D /* Frameworks */,
+				525F46441EE79DE600C5492D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DALI Lab tvOS";
+			productName = "DALI Lab tvOS";
+			productReference = 525F46461EE79DE600C5492D /* DALI Lab tvOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		525F46551EE79DE700C5492D /* DALI Lab tvOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 525F46901EE79DE700C5492D /* Build configuration list for PBXNativeTarget "DALI Lab tvOSTests" */;
+			buildPhases = (
+				525F46521EE79DE700C5492D /* Sources */,
+				525F46531EE79DE700C5492D /* Frameworks */,
+				525F46541EE79DE700C5492D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				525F46581EE79DE700C5492D /* PBXTargetDependency */,
+			);
+			name = "DALI Lab tvOSTests";
+			productName = "DALI Lab tvOSTests";
+			productReference = 525F46561EE79DE700C5492D /* DALI Lab tvOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		525F46601EE79DE700C5492D /* DALI Lab tvOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 525F46911EE79DE700C5492D /* Build configuration list for PBXNativeTarget "DALI Lab tvOSUITests" */;
+			buildPhases = (
+				525F465D1EE79DE700C5492D /* Sources */,
+				525F465E1EE79DE700C5492D /* Frameworks */,
+				525F465F1EE79DE700C5492D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				525F46631EE79DE700C5492D /* PBXTargetDependency */,
+			);
+			name = "DALI Lab tvOSUITests";
+			productName = "DALI Lab tvOSUITests";
+			productReference = 525F46611EE79DE700C5492D /* DALI Lab tvOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		5266189C1EE759EB00E0E3FF /* DALI Lab Stickers */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 526618A51EE759EB00E0E3FF /* Build configuration list for PBXNativeTarget "DALI Lab Stickers" */;
+			buildPhases = (
+				5266189B1EE759EB00E0E3FF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DALI Lab Stickers";
+			productName = "DALI Lab";
+			productReference = 5266189D1EE759EB00E0E3FF /* DALI Lab Stickers.appex */;
+			productType = "com.apple.product-type.app-extension.messages-sticker-pack";
 		};
 /* End PBXNativeTarget section */
 
@@ -623,6 +847,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0900;
 				LastUpgradeCheck = 610;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
@@ -637,6 +862,24 @@
 								enabled = 1;
 							};
 						};
+					};
+					525F46451EE79DE600C5492D = {
+						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = JQ28K6Y7JE;
+					};
+					525F46551EE79DE700C5492D = {
+						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = JQ28K6Y7JE;
+						TestTargetID = 525F46451EE79DE600C5492D;
+					};
+					525F46601EE79DE700C5492D = {
+						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = JQ28K6Y7JE;
+						TestTargetID = 525F46451EE79DE600C5492D;
+					};
+					5266189C1EE759EB00E0E3FF = {
+						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = JQ28K6Y7JE;
 					};
 				};
 			};
@@ -724,6 +967,10 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* dali */,
+				5266189C1EE759EB00E0E3FF /* DALI Lab Stickers */,
+				525F46451EE79DE600C5492D /* DALI Lab tvOS */,
+				525F46551EE79DE700C5492D /* DALI Lab tvOSTests */,
+				525F46601EE79DE700C5492D /* DALI Lab tvOSUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -890,6 +1137,13 @@
 			remoteRef = 5285641E1E68B7ED00C22D43 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		528649961EE74BCB002D99F9 /* libRNBackgroundTimer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNBackgroundTimer.a;
+			remoteRef = 528649951EE74BCB002D99F9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		529F3FC31EB810C900416D86 /* libRNBackgroundTimer.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -967,6 +1221,37 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		525F46441EE79DE600C5492D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				525F46501EE79DE600C5492D /* Assets.xcassets in Resources */,
+				525F464E1EE79DE600C5492D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		525F46541EE79DE700C5492D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		525F465F1EE79DE700C5492D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5266189B1EE759EB00E0E3FF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				526618A01EE759EB00E0E3FF /* Stickers.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -1009,7 +1294,52 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		525F46421EE79DE600C5492D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				525F46951EE7AF4600C5492D /* EventCell.swift in Sources */,
+				525F464B1EE79DE600C5492D /* ViewController.swift in Sources */,
+				525F46931EE7AF1600C5492D /* ServerCommunicator.swift in Sources */,
+				525F46491EE79DE600C5492D /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		525F46521EE79DE700C5492D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				525F465B1EE79DE700C5492D /* DALI_Lab_tvOSTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		525F465D1EE79DE700C5492D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				525F46661EE79DE700C5492D /* DALI_Lab_tvOSUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		525F46581EE79DE700C5492D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 525F46451EE79DE600C5492D /* DALI Lab tvOS */;
+			targetProxy = 525F46571EE79DE700C5492D /* PBXContainerItemProxy */;
+		};
+		525F46631EE79DE700C5492D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 525F46451EE79DE600C5492D /* DALI Lab tvOS */;
+			targetProxy = 525F46621EE79DE700C5492D /* PBXContainerItemProxy */;
+		};
+		526618A31EE759EB00E0E3FF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5266189C1EE759EB00E0E3FF /* DALI Lab Stickers */;
+			targetProxy = 526618A21EE759EB00E0E3FF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
@@ -1021,6 +1351,14 @@
 			path = dali;
 			sourceTree = "<group>";
 		};
+		525F464C1EE79DE600C5492D /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				525F464D1EE79DE600C5492D /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -1029,6 +1367,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = dali/dali.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
@@ -1060,6 +1399,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = dali/dali.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
@@ -1082,6 +1422,271 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		525F46681EE79DE700C5492D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "DALI Lab tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.JohnKotz.DALI.DaliLabApp.tvOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		525F46691EE79DE700C5492D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "DALI Lab tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.JohnKotz.DALI.DaliLabApp.tvOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
+		525F466A1EE79DE700C5492D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "DALI Lab tvOSTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JohnKotz.DALI.DALI-Lab-tvOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DALI Lab tvOS.app/DALI Lab tvOS";
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		525F466B1EE79DE700C5492D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "DALI Lab tvOSTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JohnKotz.DALI.DALI-Lab-tvOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DALI Lab tvOS.app/DALI Lab tvOS";
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		525F466C1EE79DE700C5492D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "DALI Lab tvOSUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JohnKotz.DALI.DALI-Lab-tvOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_TARGET_NAME = "DALI Lab tvOS";
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		525F466D1EE79DE700C5492D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "DALI Lab tvOSUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JohnKotz.DALI.DALI-Lab-tvOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_TARGET_NAME = "DALI Lab tvOS";
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		526618A61EE759EB00E0E3FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/DALI Lab Stickers/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.JohnKotz.DALI.DaliLabApp.MessagesApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		526618A71EE759EB00E0E3FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/DALI Lab Stickers/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.JohnKotz.DALI.DaliLabApp.MessagesApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1119,7 +1724,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1154,7 +1759,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -1169,6 +1774,42 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		525F468F1EE79DE700C5492D /* Build configuration list for PBXNativeTarget "DALI Lab tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				525F46681EE79DE700C5492D /* Debug */,
+				525F46691EE79DE700C5492D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		525F46901EE79DE700C5492D /* Build configuration list for PBXNativeTarget "DALI Lab tvOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				525F466A1EE79DE700C5492D /* Debug */,
+				525F466B1EE79DE700C5492D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		525F46911EE79DE700C5492D /* Build configuration list for PBXNativeTarget "DALI Lab tvOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				525F466C1EE79DE700C5492D /* Debug */,
+				525F466D1EE79DE700C5492D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		526618A51EE759EB00E0E3FF /* Build configuration list for PBXNativeTarget "DALI Lab Stickers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				526618A61EE759EB00E0E3FF /* Debug */,
+				526618A71EE759EB00E0E3FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

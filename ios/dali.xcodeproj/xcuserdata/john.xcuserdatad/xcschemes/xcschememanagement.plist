@@ -4,6 +4,16 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>DALI Lab tvOS.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>34</integer>
+		</dict>
+		<key>DALI Lab.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>33</integer>
+		</dict>
 		<key>dali-install.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
@@ -38,6 +48,36 @@
 			<true/>
 		</dict>
 		<key>2D02E48F1E0B4A5D006451C7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>525F46451EE79DE600C5492D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>525F46551EE79DE700C5492D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>525F46601EE79DE700C5492D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>5266189C1EE759EB00E0E3FF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>528649D31EE75533002D99F9</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>52A9173B1EE756F2008F25E0</key>
 		<dict>
 			<key>primary</key>
 			<true/>
