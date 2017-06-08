@@ -125,7 +125,7 @@ Cg
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uSV-Iw-pfW">
-                                <rect key="frame" x="1152" y="595" width="687" height="417"/>
+                                <rect key="frame" x="1152" y="595" width="687" height="341"/>
                                 <attributedString key="attributedText">
                                     <fragment content="TA Hours Now:">
                                         <attributes>
@@ -212,18 +212,17 @@ Cg
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vXd-EG-flY">
-                                <rect key="frame" x="110" y="951" width="1006" height="1"/>
+                                <rect key="frame" x="0.0" y="951" width="1920" height="1"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="1" id="hgR-gF-zNU"/>
+                                    <constraint firstAttribute="height" constant="1" id="hVb-fh-Z8D"/>
                                 </constraints>
                             </view>
-                            <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YGw-zc-s5M">
-                                <rect key="frame" x="110" y="966" width="1006" height="54"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YGw-zc-s5M">
+                                <rect key="frame" x="61" y="952" width="1818" height="54"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="People in the lab: John Kotz, Tim Tregubov, Andrew Beaubien, Jenny Seong" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Li6-Ve-CAk">
-                                        <rect key="frame" x="0.0" y="4" width="1292" height="46"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="People in the lab: John Kotz, Tim Tregubov, Andrew Beaubien, Jenny Seong" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Li6-Ve-CAk">
+                                        <rect key="frame" x="0.0" y="4" width="1818" height="46"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -231,31 +230,36 @@ Cg
                                     </label>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="54" id="ILE-y1-4Uk"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="vXd-EG-flY" firstAttribute="top" secondItem="LKp-kj-bhX" secondAttribute="bottom" constant="15" id="0kh-Jj-yYA"/>
                             <constraint firstItem="EpR-XR-mIO" firstAttribute="top" secondItem="fc9-Yb-ubJ" secondAttribute="bottom" constant="8" id="26Z-Vi-lAF"/>
+                            <constraint firstAttribute="trailing" secondItem="vXd-EG-flY" secondAttribute="trailing" id="4en-bT-jXW"/>
                             <constraint firstAttribute="trailing" secondItem="cad-MA-KsC" secondAttribute="trailing" id="82E-V9-Zx1"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="vXd-EG-flY" secondAttribute="bottom" constant="68" id="9ry-sM-sHP"/>
                             <constraint firstItem="uSV-Iw-pfW" firstAttribute="leading" secondItem="LKp-kj-bhX" secondAttribute="trailing" constant="36" id="BrD-Eq-L0c"/>
                             <constraint firstItem="fc9-Yb-ubJ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="CXZ-Vh-FLg"/>
-                            <constraint firstItem="vXd-EG-flY" firstAttribute="top" secondItem="LKp-kj-bhX" secondAttribute="bottom" constant="15" id="FeS-Ck-0Na"/>
                             <constraint firstItem="EpR-XR-mIO" firstAttribute="leading" secondItem="LKp-kj-bhX" secondAttribute="trailing" constant="36" id="Ia8-9Z-tVo"/>
                             <constraint firstItem="fc9-Yb-ubJ" firstAttribute="leading" secondItem="LKp-kj-bhX" secondAttribute="trailing" constant="36" id="Mbg-ra-J4A"/>
                             <constraint firstAttribute="trailing" secondItem="uSV-Iw-pfW" secondAttribute="trailing" constant="81" id="V4c-cp-bIc"/>
                             <constraint firstItem="cad-MA-KsC" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Xe8-5Z-RzP"/>
                             <constraint firstItem="LKp-kj-bhX" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="Yjj-bh-SDH"/>
                             <constraint firstItem="uSV-Iw-pfW" firstAttribute="top" secondItem="EpR-XR-mIO" secondAttribute="bottom" constant="22" id="b2T-dA-xr7"/>
+                            <constraint firstItem="vXd-EG-flY" firstAttribute="top" secondItem="uSV-Iw-pfW" secondAttribute="bottom" constant="15" id="bJe-cz-df9"/>
                             <constraint firstItem="cad-MA-KsC" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="dEk-wx-2Im"/>
-                            <constraint firstItem="vXd-EG-flY" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="e5i-Iy-Hpo"/>
                             <constraint firstAttribute="bottom" secondItem="cad-MA-KsC" secondAttribute="bottom" id="eh0-v8-BDY"/>
                             <constraint firstAttribute="trailing" secondItem="fc9-Yb-ubJ" secondAttribute="trailing" constant="81" id="h8K-wV-jXT"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="uSV-Iw-pfW" secondAttribute="bottom" constant="8" id="mi1-JY-7nm"/>
+                            <constraint firstItem="vXd-EG-flY" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="h8g-Dj-Cgg"/>
+                            <constraint firstItem="YGw-zc-s5M" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="61" id="i1D-9N-g8y"/>
+                            <constraint firstItem="YGw-zc-s5M" firstAttribute="top" secondItem="vXd-EG-flY" secondAttribute="bottom" id="iR1-fk-Fbk"/>
+                            <constraint firstAttribute="trailing" secondItem="YGw-zc-s5M" secondAttribute="trailing" constant="41" id="juG-oz-GPU"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="YGw-zc-s5M" secondAttribute="bottom" constant="14" id="lvG-Wi-7nx"/>
                             <constraint firstAttribute="trailing" secondItem="EpR-XR-mIO" secondAttribute="trailing" constant="81" id="miI-gM-FzW"/>
-                            <constraint firstItem="vXd-EG-flY" firstAttribute="top" secondItem="LKp-kj-bhX" secondAttribute="bottom" constant="15" id="ohN-eY-Ylh"/>
                             <constraint firstItem="LKp-kj-bhX" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="62" id="qqe-gW-fd7"/>
-                            <constraint firstItem="uSV-Iw-pfW" firstAttribute="leading" secondItem="vXd-EG-flY" secondAttribute="trailing" constant="36" id="zGA-OX-aGl"/>
                         </constraints>
                     </view>
                     <connections>
