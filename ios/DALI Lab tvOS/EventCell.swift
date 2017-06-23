@@ -27,10 +27,7 @@ class EventCell: UITableViewCell {
           let day = calendar.component(.day, from: newValue.startTime)
           let dayPostFix = getDayPostFix(day: day)
           
-          dateLabel.text = """
-          \(weekDay.rawValue), \(String(day) + dayPostFix)
-          \(newValue.startTime.timeString()) - \(newValue.endTime.timeString())
-          """
+          dateLabel.text = "\n\(weekDay.rawValue), \(String(day) + dayPostFix)\n\(newValue.startTime.timeString()) - \(newValue.endTime.timeString())"
         }
     }
     get {

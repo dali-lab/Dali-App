@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>33</integer>
 		</dict>
+		<key>dali-Swift.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>36</integer>
+		</dict>
 		<key>iOS Install.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
@@ -73,6 +78,21 @@
 			<true/>
 		</dict>
 		<key>528649D31EE75533002D99F9</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>528D4A961EFD7DBF00488B56</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>528D4AA91EFD7DC000488B56</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>528D4AB41EFD7DC000488B56</key>
 		<dict>
 			<key>primary</key>
 			<true/>

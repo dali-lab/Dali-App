@@ -9,12 +9,21 @@
 import Foundation
 
 class ServerCommunicator {
-  struct Event: Codable {
-    let name: String!
-    let startTime: Date!
-    let endTime: Date!
-    let description: String!
+  struct Event {
+    let name: String
+    let startTime: Date
+    let endTime: Date
+    let description: String
   }
+  
+  struct TAHour {
+    let name: String
+    let endTime: Date
+    let skills: String
+  }
+  
+  typealias TAHours = [TAHour]
+  typealias Events = [Event]
   
   enum WeekDay: String {
     case Sun
@@ -52,7 +61,7 @@ class ServerCommunicator {
   /**
    * Gets the upcoming events and calls the given function with the data when complete
    */
-  static func getEvents(_ callback: @escaping (_ events : [Event]) -> Void) {
+  static func getEvents(_ callback: @escaping (_ events : Events) -> Void) {
     DispatchQueue(label: "getEvents").async {
       let events = [
           Event(name: "tvOS App starts working?", startTime: Date(), endTime: Date(timeIntervalSinceNow: 40000), description: "This is a cool description"),
@@ -66,7 +75,15 @@ class ServerCommunicator {
     }
   }
   
-  static func getLabHours() {
-    
+  static func getLabHours(_ callback: @escaping (_ hours: TAHours) -> Void) {
+    DispatchQueue(label: "getEvents").async {
+      let hours: TAHours = [
+        TAHour(name: "John Kotz", endTime: Date(timeIntervalSinceNow: 200), skills: "iOS, Xcode, React Native")
+      ]
+      
+      DispatchQueue.main.async {
+        callback(hours)
+      }
+    }
   }
 }

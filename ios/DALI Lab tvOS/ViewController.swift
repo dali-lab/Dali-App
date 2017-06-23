@@ -30,7 +30,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
       self.tableView.reloadData()
     }
     
-    let text = "People in the lab: John Kotz, Tim Tregubov, Andrew Beaubien, Jenny Seong, sjdkfla;skdjflk asjdfklja kl;sdfj;lajsd fl;kjasldkfa ;sx"
+    let text = "People in the lab: John Kotz, Tim Tregubov, Andrew Beaubien, Jenny Seong jsdflkajs d;lkfjlaksdjflk;asjdklfj aslk;d jfkl;asdf ljas;lkdfjklasdjflk;ajk;k"
     self.peopleInLabLabel.text = text
     
     
