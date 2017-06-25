@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G18a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Login View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController storyboardIdentifier="LoginViewController" id="BYZ-38-t0r" customClass="LoginViewController" customModule="DALISwift" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backgroundGradient" translatesAutoresizingMaskIntoConstraints="NO" id="aMb-mK-JjW">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="DALI_whiteLogo" translatesAutoresizingMaskIntoConstraints="NO" id="ute-8w-BC8">
+                                <rect key="frame" x="67" y="269" width="240" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="128" id="H1k-7T-vbv"/>
+                                    <constraint firstAttribute="width" constant="240" id="o9w-Ko-xzC"/>
+                                </constraints>
+                            </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="boM-lX-AvV">
+                                <rect key="frame" x="0.0" y="405" width="375" height="218"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4bl-HA-EnX" customClass="GIDSignInButton">
+                                        <rect key="frame" x="84" y="8" width="207" height="48"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="207" id="5bO-Dx-gND"/>
+                                            <constraint firstAttribute="height" constant="48" id="UK1-Ld-4tG"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="4bl-HA-EnX" firstAttribute="top" secondItem="boM-lX-AvV" secondAttribute="top" constant="8" id="E9s-3n-hp8"/>
+                                    <constraint firstAttribute="height" constant="218" id="LqB-P2-VI5"/>
+                                    <constraint firstItem="4bl-HA-EnX" firstAttribute="centerX" secondItem="boM-lX-AvV" secondAttribute="centerX" id="nTe-Cw-oGo"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="boM-lX-AvV" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="7qw-zy-EN4"/>
+                            <constraint firstAttribute="trailing" secondItem="boM-lX-AvV" secondAttribute="trailing" id="7yL-mh-nBb"/>
+                            <constraint firstAttribute="trailing" secondItem="aMb-mK-JjW" secondAttribute="trailing" id="AgO-gf-A2j"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="aMb-mK-JjW" secondAttribute="bottom" id="SWe-ea-F0J"/>
+                            <constraint firstItem="ute-8w-BC8" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="aOE-tp-U00"/>
+                            <constraint firstItem="ute-8w-BC8" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="azq-ar-7Ag"/>
+                            <constraint firstItem="aMb-mK-JjW" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="qSS-H3-Gcp"/>
+                            <constraint firstItem="aMb-mK-JjW" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="ty4-zc-YXN"/>
+                            <constraint firstItem="boM-lX-AvV" firstAttribute="top" secondItem="ute-8w-BC8" secondAttribute="bottom" constant="8" id="wfk-3x-bFS"/>
+                        </constraints>
+                    </view>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <connections>
+                        <outlet property="googleButton" destination="4bl-HA-EnX" id="ITf-dY-k8i"/>
+                        <outlet property="image" destination="ute-8w-BC8" id="8aV-EV-Bg6"/>
+                        <outlet property="imageHorizontalContraint" destination="aOE-tp-U00" id="f7p-qU-SS5"/>
+                        <outlet property="subView" destination="boM-lX-AvV" id="9y7-4U-Kqw"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="32.799999999999997" y="38.23088455772114"/>
+        </scene>
+        <!--Logout View Controller-->
+        <scene sceneID="nFs-EV-58V">
+            <objects>
+                <viewController storyboardIdentifier="LogoutViewController" id="ELf-kA-nte" customClass="LogoutViewController" customModule="DALISwift" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="BGu-JY-Zum"/>
+                        <viewControllerLayoutGuide type="bottom" id="4Ob-aa-kWW"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="E4i-fV-YKU">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tzt-ru-lhh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="742" y="38"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="DALI_whiteLogo" width="2569" height="970"/>
+        <image name="backgroundGradient" width="375" height="667"/>
+    </resources>
+</document>

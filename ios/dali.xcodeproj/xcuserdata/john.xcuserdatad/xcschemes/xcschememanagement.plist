@@ -4,12 +4,17 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>DALISwift.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>37</integer>
+		</dict>
 		<key>Stickers.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>33</integer>
 		</dict>
-		<key>dali-Swift.xcscheme</key>
+		<key>Swift.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>36</integer>
@@ -57,6 +62,21 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>5227FD791EFDC0FA003D1A66</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>5227FD8C1EFDC0FB003D1A66</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>5227FD971EFDC0FB003D1A66</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>525F46451EE79DE600C5492D</key>
 		<dict>
 			<key>primary</key>
@@ -98,6 +118,21 @@
 			<true/>
 		</dict>
 		<key>52A9173B1EE756F2008F25E0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>52E02C851EFDBB9500A685CD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>52E02C981EFDBB9500A685CD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>52E02CA31EFDBB9500A685CD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
