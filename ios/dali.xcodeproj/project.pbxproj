@@ -51,7 +51,12 @@
 		526AF3BC1E67E87B00BA1EFE /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */; };
 		5271C2DD1E4D15B7004AFE2F /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2DC1E4D15B7004AFE2F /* libz.tbd */; };
 		528564311E68B82900C22D43 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5285641D1E68B7ED00C22D43 /* libRCTPushNotification.a */; };
-		52A8F6B01F005FC400C033D9 /* LogoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A8F6AF1F005FC400C033D9 /* LogoutViewController.swift */; };
+		528A01091F07E275009897DF /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 528A01081F07E275009897DF /* CoreBluetooth.framework */; };
+		528A011C1F07E5B1009897DF /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 528A011B1F07E5B1009897DF /* libsqlite3.tbd */; };
+		528A013F1F08176A009897DF /* ProximityKit.plist in Resources */ = {isa = PBXBuildFile; fileRef = 528A013E1F08176A009897DF /* ProximityKit.plist */; };
+		52A8F6D31F0067DA00C033D9 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A8F6D21F0067DA00C033D9 /* MainViewController.swift */; };
+		52B0672D1F07DC2B0098FDAA /* BeaconController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B0672C1F07DC2B0098FDAA /* BeaconController.swift */; };
+		52BC7CBC1F00ABAF003285C7 /* PeopleInLabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BC7CBB1F00ABAF003285C7 /* PeopleInLabViewController.swift */; };
 		52BF8A7B1E60C3C9000465F8 /* GoogleAppUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */; };
 		52BF8A7C1E60C3C9000465F8 /* GoogleAuthUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A751E60C3C9000465F8 /* GoogleAuthUtilities.framework */; };
 		52BF8A7D1E60C3C9000465F8 /* GoogleNetworkingUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A761E60C3C9000465F8 /* GoogleNetworkingUtilities.framework */; };
@@ -429,8 +434,13 @@
 		5271C2DC1E4D15B7004AFE2F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		528649D51EE75533002D99F9 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
+		528A01081F07E275009897DF /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		528A011B1F07E5B1009897DF /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		528A013E1F08176A009897DF /* ProximityKit.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ProximityKit.plist; sourceTree = "<group>"; };
 		52A8F69A1F0053D500C033D9 /* DALISwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DALISwift-Bridging-Header.h"; sourceTree = "<group>"; };
-		52A8F6AF1F005FC400C033D9 /* LogoutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogoutViewController.swift; sourceTree = "<group>"; };
+		52A8F6D21F0067DA00C033D9 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		52B0672C1F07DC2B0098FDAA /* BeaconController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconController.swift; sourceTree = "<group>"; };
+		52BC7CBB1F00ABAF003285C7 /* PeopleInLabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeopleInLabViewController.swift; sourceTree = "<group>"; };
 		52BF8A721E60C3C2000465F8 /* GoogleSdk */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GoogleSdk; sourceTree = "<group>"; };
 		52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppUtilities.framework; path = GoogleSdk/GoogleAppUtilities.framework; sourceTree = "<group>"; };
 		52BF8A751E60C3C9000465F8 /* GoogleAuthUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAuthUtilities.framework; path = GoogleSdk/GoogleAuthUtilities.framework; sourceTree = "<group>"; };
@@ -514,6 +524,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				528A011C1F07E5B1009897DF /* libsqlite3.tbd in Frameworks */,
+				528A01091F07E275009897DF /* CoreBluetooth.framework in Frameworks */,
 				DC29590F460E2D25272FCE62 /* Pods_DALISwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -680,9 +692,12 @@
 			isa = PBXGroup;
 			children = (
 				5227FDEB1EFDE933003D1A66 /* GoogleService-Info.plist */,
+				528A013E1F08176A009897DF /* ProximityKit.plist */,
 				5227FD7C1EFDC0FA003D1A66 /* AppDelegate.swift */,
-				52A8F6AF1F005FC400C033D9 /* LogoutViewController.swift */,
+				52B0672C1F07DC2B0098FDAA /* BeaconController.swift */,
+				52A8F6D21F0067DA00C033D9 /* MainViewController.swift */,
 				5227FD7E1EFDC0FA003D1A66 /* LoginViewController.swift */,
+				52BC7CBB1F00ABAF003285C7 /* PeopleInLabViewController.swift */,
 				5227FD801EFDC0FA003D1A66 /* Main.storyboard */,
 				5227FD831EFDC0FA003D1A66 /* Assets.xcassets */,
 				5227FD851EFDC0FB003D1A66 /* LaunchScreen.storyboard */,
@@ -815,6 +830,8 @@
 		52EE3C5B1E4BC7D50089140E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				528A011B1F07E5B1009897DF /* libsqlite3.tbd */,
+				528A01081F07E275009897DF /* CoreBluetooth.framework */,
 				52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */,
 				52BF8A751E60C3C9000465F8 /* GoogleAuthUtilities.framework */,
 				52BF8A761E60C3C9000465F8 /* GoogleNetworkingUtilities.framework */,
@@ -1556,6 +1573,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				528A013F1F08176A009897DF /* ProximityKit.plist in Resources */,
 				5227FD871EFDC0FB003D1A66 /* LaunchScreen.storyboard in Resources */,
 				5227FDEC1EFDE933003D1A66 /* GoogleService-Info.plist in Resources */,
 				5227FD841EFDC0FA003D1A66 /* Assets.xcassets in Resources */,
@@ -1803,8 +1821,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52BC7CBC1F00ABAF003285C7 /* PeopleInLabViewController.swift in Sources */,
+				52B0672D1F07DC2B0098FDAA /* BeaconController.swift in Sources */,
+				52A8F6D31F0067DA00C033D9 /* MainViewController.swift in Sources */,
 				5227FD7F1EFDC0FA003D1A66 /* LoginViewController.swift in Sources */,
-				52A8F6B01F005FC400C033D9 /* LogoutViewController.swift in Sources */,
 				5227FD7D1EFDC0FA003D1A66 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2023,7 +2043,12 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				ENABLE_BITCODE = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = DALISwift/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
@@ -2051,6 +2076,11 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = DALISwift/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;

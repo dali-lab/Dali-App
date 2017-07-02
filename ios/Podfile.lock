@@ -34,9 +34,11 @@ PODS:
   - GTMSessionFetcher/Core (1.1.10)
   - GTMSessionFetcher/Full (1.1.10):
     - GTMSessionFetcher/Core (= 1.1.10)
+  - ProximityKit (1.2.9)
 
 DEPENDENCIES:
   - Google/SignIn
+  - ProximityKit (~> 1.2)
 
 SPEC CHECKSUMS:
   FirebaseAnalytics: e5fe8486efc01bec33f6bf82e2fa9fce4b124052
@@ -47,7 +49,8 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   GTMOAuth2: 7fc9c10f5c745f4d9850419ea88889fe3baa6b7d
   GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
+  ProximityKit: e763235e2fca64711ed7a5bae08cea1508f80919
 
-PODFILE CHECKSUM: c13497aa117e709dc0132a281ebf3c2a2b29def3
+PODFILE CHECKSUM: 30258e2141b66374b41c4017d24fcc8c4abb36be
 
 COCOAPODS: 1.2.1

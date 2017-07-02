@@ -14,6 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 	var window: UIWindow?
 	var user: GIDGoogleUser?
 	var loginViewController: LoginViewController?
+	var inBackground = false
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 		// Override point for customization after application launch.
@@ -38,18 +39,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 			print("Signed in successfuly")
 			self.user = user
 			
-			if let loginViewController = self.loginViewController, let logoutViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LogoutViewController") as? LogoutViewController {
+			let mainViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MainViewController") as! MainViewController
+			
+			if let loginViewController = self.loginViewController {
 				
-				logoutViewController.modalTransitionStyle = .crossDissolve
-				logoutViewController.modalPresentationStyle = .fullScreen
+				mainViewController.modalTransitionStyle = .crossDissolve
+				mainViewController.modalPresentationStyle = .fullScreen
+				mainViewController.loginTransformAnimationDone = loginViewController.transformAnimationDone
 				
-				loginViewController.present(logoutViewController, animated: true, completion: {
+				loginViewController.present(mainViewController, animated: true, completion: {
 					
 				})
 			}else{
-				self.window?.rootViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LogoutViewController")
+				self.window?.rootViewController = mainViewController
 			}
 		}
+	}
+	
+	func skipSignIn() {
+		let mainViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MainViewController") as! MainViewController
+		
+		mainViewController.modalTransitionStyle = .crossDissolve
+		mainViewController.modalPresentationStyle = .fullScreen
+		mainViewController.loginTransformAnimationDone = loginViewController?.transformAnimationDone
+		
+		loginViewController?.present(mainViewController, animated: true, completion: {
+			
+		})
 	}
 	
 	func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
@@ -75,6 +91,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 	func applicationDidEnterBackground(_ application: UIApplication) {
 		// Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
 		// If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+		inBackground = true
+		print("Entering Background")
+		
+		// Notify the rest of the app
+		NotificationCenter.default.post(name: NSNotification.Name(rawValue: "enterBackground"), object: nil)
 	}
 
 	func applicationWillEnterForeground(_ application: UIApplication) {
@@ -83,6 +104,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 
 	func applicationDidBecomeActive(_ application: UIApplication) {
 		// Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+		if inBackground {
+			print("Returning from Background")
+			inBackground = false
+			
+			// Notify the rest of the app
+			NotificationCenter.default.post(name: NSNotification.Name(rawValue: "returnFromBackground"), object: nil)
+		}
 	}
 
 	func applicationWillTerminate(_ application: UIApplication) {
