@@ -50,10 +50,10 @@
 		526AF3BB1E67E87B00BA1EFE /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3B91E67E87B00BA1EFE /* Fabric.framework */; };
 		526AF3BC1E67E87B00BA1EFE /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */; };
 		5271C2DD1E4D15B7004AFE2F /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5271C2DC1E4D15B7004AFE2F /* libz.tbd */; };
+		527A0E2A1F0D4F49009F024B /* EnumsAndStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527A0E291F0D4F49009F024B /* EnumsAndStructs.swift */; };
 		528564311E68B82900C22D43 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5285641D1E68B7ED00C22D43 /* libRCTPushNotification.a */; };
 		528A01091F07E275009897DF /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 528A01081F07E275009897DF /* CoreBluetooth.framework */; };
 		528A011C1F07E5B1009897DF /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 528A011B1F07E5B1009897DF /* libsqlite3.tbd */; };
-		528A013F1F08176A009897DF /* ProximityKit.plist in Resources */ = {isa = PBXBuildFile; fileRef = 528A013E1F08176A009897DF /* ProximityKit.plist */; };
 		52A8F6D31F0067DA00C033D9 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A8F6D21F0067DA00C033D9 /* MainViewController.swift */; };
 		52B0672D1F07DC2B0098FDAA /* BeaconController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B0672C1F07DC2B0098FDAA /* BeaconController.swift */; };
 		52BC7CBC1F00ABAF003285C7 /* PeopleInLabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BC7CBB1F00ABAF003285C7 /* PeopleInLabViewController.swift */; };
@@ -432,11 +432,11 @@
 		526AF3B91E67E87B00BA1EFE /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		5271C2DC1E4D15B7004AFE2F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		527A0E291F0D4F49009F024B /* EnumsAndStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumsAndStructs.swift; sourceTree = "<group>"; };
 		5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		528649D51EE75533002D99F9 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
 		528A01081F07E275009897DF /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		528A011B1F07E5B1009897DF /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		528A013E1F08176A009897DF /* ProximityKit.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ProximityKit.plist; sourceTree = "<group>"; };
 		52A8F69A1F0053D500C033D9 /* DALISwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DALISwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		52A8F6D21F0067DA00C033D9 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		52B0672C1F07DC2B0098FDAA /* BeaconController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconController.swift; sourceTree = "<group>"; };
@@ -450,6 +450,7 @@
 		52BF8A791E60C3C9000465F8 /* GoogleSymbolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSymbolUtilities.framework; path = GoogleSdk/GoogleSymbolUtilities.framework; sourceTree = "<group>"; };
 		52BF8A7A1E60C3C9000465F8 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = GoogleSdk/GoogleUtilities.framework; sourceTree = "<group>"; };
 		52C253DB1E6E63B100C3DA3E /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
+		52D962561F0D47E90091D49D /* ProximityKit.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ProximityKit.plist; sourceTree = "<group>"; };
 		52EE3C5C1E4BC7D50089140E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		52EFF1101EE8407700D40811 /* dali UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "dali UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EFF1121EE8407700D40811 /* dali_UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dali_UITests.swift; sourceTree = "<group>"; };
@@ -692,9 +693,10 @@
 			isa = PBXGroup;
 			children = (
 				5227FDEB1EFDE933003D1A66 /* GoogleService-Info.plist */,
-				528A013E1F08176A009897DF /* ProximityKit.plist */,
+				52D962561F0D47E90091D49D /* ProximityKit.plist */,
 				5227FD7C1EFDC0FA003D1A66 /* AppDelegate.swift */,
 				52B0672C1F07DC2B0098FDAA /* BeaconController.swift */,
+				527A0E291F0D4F49009F024B /* EnumsAndStructs.swift */,
 				52A8F6D21F0067DA00C033D9 /* MainViewController.swift */,
 				5227FD7E1EFDC0FA003D1A66 /* LoginViewController.swift */,
 				52BC7CBB1F00ABAF003285C7 /* PeopleInLabViewController.swift */,
@@ -1573,7 +1575,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				528A013F1F08176A009897DF /* ProximityKit.plist in Resources */,
 				5227FD871EFDC0FB003D1A66 /* LaunchScreen.storyboard in Resources */,
 				5227FDEC1EFDE933003D1A66 /* GoogleService-Info.plist in Resources */,
 				5227FD841EFDC0FA003D1A66 /* Assets.xcassets in Resources */,
@@ -1826,6 +1827,7 @@
 				52A8F6D31F0067DA00C033D9 /* MainViewController.swift in Sources */,
 				5227FD7F1EFDC0FA003D1A66 /* LoginViewController.swift in Sources */,
 				5227FD7D1EFDC0FA003D1A66 /* AppDelegate.swift in Sources */,
+				527A0E2A1F0D4F49009F024B /* EnumsAndStructs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2050,6 +2052,7 @@
 					"$(PROJECT_DIR)",
 				);
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = DALISwift/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

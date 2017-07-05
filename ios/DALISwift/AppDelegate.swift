@@ -15,6 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 	var user: GIDGoogleUser?
 	var loginViewController: LoginViewController?
 	var inBackground = false
+	
+	var beaconController: BeaconController?
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 		// Override point for customization after application launch.
@@ -38,6 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 		}else{
 			print("Signed in successfuly")
 			self.user = user
+			self.beaconController = BeaconController()
 			
 			let mainViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MainViewController") as! MainViewController
 			
@@ -57,6 +60,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 	}
 	
 	func skipSignIn() {
+		self.beaconController = BeaconController()
+		
 		let mainViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MainViewController") as! MainViewController
 		
 		mainViewController.modalTransitionStyle = .crossDissolve
@@ -73,10 +78,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 	}
 	
 	func signOut() {
+		self.beaconController = nil
 		GIDSignIn.sharedInstance().signOut()
+		
+		// I'm gonna need a better way than this:
 		self.window?.rootViewController?.dismiss(animated: true, completion: {
 			
 		})
+	}
+	
+	func returnToSignIn() {
+		self.signOut()
 	}
 	
 	func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {

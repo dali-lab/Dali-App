@@ -12,7 +12,6 @@ import UIKit
 class PeopleInLabViewController : UITableViewController {
 	
 	@IBAction func donePressed(_ sender: Any) {
-		print("Done Pressed")
 		self.navigationController?.dismiss(animated: true) {
 			
 		}

@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G18a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.19" systemVersion="16G23a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.16"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="AvenirNext.ttc">
+            <string>AvenirNext-DemiBold</string>
+            <string>AvenirNext-Italic</string>
+            <string>AvenirNext-Regular</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Login View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -43,9 +50,8 @@
                                             <constraint firstAttribute="height" constant="48" id="UK1-Ld-4tG"/>
                                         </constraints>
                                     </view>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2HN-gB-A4c">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2HN-gB-A4c">
                                         <rect key="frame" x="147" y="64" width="81" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Skip Sign In">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
@@ -58,7 +64,9 @@
                                 <constraints>
                                     <constraint firstItem="4bl-HA-EnX" firstAttribute="top" secondItem="boM-lX-AvV" secondAttribute="top" constant="8" id="E9s-3n-hp8"/>
                                     <constraint firstAttribute="height" constant="218" id="LqB-P2-VI5"/>
+                                    <constraint firstItem="2HN-gB-A4c" firstAttribute="centerX" secondItem="boM-lX-AvV" secondAttribute="centerX" id="hWh-cq-wQy"/>
                                     <constraint firstItem="4bl-HA-EnX" firstAttribute="centerX" secondItem="boM-lX-AvV" secondAttribute="centerX" id="nTe-Cw-oGo"/>
+                                    <constraint firstItem="2HN-gB-A4c" firstAttribute="top" secondItem="4bl-HA-EnX" secondAttribute="bottom" constant="8" id="nol-IM-ACx"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -115,7 +123,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kIM-eC-D4F">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eh5-t1-Nla">
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eh5-t1-Nla">
                                         <rect key="frame" x="324" y="52" width="35" height="35"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="eh5-t1-Nla" secondAttribute="height" multiplier="1:1" id="3GM-VX-luj"/>
@@ -126,7 +134,7 @@
                                             <segue destination="hF8-7D-bQB" kind="show" id="XmQ-tG-ylX"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AXd-xF-1zI">
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AXd-xF-1zI">
                                         <rect key="frame" x="16" y="52" width="28" height="35"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="AXd-xF-1zI" secondAttribute="height" multiplier="4:5" id="b3R-Ap-7lo"/>
@@ -244,6 +252,7 @@
                     <connections>
                         <outlet property="daliImage" destination="MtM-fv-ipP" id="f6x-7k-pY1"/>
                         <outlet property="internalView" destination="kIM-eC-D4F" id="Mgi-N5-zx7"/>
+                        <outlet property="locationLabel" destination="EXY-ff-5kM" id="Psc-pK-SOf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tzt-ru-lhh" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -330,7 +339,7 @@
         <scene sceneID="rhE-ob-OcZ">
             <objects>
                 <navigationController id="hF8-7D-bQB" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="3hg-cN-BmP">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="3hg-cN-BmP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" red="0.31372549020000001" green="0.89019607840000003" blue="0.76078431369999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -393,7 +402,7 @@
         <scene sceneID="HgK-3r-dcC">
             <objects>
                 <navigationController id="B8g-Hg-By4" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Qz2-3j-LwH">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Qz2-3j-LwH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" red="0.31372549019607843" green="0.8901960784313725" blue="0.76078431372549016" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -414,7 +423,7 @@
         <scene sceneID="swS-wd-McQ">
             <objects>
                 <navigationController id="TyO-XQ-AgS" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="m8n-XI-bcm">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="m8n-XI-bcm">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.1137254902" green="0.47843137250000001" blue="0.54117647059999996" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -434,7 +443,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Background" width="1920" height="1080"/>
+        <image name="Background" width="376" height="667"/>
         <image name="DALI_whiteLogo" width="2569" height="970"/>
         <image name="backgroundGradient" width="375" height="667"/>
         <image name="people" width="675" height="501"/>

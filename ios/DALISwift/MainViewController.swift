@@ -12,6 +12,7 @@ import UIKit
 class MainViewController: UIViewController {
 	@IBOutlet weak var daliImage: UIImageView!
 	@IBOutlet weak var internalView: UIView!
+	@IBOutlet weak var locationLabel: UILabel!
 	
 	var viewShown = false
 	var loginTransformAnimationDone: Bool!
@@ -19,11 +20,24 @@ class MainViewController: UIViewController {
 	override func viewDidLoad() {
 		UIApplication.shared.statusBarStyle = .lightContent
 		self.setNeedsStatusBarAppearanceUpdate()
+		self.setUpListeners()
 	}
 	
 	
 	func updateData() {
 		
+	}
+	
+	func setUpListeners() {
+		NotificationCenter.default.addObserver(self, selector: #selector(MainViewController.locationUpdated), name: NSNotification.Name.Custom.LocationUpdated, object: nil)
+	}
+	
+	func locationUpdated() {
+		if let controller = (UIApplication.shared.delegate as! AppDelegate).beaconController, let location = controller.currentLocation {
+			self.locationLabel.text = "In \(location)"
+		}else{
+			self.locationLabel.text = "Not in DALI Lab"
+		}
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {

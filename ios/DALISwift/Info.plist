@@ -57,11 +57,13 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location is used only to determine if you are within the DALI Lab or at one of its events.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>To determine location we use Bluetooth beacons. This requires access to bluetooth peripherals</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
 </dict>
 </plist>
