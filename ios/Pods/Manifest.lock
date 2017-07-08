@@ -35,10 +35,12 @@ PODS:
   - GTMSessionFetcher/Full (1.1.10):
     - GTMSessionFetcher/Core (= 1.1.10)
   - ProximityKit (1.2.9)
+  - SCLAlertView (0.7.0)
 
 DEPENDENCIES:
   - Google/SignIn
   - ProximityKit (~> 1.2)
+  - SCLAlertView
 
 SPEC CHECKSUMS:
   FirebaseAnalytics: e5fe8486efc01bec33f6bf82e2fa9fce4b124052
@@ -50,7 +52,8 @@ SPEC CHECKSUMS:
   GTMOAuth2: 7fc9c10f5c745f4d9850419ea88889fe3baa6b7d
   GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
   ProximityKit: e763235e2fca64711ed7a5bae08cea1508f80919
+  SCLAlertView: 8a14ffc40590c619e183eed2298b854385f30be1
 
-PODFILE CHECKSUM: 30258e2141b66374b41c4017d24fcc8c4abb36be
+PODFILE CHECKSUM: 080ea4e74a24a5110a2d46f9e6026fe88179e8ad
 
 COCOAPODS: 1.2.1
