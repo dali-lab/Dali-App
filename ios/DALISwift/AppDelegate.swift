@@ -7,9 +7,13 @@
 //
 
 import UIKit
+import Fabric
+import Crashlytics
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
+	static var shared: AppDelegate?
 
 	var window: UIWindow?
 	var user: GIDGoogleUser?
@@ -17,10 +21,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 	var inBackground = false
 	
 	var beaconController: BeaconController?
+	var serverCommunicator = ServerCommunicator()
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 		// Override point for customization after application launch.
 		UIApplication.shared.statusBarStyle = .lightContent
+		
+		Fabric.with([Crashlytics.self])
+		
+		AppDelegate.shared = self
 		
 		var error: NSError? = nil
 		GGLContext.sharedInstance().configureWithError(&error)
@@ -38,9 +47,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 		if let error = error {
 			print(error)
 		}else{
-			print("Signed in successfuly")
 			self.user = user
-			self.beaconController = BeaconController()
+			if self.beaconController == nil && BeaconController.current == nil {
+				self.beaconController = BeaconController()
+			}else{
+				self.beaconController = BeaconController.current
+			}
 			
 			let mainViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MainViewController") as! MainViewController
 			

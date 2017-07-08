@@ -10,12 +10,31 @@ import Foundation
 import ProximityKit
 import GoogleSignIn
 
+/**
+ Handles all beacon activity for the application. It tracks at all times, even in the background, the beacon's nearby to get an accurate understanding of position
+
+Functions:
+ -
+
+Properties:
+- currentLocation: String?
+	Generated property
+ */
 class BeaconController: NSObject, RPKManagerDelegate {
+	
+	static let notificationNames: [String: Notification.Name] = [
+		"DALI Lab Region": Notification.Name.Custom.EnteredOrExitedDALI,
+		"Check In Region": Notification.Name.Custom.CheckInEnteredOrExited,
+		"Tims Office Region": Notification.Name.Custom.TimsOfficeEnteredOrExited,
+		"Event Vote Region": Notification.Name.Custom.EventVoteEnteredOrExited
+	]
 	
 	static var current: BeaconController?
 	var user: GIDGoogleUser?
 	var beaconManager: RPKManager = RPKManager()
-	var numRanged = 0
+	var numToRange = 0
+	
+	var refreshTimers = [RPKRegion:Timer]()
 	
 	var currentLocation: String? {
 		return regions.filter({ (region) -> Bool in
@@ -23,6 +42,12 @@ class BeaconController: NSObject, RPKManagerDelegate {
 		}).sorted(by: { (region1, region2) -> Bool in
 			return (Int(region1.attributes["locationPriority"] as! String))! > (Int(region2.attributes["locationPriority"] as! String))!
 		}).first?.name.replacingOccurrences(of: " Region", with: "").replacingOccurrences(of: "\\", with: "")
+	}
+	
+	var inDALI: Bool {
+		return regions.filter({ (region) -> Bool in
+			return region.name == "DALI Lab Region"
+		}).count >= 1
 	}
 	
 	private var regions = Set<RPKRegion>()
@@ -44,28 +69,39 @@ class BeaconController: NSObject, RPKManagerDelegate {
 			"allow_cellular_data": true
 			])
 		self.beaconManager.start()
-	}
-	
-	func proximityKitDidSync(_ manager : RPKManager) {
-		print("Proximity Kit did sync")
+		// A good buffer to find all the beacons possible
+		numToRange = 50
+		self.beaconManager.startRangingBeacons()
 	}
 	
 	func proximityKit(_ manager: RPKManager!, didDetermineState state: RPKRegionState, for region: RPKRegion!) {
-		var stateDescription: String
 		
 		switch (state) {
 		case .inside:
 			regions.insert(region!)
-			stateDescription = "Inside"
+			
+			let regionName = region.name.replacingOccurrences(of: "'", with: "")
+			if let name = BeaconController.notificationNames[regionName] {
+				NotificationCenter.default.post(name: name, object: nil, userInfo: ["entered" : true])
+			}
+			
 		case .outside:
 			regions.remove(region!)
-			stateDescription = "Outside"
+			
+			let regionName = region.name.replacingOccurrences(of: "'", with: "")
+			if let name = BeaconController.notificationNames[regionName] {
+				NotificationCenter.default.post(name: name, object: nil, userInfo: ["entered" : false])
+			}
 		case .unknown:
-			stateDescription = "Unknown"
+			
+			let regionName = region.name.replacingOccurrences(of: "'", with: "")
+			if let name = BeaconController.notificationNames[regionName] {
+				NotificationCenter.default.post(name: name, object: nil, userInfo: ["entered" : false])
+			}
 		}
 		
-		print("State Changed: \(stateDescription) Region \(region.name ?? "untitled") (\(region.identifier ?? ""))")
-		print("Now in: \(self.currentLocation ?? "unknown")")
+//		print("State Changed: \(stateDescription) Region \(region.name ?? "untitled") (\(region.identifier ?? ""))")
+//		print("Now in: \(self.currentLocation ?? "unknown")")
 		NotificationCenter.default.post(name: NSNotification.Name.Custom.LocationUpdated, object: nil)
 	}
 	
@@ -88,7 +124,21 @@ class BeaconController: NSObject, RPKManagerDelegate {
 	
 	func proximityKit(_ manager : RPKManager, didExit region:RPKRegion) {
 		print("Exited Region \(region.name), \(region.identifier)");
-		region.attributes
+	}
+	
+	func proximityKit(_ manager: RPKManager!, didRangeBeacons beacons: [Any]!, in region: RPKBeaconRegion!) {
+		if numToRange <= 0 {
+			self.beaconManager.stopRangingIBeacons()
+			return
+		}
+		
+		numToRange -= 1
+		if beacons.count == 0 && regions.contains(region) {
+			// I am not going to deal with exits here. That will be the job of the exit region code
+			return
+		}
+		
+		self.proximityKit(manager, didDetermineState: beacons.count > 1 ? .inside : .outside, for: region)
 	}
 	
 	enum BeaconError: Error {

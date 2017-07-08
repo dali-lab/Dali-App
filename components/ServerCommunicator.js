@@ -6,22 +6,23 @@ Also sets up listeners for checkin's, enter, exit, and tim's office, sending rel
 AUTHOR: John Kotz
 */
 
-import {Platform, NativeModules} from 'react-native';
+import { Platform, NativeModules } from 'react-native';
+
 const { RNGoogleSignin } = NativeModules;
-import {GoogleSignin} from 'react-native-google-signin';
+import { GoogleSignin } from 'react-native-google-signin';
 
 
-let BeaconController = require('./BeaconController').default;
-let env = require('./Environment');
-let StorageController = require('./StorageController').default;
-let GlobalFunctions = require('./GlobalFunctions').default;
-let ApiUtils = require('./ApiUtils').default;
+const BeaconController = require('./BeaconController').default;
+const env = require('./Environment');
+const StorageController = require('./StorageController').default;
+const GlobalFunctions = require('./GlobalFunctions').default;
+const ApiUtils = require('./ApiUtils').default;
 
-let days = ['SU','MO','TU','WE','TH','FR','SA'];
+const days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 const debugging = false;
 
 function DifferenceInDays(firstDate, secondDate) {
-   return Math.round((secondDate-firstDate)/(1000*60*60*24));
+   return Math.round((secondDate - firstDate) / (1000 * 60 * 60 * 24));
 }
 
 
@@ -41,8 +42,7 @@ class ServerCommunicator {
 
    constructor(beaconController) {
       if (ServerCommunicator.current != null) {
-         throw "Can't create more than one instance of ServerCommunicator at a time"
-         return
+         throw 'Can\'t create more than one instance of ServerCommunicator at a time';
       }
 
       // Experimental system for saving checkin action for login
@@ -58,47 +58,47 @@ class ServerCommunicator {
       if (GlobalFunctions.userIsTim()) {
          this.beaconController.addTimsOfficeListener(this.timsOfficeListener);
          this.beaconController.addBeaconDidRangeListener(() => {
-            this.postForTim("DALI", this.beaconController.inDALI)
+            this.postForTim('DALI', this.beaconController.inDALI);
          });
       }
 
       // To get current locations
-      this.beaconController.startRanging()
+      this.beaconController.startRanging();
 
       // Save this is current
       ServerCommunicator.current = this;
 
       GoogleSignin.currentUserAsync((user) => {
-         this.user = user
-      })
+         this.user = user;
+      });
    }
 
-   /// On a checkin event
+   // / On a checkin event
    checkIn=(entering) => {
       if (!entering) {
          // Again, experimental system
          this.awaitingUser = false;
-      }else{
+      } else {
          const user = this.user;
          if (user != null) {
             // Post checkin
             this.postCheckin(user).then((response) => {
                this.beaconController.checkInComplete();
             });
-         }else{
+         } else {
             // We didnt get a user... I am going to try to wait for sign in
             GoogleSignin.currentUserAsync().then((user) => {
                if (user == null) {
                   // Experimental...
                   this.awaitingUser = true;
-               }else{
+               } else {
                   this.postCheckin(user).then((response) => {
                      this.beaconController.checkInComplete();
                   }).catch((response) => {
                      // Failed to connect. Ignore...
                   });
                }
-            })
+            });
          }
       }
    }
@@ -108,20 +108,20 @@ class ServerCommunicator {
       this.enterExitDALI(this.beaconController.inDALI);
    }
 
-   /// Posts to the relevant data to the relevant server
+   // / Posts to the relevant data to the relevant server
    postCheckin(user) {
       if (user != null) {
-         return this.post(env.checkInURL, {"username": user.email});
+         return this.post(env.checkInURL, { username: user.email });
       }
-      return new Promise(function(resolve, reject) {
-         reject("User is not a DALI member")
-      });
+      return new Promise(((resolve, reject) => {
+         reject('User is not a DALI member');
+      }));
    }
 
-   /// On login
+   // / On login
    loggedIn(user) {
       // In case notifications aren't setup
-      this.beaconController.setUpNotifications()
+      this.beaconController.setUpNotifications();
       // If I log in after trying to check in, then I will do my best to delay this action till the login
       if (this.awaitingUser) {
          this.checkIn(true);
@@ -133,13 +133,13 @@ class ServerCommunicator {
       }
 
       GoogleSignin.currentUserAsync((user) => {
-         this.user = user
-      })
+         this.user = user;
+      });
    }
 
-   /// Returns a string to be added to any voting request that will allow the server to validate the identity of the device
+   // / Returns a string to be added to any voting request that will allow the server to validate the identity of the device
    authString() {
-      return "?key=" + env.apiKey;
+      return `?key=${env.apiKey}`;
    }
 
    /**
@@ -148,14 +148,14 @@ class ServerCommunicator {
    */
    getEventNow() {
       // Generating the url
-      var url = env.voting.currentURL + this.authString();
+      const url = env.voting.currentURL + this.authString();
 
       // Get
-      return fetch(url, {method: "GET"})
+      return fetch(url, { method: 'GET' })
       .then(ApiUtils.checkStatus) // This will search the response for error indicators and throw if there are problems
       .then((response) => {
          // Handle the response
-         return new Promise(function(resolve, reject) {
+         return new Promise(function (resolve, reject) {
             response.json().then((responseJson) => {
                // Saving the event in case I need it later
                this.event = responseJson;
@@ -174,18 +174,18 @@ class ServerCommunicator {
    getEventNowWithScores() {
       if (this.user == null || !GlobalFunctions.userIsAdmin()) {
          // Autoreject
-         return new Promise(function(resolve, reject) { reject() });
+         return new Promise(((resolve, reject) => { reject(); }));
       }
 
-      return fetch(env.voting.currentResultsURL + this.authString(), {method: "GET"})
-      .then(ApiUtils.checkStatus).then((response) => response.json());
+      return fetch(env.voting.currentResultsURL + this.authString(), { method: 'GET' })
+      .then(ApiUtils.checkStatus).then((response) => { return response.json(); });
    }
 
    /**
    * Creates a new event on the server with the given object as a guide
    */
    submitNewEvent(event) {
-      return this.post(env.voting.createURL + this.authString(), event, "POST", true)
+      return this.post(env.voting.createURL + this.authString(), event, 'POST', true)
       .then(ApiUtils.checkStatus);
    }
 
@@ -196,12 +196,12 @@ class ServerCommunicator {
    releaseAwards(event) {
       if (this.user == null || !GlobalFunctions.userIsAdmin()) {
          // Autoreject
-         return new Promise(function(resolve, reject) { reject() });
+         return new Promise(((resolve, reject) => { reject(); }));
       }
 
       return this.post(
          env.voting.releaseURL + this.authString(),
-         { event: event.id }
+         { event: event.id },
       )
       .then(ApiUtils.checkStatus);
    }
@@ -213,12 +213,12 @@ class ServerCommunicator {
    saveAwards(awards, event) {
       if (this.user == null || !GlobalFunctions.userIsAdmin()) {
          // Autoreject
-         return new Promise(function(resolve, reject) { reject() });
+         return new Promise(((resolve, reject) => { reject(); }));
       }
 
       return this.post(env.voting.awardsSavingURL + this.authString(), {
          event: event.id,
-         winners: awards
+         winners: awards,
       }).then(ApiUtils.checkStatus);
    }
 
@@ -226,8 +226,8 @@ class ServerCommunicator {
    * Pulls the voting results for the current event from the server
    */
    getVotingResults() {
-      return fetch(env.voting.finalResultsURL + this.authString(), {method: "GET"})
-      .then(ApiUtils.checkStatus).then((response) => response.json())
+      return fetch(env.voting.finalResultsURL + this.authString(), { method: 'GET' })
+      .then(ApiUtils.checkStatus).then((response) => { return response.json(); });
    }
 
    /**
@@ -240,42 +240,42 @@ class ServerCommunicator {
    submitVotes(first, second, third, event) {
       return this.post(env.voting.submitURL + this.authString(), {
          event: event.id,
-         first: first,
-         second: second,
-         third: third,
-         user: this.user.email
-      }, "POST", true);
+         first,
+         second,
+         third,
+         user: this.user.email,
+      }, 'POST', true);
    }
 
-   /// Simple convenience post method
+   // / Simple convenience post method
    post(path, params, method, allowNoUser) {
       // I allow the caller to pass a flag that bypasses the user check for the given post
       if (this.user != null || allowNoUser) {
-         console.log("Posting to: " + path);
+         console.log(`Posting to: ${path}`);
          return fetch(path, {
             method: method || 'POST',
             headers: {
-               'Accept': 'application/json',
+               Accept: 'application/json',
                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(params)
+            body: JSON.stringify(params),
          }).then(ApiUtils.checkStatus);
       }
-      return new Promise(function(resolve, reject) {
-         reject("Can't post if you are not a member");
-      });
+      return new Promise(((resolve, reject) => {
+         reject('Can\'t post if you are not a member');
+      }));
    }
 
-   /// Calls getLabHours and filters it by those still tonight
+   // / Calls getLabHours and filters it by those still tonight
    getTonightsLabHours() {
-      const prefix = "> getTonightsLabHours: ";
-      if (debugging) {console.log("Running getTonightsLabHours...");}
+      const prefix = '> getTonightsLabHours: ';
+      if (debugging) { console.log('Running getTonightsLabHours...'); }
 
       return new Promise((resolve, reject) => {
          this.getLabHours().then((hours) => {
-            if (debugging) {console.log(prefix + "Got back:", hours);}
-            let now = new Date();
-            let midnight = new Date();
+            if (debugging) { console.log(`${prefix}Got back:`, hours); }
+            const now = new Date();
+            const midnight = new Date();
             midnight.setHours(23, 59, 59);
             if (now.getHours() < 4) {
                now.setDate(now.getDate() - 1);
@@ -283,66 +283,70 @@ class ServerCommunicator {
                midnight.setDate(midnight.getDate() - 1);
             }
 
-            var taHours = hours.filter((hour) => {
-               const innerPrefix = "==" + prefix + hour.name + ": "
-               if (hour.status != "confirmed") {
+            const taHours = hours.filter((hour) => {
+               const innerPrefix = `==${prefix}${hour.name}: `;
+               if (hour.status != 'confirmed') {
                   return false;
                }
 
                // This method worked for the first week, but no longer!
                // Because we only get one event for each that recurrs
                if (hour.recurrence == undefined || hour.recurrence.length == 0) {
-                  if (debugging) {console.log(innerPrefix + "No recurrence");
-                  console.log(innerPrefix + "Should show:", (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight);}
+                  if (debugging) {
+                     console.log(`${innerPrefix}No recurrence`);
+                     console.log(`${innerPrefix}Should show:`, (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight);
+                  }
                   return (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight;
                }
 
                // This new method should determine what day of the week the
-               let numDaysDiff = DifferenceInDays(hour.startDate, now);
-               if (debugging) {console.log(innerPrefix + "Num days diff:", numDaysDiff);}
+               const numDaysDiff = DifferenceInDays(hour.startDate, now);
+               if (debugging) { console.log(`${innerPrefix}Num days diff:`, numDaysDiff); }
 
-               let recurrence = hour.recurrence[0];
-               let parts = recurrence.replace("RRULE:", "").split(';');
-               let freq = parts[0].replace("FREQ=", "");
-               let count = parseInt(parts[1].replace("COUNT=", ""));
-               let day = parts[2].replace("BYDAY=", "");
+               const recurrence = hour.recurrence[0];
+               const parts = recurrence.replace('RRULE:', '').split(';');
+               const freq = parts[0].replace('FREQ=', '');
+               const count = parseInt(parts[1].replace('COUNT=', ''));
+               const day = parts[2].replace('BYDAY=', '');
 
-               let lastDuplicate = new Date(hour.end.dateTime);
+               const lastDuplicate = new Date(hour.end.dateTime);
                lastDuplicate.setDate(hour.startDate.getDate() + 7 * count);
 
                if (now > lastDuplicate) {
                   // The last occurence of this event has passed
 
-                  if (debugging) {console.log(innerPrefix + "Past expiration");}
+                  if (debugging) { console.log(`${innerPrefix}Past expiration`); }
                   return false;
-               }else if (days[now.getDay()] != day){
+               } else if (days[now.getDay()] != day) {
                   // Not the right day of the week
-                  if (debugging) {console.log(innerPrefix + "Not today!");}
+                  if (debugging) { console.log(`${innerPrefix}Not today!`); }
                   return false;
-               }else{
+               } else {
                   // Right day of week. Check time
-                  if (debugging) {console.log(innerPrefix + "Correct day");}
+                  if (debugging) { console.log(`${innerPrefix}Correct day`); }
 
-                  let thisWeeksEndTime = new Date(hour.end.dateTime);
+                  const thisWeeksEndTime = new Date(hour.end.dateTime);
                   thisWeeksEndTime.setDate(thisWeeksEndTime.getDate() + numDaysDiff);
 
-                  if (debugging) {console.log(innerPrefix + "Now is:", now);
-                  console.log(innerPrefix + "Ends at:", thisWeeksEndTime);}
+                  if (debugging) {
+                     console.log(`${innerPrefix}Now is:`, now);
+                     console.log(`${innerPrefix}Ends at:`, thisWeeksEndTime);
+                  }
 
-                  let shouldShow = thisWeeksEndTime > now
-                  if (debugging) {console.log(innerPrefix + "Should show:", shouldShow);}
+                  const shouldShow = thisWeeksEndTime > now;
+                  if (debugging) { console.log(`${innerPrefix}Should show:`, shouldShow); }
                   return shouldShow;
                }
             });
 
-            var i = 0;
+            let i = 0;
             while (i < taHours.length) {
-               let hour = taHours[i];
-               let otherI = findWithAttr(taHours, "id", hour.id, i);
+               const hour = taHours[i];
+               const otherI = findWithAttr(taHours, 'id', hour.id, i);
 
                if (otherI != -1) {
-                  if (debugging) {console.log(prefix + "Found duplicate", otherI, "to", i)}
-                  let otherHour = taHours[otherI];
+                  if (debugging) { console.log(`${prefix}Found duplicate`, otherI, 'to', i); }
+                  const otherHour = taHours[otherI];
                   taHours.splice(otherI, 1);
 
                   if (otherHour.skills != null) {
@@ -353,73 +357,75 @@ class ServerCommunicator {
                i++;
             }
 
-            taHours.sort((hour1,hour2) => {
+            taHours.sort((hour1, hour2) => {
                return hour1.startDate > hour2.startDate;
             });
 
-            resolve(taHours)
+            resolve(taHours);
          }).catch((error) => {
-            reject(error)
+            reject(error);
          });
-      })
+      });
    }
 
    // Gets the lab hours listed on the Google Calendar
    getLabHours() {
-      const prefix = "==> getLabHours: ";
-      if (debugging) {console.log("Running getLabHours");}
+      const prefix = '==> getLabHours: ';
+      if (debugging) { console.log('Running getLabHours'); }
       return GoogleSignin.currentUserAsync().then((user) => {
-         if (user == null){
-            return new Promise(function(resolve, reject) {
-               reject()
-            });
+         if (user == null) {
+            return new Promise(((resolve, reject) => {
+               reject();
+            }));
          }
-         this.user = user
+         this.user = user;
 
          // I can access the calendar
-         return new Promise(function(resolve, reject) {
+         return new Promise(function (resolve, reject) {
             // There is some wierd accessToken stuff on Android, so I will check if I have it...
-            this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken
-            if (debugging) {console.log(prefix + "Access token?", this.accessToken);}
+            this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken;
+            if (debugging) { console.log(`${prefix}Access token?`, this.accessToken); }
 
             if (this.accessToken == undefined) {
-               if (debugging) {console.log(prefix + "Nope...");}
+               if (debugging) { console.log(`${prefix}Nope...`); }
                // If not, I will request it...
                RNGoogleSignin.getAccessToken(user).then((token) => {
                   // Save it...
-                  this.accessToken = token
+                  this.accessToken = token;
 
-                  if (debugging) {console.log(prefix + "New one?", this.accessToken);
-                  // And start the function over
-                  console.log(prefix + "Starting over...");}
+                  if (debugging) {
+                     console.log(`${prefix}New one?`, this.accessToken);
+                     // And start the function over
+                     console.log(`${prefix}Starting over...`);
+                  }
                   this.getLabHours().then(() => {
-                     resolve.apply(null, arguments);
+                     resolve(...arguments);
                   }).catch(() => {
-                     reject.apply(null, arguments);
-                  })
+                     reject(...arguments);
+                  });
                }).catch(() => {
-                  reject.apply(null, arguments);
-               })
+                  reject(...arguments);
+               });
             }
 
-            if (debugging) {console.log(prefix + "Yup!");}
+            if (debugging) { console.log(`${prefix}Yup!`); }
 
             // Now that I have the token...
-            let accessToken = this.accessToken
-            if (debugging) {console.log(prefix + "Fetching calendar...");}
-            fetch("https://www.googleapis.com/calendar/v3/calendars/" + env.taCalendarId + "/events", {
-               method: "GET",
+            const accessToken = this.accessToken;
+            if (debugging) { console.log(`${prefix}Fetching calendar...`); }
+            fetch(`https://www.googleapis.com/calendar/v3/calendars/${env.taCalendarId}/events`, {
+               method: 'GET',
                headers: {
-                  'Authorization': "Bearer " + accessToken
-               }
-            }).then((response) => response.json())
+                  Authorization: `Bearer ${accessToken}`,
+               },
+            }).then((response) => { return response.json(); })
             .then((responseJson) => {
-               if (debugging) {console.log(prefix + "Got it:", responseJson);}
+               if (debugging) { console.log(`${prefix}Got it:`, responseJson); }
 
                // Handle no data
                if (responseJson == null || responseJson.items == null) {
                   console.log(responseJson);
-                  reject("No data!");
+                  reject('No data!');
                   return;
                }
 
@@ -441,61 +447,61 @@ class ServerCommunicator {
       });
    }
 
-   /// Gets the events in the next week
+   // / Gets the events in the next week
    getUpcomingEvents() {
       return new Promise((success, failure) => {
          GoogleSignin.currentUserAsync().then((user) => {
             if (user != null) {
-               this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken
+               this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken;
 
 
                if (this.accessToken == undefined) {
                   return GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
-                     return GoogleSignin.currentUserAsync()
+                     return GoogleSignin.currentUserAsync();
                   }).then((user) => {
-                     return RNGoogleSignin.getAccessToken(user)
+                     return RNGoogleSignin.getAccessToken(user);
                   }).then((token) => {
-                     this.accessToken = token
+                     this.accessToken = token;
                      this.getUpcomingEvents().then(() => {
                         success.apply(arguments);
                      }).catch(() => {
                         failure.apply(arguments);
-                     })
-                  })
+                     });
+                  });
                }
             }
 
-            let accessToken = this.accessToken
+            const accessToken = this.accessToken;
 
-            fetch("https://www.googleapis.com/calendar/v3/calendars/" + (user != null ? env.eventsCalendarId : env.publicEventsCalendarId) + "/events" + (user == null ? "?key=" + env.googleConfig.publicKey : ""), {
-               method: "GET",
+            fetch(`https://www.googleapis.com/calendar/v3/calendars/${user != null ? env.eventsCalendarId : env.publicEventsCalendarId}/events${user == null ? `?key=${env.googleConfig.publicKey}` : ''}`, {
+               method: 'GET',
                headers: user != null ? {
-                  'Authorization': "Bearer " + accessToken
-               } : null
-            }).then((response) => response.json())
+                  Authorization: `Bearer ${accessToken}`,
+               } : null,
+            }).then((response) => { return response.json(); })
             .then((responseJson) => {
                // Handle no data
                if (responseJson.items == null) {
                   failure();
-                  console.log("Failed!", responseJson);
+                  console.log('Failed!', responseJson);
                   return;
                }
 
                // Get today...
-               let now = new Date();
+               const now = new Date();
                // ... aka the beginning of today
 
                // Get next week
-               let weekFromNow = new Date();
+               const weekFromNow = new Date();
                weekFromNow.setDate(now.getDate() + 6);
                // At the end of the day
                weekFromNow.setHours(23, 59, 59);
 
-               let weekend = new Date();
-               weekend.setDate(now.getDate() + (7 - now.getDay()))
+               const weekend = new Date();
+               weekend.setDate(now.getDate() + (7 - now.getDay()));
                weekend.setHours(23, 59, 59);
 
-               let midnight = new Date();
+               const midnight = new Date();
                midnight.setHours(23, 59, 59);
                if (now.getHours() < 4) {
                   now.setDate(now.getDate() - 1);
@@ -504,10 +510,10 @@ class ServerCommunicator {
                }
 
                // Filter events so they fit between those days
-               var events = responseJson.items.filter((event) => {
+               const events = responseJson.items.filter((event) => {
                   event.today = false;
-                  if (event.status != "confirmed") {
-                     return false
+                  if (event.status != 'confirmed') {
+                     return false;
                   }
 
                   event.startDate = new Date(event.start.dateTime);
@@ -519,43 +525,43 @@ class ServerCommunicator {
                      return event.startDate > now && event.startDate < weekFromNow;
                   }
 
-                  let numDaysDiff = DifferenceInDays(event.startDate, now);
+                  const numDaysDiff = DifferenceInDays(event.startDate, now);
 
-                  let recurrence = event.recurrence[0];
-                  let parts = recurrence.replace("RRULE:", "").split(';');
+                  const recurrence = event.recurrence[0];
+                  const parts = recurrence.replace('RRULE:', '').split(';');
 
-                  let obj = {}
+                  const obj = {};
 
                   parts.forEach((part) => {
-                     let strings = part.split("=");
+                     const strings = part.split('=');
                      // Now I will parse the information the best I can
 
-                     if (strings[0] == "COUNT") {
-                        let count = parseInt(strings[1]);
-                        let lastDuplicate = new Date(event.start.dateTime);
+                     if (strings[0] == 'COUNT') {
+                        const count = parseInt(strings[1]);
+                        const lastDuplicate = new Date(event.start.dateTime);
                         lastDuplicate.setDate(event.startDate.getDate() + 7 * count);
 
                         obj.lastDuplicate = lastDuplicate;
-                     }else if (strings[0] == "FREQ") {
+                     } else if (strings[0] == 'FREQ') {
                         obj.frequency = strings[1];
-                     }else if (strings[0] == "UNTIL") {
-                        let year = strings[1].substring(0,4);
-                        let month = strings[1].substring(4,6);
-                        let day = strings[1].substring(6,8);
+                     } else if (strings[0] == 'UNTIL') {
+                        const year = strings[1].substring(0, 4);
+                        const month = strings[1].substring(4, 6);
+                        const day = strings[1].substring(6, 8);
 
-                        obj.lastDuplicate = new Date(year, month-1, day);
+                        obj.lastDuplicate = new Date(year, month - 1, day);
                         obj.lastDuplicate.setHours(event.startDate.getHours(), event.startDate.getMinutes());
-                     }else if (strings[0] == "BYDAY") {
+                     } else if (strings[0] == 'BYDAY') {
                         obj.day = strings[1];
-                     }else{
+                     } else {
                         obj[strings[0]] = strings[1];
                      }
-                  })
+                  });
 
                   if (now > obj.lastDuplicate) {
                      // The last occurence of this event has passed
                      return false;
-                  }else{
+                  } else {
                      // Before end. Check time
                      event.startDate.setDate(event.startDate.getDate() + 7 * Math.ceil(numDaysDiff / 7));
                      event.endDate.setDate(event.endDate.getDate() + 7 * Math.ceil(numDaysDiff / 7));
@@ -569,7 +575,7 @@ class ServerCommunicator {
 
                // Sort by date (soonest first)
                events.sort((event1, event2) => {
-                  return event1.startDate > event2.startDate ? 1 : -1
+                  return event1.startDate > event2.startDate ? 1 : -1;
                });
 
                // Return them
@@ -584,35 +590,34 @@ class ServerCommunicator {
       });
    }
 
-   /// Query the server for Tim's location
+   // / Query the server for Tim's location
    getTimLocation() {
       if (this.user != null) {
-         return fetch(env.timLocationInfoURL, {method: "GET"})
-         .then((response) => response.json()).catch((error) => {
+         return fetch(env.timLocationInfoURL, { method: 'GET' })
+         .then((response) => { return response.json(); }).catch((error) => {
             console.log(error);
-         })
+         });
       }
    }
 
-   /// Query the server for the location of sharing members
+   // / Query the server for the location of sharing members
    getSharedMembersInLab() {
       if (this.user != null) {
-         return fetch(env.sharedLabURL, {method: "GET"})
-         .then((response) => response.json()).catch((error) => {
+         return fetch(env.sharedLabURL, { method: 'GET' })
+         .then((response) => { return response.json(); }).catch((error) => {
             console.log(error);
-         })
+         });
       }
    }
 
-   /// Handle enter exit event
+   // / Handle enter exit event
    enterExitDALI=(inDALI) => {
-
       // Get the user
       GoogleSignin.currentUserAsync().then((user) => {
          if (user == null) {
-            throw "Not posting because there is no user";
+            throw 'Not posting because there is no user';
          }
-         this.user = user
+         this.user = user;
          // Get sharing preference
          return StorageController.getLabPresencePreference();
       }).then((share) => {
@@ -625,38 +630,38 @@ class ServerCommunicator {
                id: user.id,
                familyName: user.familyName,
                givenName: user.givenName,
-               name: user.name
+               name: user.name,
             },
-            inDALI: inDALI,
-            share: share
+            inDALI,
+            share,
          }).catch((error) => {
             console.log(error);
-         });;
+         });
       }).then((response) => {
          // Done
          console.log(response);
       }).catch((error) => {
          // Failed to connect. Ignoring...
-         console.log(error)
+         console.log(error);
       });
 
       // As well if the user is Tim, we will post for him
-      this.postForTim("DALI", inDALI);
+      this.postForTim('DALI', inDALI);
    }
 
    timsOfficeListener=(enter) => {
-      console.log((enter ? "Entered" : "Exited") + " tim's office!")
+      console.log(`${enter ? 'Entered' : 'Exited'} tim's office!`);
 
       // TODO: Force check for lab
 
-      this.postForTim("OFFICE", enter);
+      this.postForTim('OFFICE', enter);
    }
 
-   /// Posts the location info given to the server
+   // / Posts the location info given to the server
    postForTim(location, enter) {
       if (this.user != null && GlobalFunctions.userIsTim()) {
-         this.post(env.timLocationInfoURL, {location: location, enter: enter})
-         .then((response) => response.json()).then((responseJson) => {
+         this.post(env.timLocationInfoURL, { location, enter })
+         .then((response) => { return response.json(); }).then((responseJson) => {
 
          }).catch((error) => {
             // Failed...
@@ -666,8 +671,8 @@ class ServerCommunicator {
 }
 
 function findWithAttr(array, attr, value, not) {
-   for(var i = 0; i < array.length; i += 1) {
-      if(array[i][attr] === value && i !== not) {
+   for (let i = 0; i < array.length; i += 1) {
+      if (array[i][attr] === value && i !== not) {
          return i;
       }
    }

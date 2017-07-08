@@ -39,14 +39,39 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>Fabric</key>
+	<dict>
+		<key>APIKey</key>
+		<string>b6332eaf2877cd4c71ae5da96a8785e6e49870aa</string>
+		<key>Kits</key>
+		<array>
+			<dict>
+				<key>KitInfo</key>
+				<dict/>
+				<key>KitName</key>
+				<string>Crashlytics</string>
+			</dict>
+		</array>
+	</dict>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>To determine location we use Bluetooth beacons. This requires access to bluetooth peripherals</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -57,13 +82,7 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>To determine location we use Bluetooth beacons. This requires access to bluetooth peripherals</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Location is used only to determine if you are within the DALI Lab or at one of its events</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

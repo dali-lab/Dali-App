@@ -27,6 +27,9 @@
 		2A4B864DCA854B358BF25A4B /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20135D497CC642AA9E276B95 /* AddressBook.framework */; };
 		32D489D54703478398FDBC8A /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D29B9663FF7489E9A947ABF /* libRNGoogleSignin.a */; };
 		3F79E02F59D3E655B40C2C13 /* Pods_DALISwiftUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FDFB698A929871F3C18FD02 /* Pods_DALISwiftUITests.framework */; };
+		5221949E1F1008FB0082143D /* DALI Lab Stickers.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5266189D1EE759EB00E0E3FF /* DALI Lab Stickers.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		522194A61F1009490082143D /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3B91E67E87B00BA1EFE /* Fabric.framework */; };
+		522194A71F1009490082143D /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */; };
 		5227FD7D1EFDC0FA003D1A66 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5227FD7C1EFDC0FA003D1A66 /* AppDelegate.swift */; };
 		5227FD7F1EFDC0FA003D1A66 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5227FD7E1EFDC0FA003D1A66 /* LoginViewController.swift */; };
 		5227FD821EFDC0FA003D1A66 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5227FD801EFDC0FA003D1A66 /* Main.storyboard */; };
@@ -37,6 +40,7 @@
 		5227FDEC1EFDE933003D1A66 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5227FDEB1EFDE933003D1A66 /* GoogleService-Info.plist */; };
 		523585AE1E60C5C5008B9FD9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */; };
 		5252937A1E688677004BFAF5 /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 52BF8A771E60C3C9000465F8 /* GoogleSignIn.bundle */; };
+		5255919C1F0DD9240006F323 /* PrivateInformation.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5255919B1F0DD9240006F323 /* PrivateInformation.plist */; };
 		525F46491EE79DE600C5492D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F46481EE79DE600C5492D /* AppDelegate.swift */; };
 		525F464B1EE79DE600C5492D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F464A1EE79DE600C5492D /* ViewController.swift */; };
 		525F464E1EE79DE600C5492D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 525F464C1EE79DE600C5492D /* Main.storyboard */; };
@@ -64,9 +68,11 @@
 		52BF8A7F1E60C3C9000465F8 /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A781E60C3C9000465F8 /* GoogleSignIn.framework */; };
 		52BF8A801E60C3C9000465F8 /* GoogleSymbolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A791E60C3C9000465F8 /* GoogleSymbolUtilities.framework */; };
 		52BF8A811E60C3C9000465F8 /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BF8A7A1E60C3C9000465F8 /* GoogleUtilities.framework */; };
+		52DA17971F0DADED00E96EA0 /* ServerCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DA17961F0DADED00E96EA0 /* ServerCommunicator.swift */; };
 		52EE3C5D1E4BC7D50089140E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EE3C5C1E4BC7D50089140E /* CoreLocation.framework */; };
 		52EFF1131EE8407700D40811 /* dali_UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EFF1121EE8407700D40811 /* dali_UITests.swift */; };
 		52EFF1211EE8408400D40811 /* dali_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EFF1201EE8408400D40811 /* dali_Tests.swift */; };
+		52FC72D81F0E82A900FBCEF1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FC72D71F0E82A900FBCEF1 /* SettingsViewController.swift */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		93B2D79E059E4356BD758EF8 /* libRNBackgroundTimer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F5E13E3B8D94D01B37DC88F /* libRNBackgroundTimer.a */; };
@@ -222,6 +228,13 @@
 			remoteGlobalIDString = 3D3CD9181DE5FBD800167DC4;
 			remoteInfo = "jschelpers-tvOS";
 		};
+		5221949F1F1008FB0082143D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5266189C1EE759EB00E0E3FF;
+			remoteInfo = "DALI Lab Stickers";
+		};
 		5227FD8E1EFDC0FB003D1A66 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
@@ -358,6 +371,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		522194A11F1008FB0082143D /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5221949E1F1008FB0082143D /* DALI Lab Stickers.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		528649E61EE75533002D99F9 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -411,6 +435,7 @@
 		5227FDEB1EFDE933003D1A66 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5236B7151EE9CD4700643865 /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
+		5255919B1F0DD9240006F323 /* PrivateInformation.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivateInformation.plist; sourceTree = "<group>"; };
 		5259642C1E51173B009C970E /* dali.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = dali.entitlements; path = dali/dali.entitlements; sourceTree = "<group>"; };
 		525F46461EE79DE600C5492D /* DALI Lab tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DALI Lab tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		525F46481EE79DE600C5492D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -451,6 +476,7 @@
 		52BF8A7A1E60C3C9000465F8 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = GoogleSdk/GoogleUtilities.framework; sourceTree = "<group>"; };
 		52C253DB1E6E63B100C3DA3E /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 		52D962561F0D47E90091D49D /* ProximityKit.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ProximityKit.plist; sourceTree = "<group>"; };
+		52DA17961F0DADED00E96EA0 /* ServerCommunicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCommunicator.swift; sourceTree = "<group>"; };
 		52EE3C5C1E4BC7D50089140E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		52EFF1101EE8407700D40811 /* dali UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "dali UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EFF1121EE8407700D40811 /* dali_UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dali_UITests.swift; sourceTree = "<group>"; };
@@ -458,6 +484,7 @@
 		52EFF11E1EE8408400D40811 /* dali Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "dali Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EFF1201EE8408400D40811 /* dali_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dali_Tests.swift; sourceTree = "<group>"; };
 		52EFF1221EE8408400D40811 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		52FC72D71F0E82A900FBCEF1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		6D29B9663FF7489E9A947ABF /* libRNGoogleSignin.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGoogleSignin.a; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
@@ -528,6 +555,8 @@
 				528A011C1F07E5B1009897DF /* libsqlite3.tbd in Frameworks */,
 				528A01091F07E275009897DF /* CoreBluetooth.framework in Frameworks */,
 				DC29590F460E2D25272FCE62 /* Pods_DALISwift.framework in Frameworks */,
+				522194A61F1009490082143D /* Fabric.framework in Frameworks */,
+				522194A71F1009490082143D /* Crashlytics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,11 +723,14 @@
 			children = (
 				5227FDEB1EFDE933003D1A66 /* GoogleService-Info.plist */,
 				52D962561F0D47E90091D49D /* ProximityKit.plist */,
+				5255919B1F0DD9240006F323 /* PrivateInformation.plist */,
 				5227FD7C1EFDC0FA003D1A66 /* AppDelegate.swift */,
 				52B0672C1F07DC2B0098FDAA /* BeaconController.swift */,
 				527A0E291F0D4F49009F024B /* EnumsAndStructs.swift */,
+				52DA17961F0DADED00E96EA0 /* ServerCommunicator.swift */,
 				52A8F6D21F0067DA00C033D9 /* MainViewController.swift */,
 				5227FD7E1EFDC0FA003D1A66 /* LoginViewController.swift */,
+				52FC72D71F0E82A900FBCEF1 /* SettingsViewController.swift */,
 				52BC7CBB1F00ABAF003285C7 /* PeopleInLabViewController.swift */,
 				5227FD801EFDC0FA003D1A66 /* Main.storyboard */,
 				5227FD831EFDC0FA003D1A66 /* Assets.xcassets */,
@@ -1001,10 +1033,13 @@
 				5227FD781EFDC0FA003D1A66 /* Resources */,
 				66E5E825168D32E4E77D7293 /* [CP] Embed Pods Frameworks */,
 				25B7D62DBE52960218138128 /* [CP] Copy Pods Resources */,
+				5221949C1F1008C00082143D /* ShellScript */,
+				522194A11F1008FB0082143D /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				522194A01F1008FB0082143D /* PBXTargetDependency */,
 			);
 			name = DALISwift;
 			productName = DALISwift;
@@ -1185,6 +1220,11 @@
 						DevelopmentTeam = JQ28K6Y7JE;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
 					};
 					5227FD8C1EFDC0FB003D1A66 = {
 						CreatedOnToolsVersion = 8.3.3;
@@ -1579,6 +1619,7 @@
 				5227FDEC1EFDE933003D1A66 /* GoogleService-Info.plist in Resources */,
 				5227FD841EFDC0FA003D1A66 /* Assets.xcassets in Resources */,
 				5227FD821EFDC0FA003D1A66 /* Main.storyboard in Resources */,
+				5255919C1F0DD9240006F323 /* PrivateInformation.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1702,6 +1743,19 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DALISwiftUITests/Pods-DALISwiftUITests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		5221949C1F1008C00082143D /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./Fabric.framework/run b6332eaf2877cd4c71ae5da96a8785e6e49870aa c07b767cee52486a1b7d5a24732a2c2dc77e790d70551fd02f9c983e10e9d2e5";
 		};
 		526AF3B81E67E82700BA1EFE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1827,7 +1881,9 @@
 				52A8F6D31F0067DA00C033D9 /* MainViewController.swift in Sources */,
 				5227FD7F1EFDC0FA003D1A66 /* LoginViewController.swift in Sources */,
 				5227FD7D1EFDC0FA003D1A66 /* AppDelegate.swift in Sources */,
+				52DA17971F0DADED00E96EA0 /* ServerCommunicator.swift in Sources */,
 				527A0E2A1F0D4F49009F024B /* EnumsAndStructs.swift in Sources */,
+				52FC72D81F0E82A900FBCEF1 /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1893,6 +1949,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		522194A01F1008FB0082143D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5266189C1EE759EB00E0E3FF /* DALI Lab Stickers */;
+			targetProxy = 5221949F1F1008FB0082143D /* PBXContainerItemProxy */;
+		};
 		5227FD8F1EFDC0FB003D1A66 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 5227FD791EFDC0FA003D1A66 /* DALISwift */;
@@ -2043,6 +2104,8 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
 				ENABLE_BITCODE = YES;
@@ -2050,11 +2113,12 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/DALISwift",
 				);
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = DALISwift/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.JohnKotz.DALI.DaliLabApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2076,6 +2140,8 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
@@ -2083,10 +2149,11 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/DALISwift",
 				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = DALISwift/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.JohnKotz.DALI.DaliLabApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
