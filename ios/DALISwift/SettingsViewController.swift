@@ -8,28 +8,38 @@
 
 import Foundation
 import UIKit
+import SCLAlertView
 
-class SettingsViewController: UITableViewController {
+class SettingsViewController: UITableViewController, AlertShower {
 	@IBOutlet weak var signOutCell: UITableViewCell!
 	@IBOutlet weak var enterSwitch: UISwitch!
 	@IBOutlet weak var checkInSwitch: UISwitch!
 	@IBOutlet weak var votingSwitch: UISwitch!
 	@IBOutlet weak var shareSwitch: UISwitch!
 	
-	let defaults: UserDefaults = UserDefaults(suiteName: "Settings")!
-	
 	override func viewDidLoad() {
 		let user = GIDSignIn.sharedInstance().currentUser
 		signOutCell.textLabel?.text = user == nil ? "Sign In" : "Sign out"
 		
-		enterSwitch.isOn = defaults.value(forKey: "enterExitNotification") != nil ? defaults.bool(forKey: "enterExitNotification") : false
-		checkInSwitch.isOn = defaults.value(forKey: "checkInNotification") != nil ? defaults.bool(forKey: "checkInNotification") : true
-		votingSwitch.isOn = defaults.value(forKey: "votingNotification") != nil ? defaults.bool(forKey: "votingNotification") : true
-		shareSwitch.isOn = defaults.value(forKey: "sharePreference") != nil ? defaults.bool(forKey: "sharePreference") : true
+		enterSwitch.isOn = SettingsController.getEnterExitNotif()
+		checkInSwitch.isOn = SettingsController.getCheckInNotif()
+		votingSwitch.isOn = SettingsController.getVotingNotif()
+		shareSwitch.isOn = SettingsController.getSharePref()
 	}
 	
 	@IBAction func switchChanged(_ sender: UISwitch) {
-		defaults.set(sender.isOn, forKey: sender.accessibilityLabel!)
+		SettingsController.set(sender.isOn, forKey: sender.accessibilityLabel!)
+		if sender != shareSwitch {
+			// Then they switched a notification
+			if sender.isOn {
+				 UserDefaults.standard.set(false, forKey: "noNotificationsSelected")
+			}
+			AppDelegate.shared.setUpNotificationListeners()
+		}
+	}
+	
+	func showAlert(alert: SCLAlertView, title: String, subTitle: String, color: UIColor, image: UIImage) {
+		let _ = alert.showCustom(title, subTitle: subTitle, color: color, icon: image)
 	}
 	
 	override func numberOfSections(in tableView: UITableView) -> Int {
@@ -52,5 +62,29 @@ class SettingsViewController: UITableViewController {
 			// Sign out
 			AppDelegate.shared?.signOut()
 		}
+	}
+}
+
+class SettingsController {
+	private static let defaults = UserDefaults(suiteName: "Settings")!
+	
+	static func set(_ bool: Bool, forKey key: String) {
+		defaults.set(bool, forKey: key)
+	}
+	
+	static func getEnterExitNotif() -> Bool {
+		return defaults.value(forKey: "enterExitNotification") != nil ? defaults.bool(forKey: "enterExitNotification") : false
+	}
+	
+	static func getCheckInNotif() -> Bool {
+		return defaults.value(forKey: "checkInNotification") != nil ? defaults.bool(forKey: "checkInNotification") : true
+	}
+	
+	static func getVotingNotif() -> Bool {
+		return defaults.value(forKey: "votingNotification") != nil ? defaults.bool(forKey: "votingNotification") : true
+	}
+	
+	static func getSharePref() -> Bool {
+		return defaults.value(forKey: "sharePreference") != nil ? defaults.bool(forKey: "sharePreference") : true
 	}
 }

@@ -7,12 +7,14 @@
 //
 
 import Foundation
+import SCLAlertView
 
 let env = NSDictionary(contentsOfFile: Bundle.main.path(forResource: "PrivateInformation", ofType: "plist")!)! as! [String: Any]
 
 extension Notification.Name {
 	enum Custom {
 		static let LocationUpdated = Notification.Name(rawValue: "LocationUpdated")
+		static let CheckInComeplte  =  Notification.Name(rawValue: "CheckInComeplte")
 		static let EnteredOrExitedDALI = Notification.Name(rawValue: "EnteredOrExitedDALI")
 		static let CheckInEnteredOrExited = Notification.Name(rawValue: "CheckInEnteredOrExited")
 		static let EventVoteEnteredOrExited = Notification.Name(rawValue: "EventVoteEnteredOrExited")
@@ -62,4 +64,8 @@ var apiPrivateKey: String {
 
 var serverPrivateKey: String {
 	return (env["secure-keys"] as! [String:String])["dali-app-server"]!
+}
+
+protocol AlertShower {
+	func showAlert(alert: SCLAlertView, title: String, subTitle: String, color: UIColor, image: UIImage)
 }

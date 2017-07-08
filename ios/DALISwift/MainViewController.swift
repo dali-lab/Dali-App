@@ -8,8 +8,10 @@
 
 import Foundation
 import UIKit
+import SCLAlertView
+import UserNotifications
 
-class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AlertShower {
 	@IBOutlet weak var daliImage: UIImageView!
 	@IBOutlet weak var internalView: UIView!
 	@IBOutlet weak var locationLabel: UILabel!
@@ -17,6 +19,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 	
 	var viewShown = false
 	var loginTransformAnimationDone: Bool!
+	var animationDone: (() -> Void)?
 	
 	var events = [[Event]]()
 	var sections = [String]()
@@ -27,6 +30,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 		self.setUpListeners()
 		self.locationUpdated()
 		self.updateData()
+		(UIApplication.shared.delegate as! AppDelegate).mainViewController = self
 	}
 	
 	
@@ -143,6 +147,13 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 		return 30
 	}
 	
+	func showAlert(alert: SCLAlertView, title: String, subTitle: String, color: UIColor, image: UIImage) {
+		animationDone = { () in
+			UIApplication.shared.statusBarStyle = .default
+			let _ = alert.showCustom(title, subTitle: subTitle, color: color, icon: image)
+		}
+	}
+	
 	func startAnimation() {
 		let mid = self.view.frame.size.height / 2.0
 		let top = mid - self.daliImage.frame.height / 2.0
@@ -162,9 +173,13 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 			self.daliImage.center = startingCenter
 			self.daliImage.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
 		}) { (success) in
-			UIView.animate(withDuration: 0.5, animations: {
+			UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
 				self.internalView.alpha = 1.0
-			})
+			}) { (success) in
+				if let animationDone = self.animationDone {
+					animationDone()
+				}
+			}
 			self.viewShown = true
 		}
 	}

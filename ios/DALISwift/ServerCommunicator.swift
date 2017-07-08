@@ -110,7 +110,7 @@ class ServerCommunicator {
 				"name": user.profile.name
 			],
 			"inDALI": entered,
-			"share": true
+			"share": SettingsController.getSharePref()
 		]
 		
 		if let jsonData = try? JSONSerialization.data(withJSONObject: json) {

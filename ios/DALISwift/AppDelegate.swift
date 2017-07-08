@@ -9,15 +9,17 @@
 import UIKit
 import Fabric
 import Crashlytics
-
+import UserNotifications
+import SCLAlertView
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
-	static var shared: AppDelegate?
+	static var shared: AppDelegate!
 
 	var window: UIWindow?
 	var user: GIDGoogleUser?
 	var loginViewController: LoginViewController?
+	var mainViewController: MainViewController?
 	var inBackground = false
 	
 	var beaconController: BeaconController?
@@ -39,8 +41,111 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 		
 		GIDSignIn.sharedInstance().delegate = self
 		GIDSignIn.sharedInstance().signInSilently()
-
+		
 		return true
+	}
+	
+	func askForNotifications(callback: @escaping (_ success: Bool) -> Void) {
+		let center = UNUserNotificationCenter.current()
+		
+		if UserDefaults.standard.bool(forKey: "noNotificationsSelected") {
+			callback(false)
+			return
+		}
+		
+		center.getNotificationSettings(completionHandler: { (settings) in
+			switch (settings.authorizationStatus) {
+			case .notDetermined:
+				DispatchQueue.main.async {
+					let alertAppearance = SCLAlertView.SCLAppearance(
+						showCloseButton: false
+					)
+					
+					let alert = SCLAlertView(appearance: alertAppearance)
+					alert.addButton("No, not now", action: {
+						UIApplication.shared.statusBarStyle = .lightContent
+						UserDefaults.standard.set(true, forKey: "noNotificationsSelected")
+						callback(false)
+					})
+					alert.addButton("Sure", action: {
+						UIApplication.shared.statusBarStyle = .lightContent
+						center.requestAuthorization(options: [.alert, .badge, .sound]) { (success, error) in
+							callback(success)
+						}
+					})
+					
+					(self.getVisibleViewController(self.window?.rootViewController) as? AlertShower)?.showAlert(alert: alert, title: "Notifications", subTitle: "Would you like this app to send you notifications to welcoming you to events you go to?", color: #colorLiteral(red: 0.6085096002, green: 0.80526066, blue: 0.9126116071, alpha: 1), image: #imageLiteral(resourceName: "notificationBell"))
+				}
+				break
+			case .authorized:
+				callback(true)
+				break
+			default:
+				callback(false)
+				break
+			}
+		})
+	}
+	
+	
+	// Credits to @ProgrammierTier https://stackoverflow.com/a/34179192
+	func getVisibleViewController(_ rootViewController: UIViewController?) -> UIViewController? {
+		
+		var rootVC = rootViewController
+		if rootVC == nil {
+			rootVC = UIApplication.shared.keyWindow?.rootViewController
+		}
+		
+		if rootVC?.presentedViewController == nil {
+			return rootVC
+		}
+		
+		if let presented = rootVC?.presentedViewController {
+			if presented.isKind(of: UINavigationController.self) {
+				let navigationController = presented as! UINavigationController
+				return navigationController.viewControllers.last!
+			}
+			
+			if presented.isKind(of: UITabBarController.self) {
+				let tabBarController = presented as! UITabBarController
+				return tabBarController.selectedViewController!
+			}
+			
+			return getVisibleViewController(presented)
+		}
+		return nil
+	}
+	
+	func setUpNotificationListeners() {
+		self.askForNotifications { (success) in
+			if success {
+				if SettingsController.getEnterExitNotif() {
+					NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.enterExitHappened), name: Notification.Name.Custom.EnteredOrExitedDALI, object: nil)
+				}
+				if SettingsController.getCheckInNotif() {
+					NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.checkInHappened), name: Notification.Name.Custom.CheckInComeplte, object: nil)
+				}
+				if SettingsController.getVotingNotif() {
+					NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.votingEventEnteredOrExited), name: Notification.Name.Custom.EventVoteEnteredOrExited, object: nil)
+				}
+			}
+		}
+	}
+	
+	@objc private func enterExitHappened() {
+		
+	}
+	
+	@objc private func checkInHappened() {
+		
+	}
+	
+	@objc private func votingEventEnteredOrExited() {
+		
+	}
+	
+	func breakDownNotificationListeners() {
+		NotificationCenter.default.removeObserver(self)
 	}
 	
 	func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
@@ -63,7 +168,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 				mainViewController.loginTransformAnimationDone = loginViewController.transformAnimationDone
 				
 				loginViewController.present(mainViewController, animated: true, completion: {
-					
+					self.setUpNotificationListeners()
 				})
 			}else{
 				self.window?.rootViewController = mainViewController
@@ -87,6 +192,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 	
 	func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
 		print("Disconnected!")
+		self.breakDownNotificationListeners()
 	}
 	
 	func signOut() {
@@ -95,7 +201,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 		
 		// I'm gonna need a better way than this:
 		self.window?.rootViewController?.dismiss(animated: true, completion: {
-			
+			self.breakDownNotificationListeners()
 		})
 	}
 	
