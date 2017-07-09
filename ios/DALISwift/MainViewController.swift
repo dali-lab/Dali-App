@@ -121,7 +121,6 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 	
 	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 		let view = UIView()
-		view.backgroundColor = #colorLiteral(red: 0.4078431373, green: 0.7137254902, blue: 0.7607843137, alpha: 1)
 		
 		let active = events[section].count > 0
 		
