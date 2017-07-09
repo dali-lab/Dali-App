@@ -68,14 +68,14 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 				}
 			}
 			
-			if today.count > 0 {
+//			if today.count > 0 {
 				self.events.append(today)
 				self.sections.append("Today")
-			}
-			if week.count > 0 {
+//			}
+//			if week.count > 0 {
 				self.events.append(week)
 				self.sections.append("This Week")
-			}
+//			}
 			if next.count > 0 {
 				self.events.append(next)
 				self.sections.append("Next Week")
@@ -127,24 +127,55 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 	
 	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 		let view = UIView()
+		view.backgroundColor = #colorLiteral(red: 0.4078431373, green: 0.7137254902, blue: 0.7607843137, alpha: 1)
+		
+		let active = events[section].count > 0
 		
 		let label = UILabel()
+		label.font = UIFont(name: "AvenirNext-Italic", size: 15)!
 		label.text = sections[section]
-		label.textColor = UIColor.white
+		label.textColor = active ? UIColor.white : UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
 		label.sizeToFit()
+		
+		let leftView = UIView()
+		leftView.backgroundColor = active ? UIColor.white : UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
+		let rightView = UIView()
+		rightView.backgroundColor = active ? UIColor.white : UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
+		
 		view.addSubview(label)
+		view.addSubview(leftView)
+		view.addSubview(rightView)
 		
 		NSLayoutConstraint.activate([
-			label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-			label.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+			label.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: section == 0 ? 6 : 0),
+			label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+			
+			leftView.heightAnchor.constraint(equalToConstant: 1),
+			leftView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: section == 0 ? 6 : 0),
+			leftView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8),
+			leftView.rightAnchor.constraint(equalTo: label.leftAnchor, constant: -8),
+			
+			rightView.heightAnchor.constraint(equalTo: leftView.heightAnchor),
+			rightView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: section == 0 ? 6 : 0),
+			rightView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8),
+			rightView.leftAnchor.constraint(equalTo: label.rightAnchor, constant: 8),
 			])
 		label.translatesAutoresizingMaskIntoConstraints = false
+		rightView.translatesAutoresizingMaskIntoConstraints = false
+		leftView.translatesAutoresizingMaskIntoConstraints = false
+		
+		
+		leftView.layer.cornerRadius = 0.5
+		leftView.layer.masksToBounds = true
+		
+		rightView.layer.cornerRadius = 0.5
+		rightView.layer.masksToBounds = true
 		
 		return view
 	}
 	
 	func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-		return 30
+		return 30 + (section == 0 ? 8 : 0)
 	}
 	
 	func showAlert(alert: SCLAlertView, title: String, subTitle: String, color: UIColor, image: UIImage) {

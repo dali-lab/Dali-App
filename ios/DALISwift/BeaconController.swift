@@ -119,11 +119,11 @@ class BeaconController: NSObject, RPKManagerDelegate {
 	}
 	
 	func proximityKit(_ manager : RPKManager, didEnter region:RPKRegion) {
-		print("Entered Region \(region.name), \(region.identifier)");
+		print("Entered Region \(region.name ?? "unknown name"), \(region.identifier ?? "unknown id")");
 	}
 	
 	func proximityKit(_ manager : RPKManager, didExit region:RPKRegion) {
-		print("Exited Region \(region.name), \(region.identifier)");
+		print("Exited Region \(region.name ?? "unknown name"), \(region.identifier ?? "unknown id")");
 	}
 	
 	func proximityKit(_ manager: RPKManager!, didRangeBeacons beacons: [Any]!, in region: RPKBeaconRegion!) {

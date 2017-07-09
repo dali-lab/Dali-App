@@ -132,16 +132,60 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 		}
 	}
 	
-	@objc private func enterExitHappened() {
+	@objc private func enterExitHappened(notification: Notification) {
+		if UIApplication.shared.applicationState != .background {
+			return
+		}
 		
+		let entered = (notification.userInfo as! [String: Any])["entered"] as! Bool
+		let content = UNMutableNotificationContent()
+		content.title = entered ? "Welcome Back" : "See you next time"
+		content.subtitle = entered ? "" : "👋"
+		content.categoryIdentifier = "alarm"
+		content.sound = UNNotificationSound(named: "coins")
+		
+		let notification = UNNotificationRequest(identifier: "enterExitNotification", content: content, trigger: nil)
+		UNUserNotificationCenter.current().add(notification) { (error) in
+			
+		}
 	}
 	
 	@objc private func checkInHappened() {
+		if UIApplication.shared.applicationState != .background {
+			return
+		}
 		
+		let content = UNMutableNotificationContent()
+		content.title = "Checked In!"
+		content.subtitle = "Just checked you into this event 👍🤖!"
+		content.sound = UNNotificationSound(named: "coins")
+		
+		let notification = UNNotificationRequest(identifier: "checkInNotification", content: content, trigger: nil)
+		UNUserNotificationCenter.current().add(notification) { (error) in
+			
+		}
 	}
 	
 	@objc private func votingEventEnteredOrExited() {
+		if UIApplication.shared.applicationState != .background {
+			return
+		}
 		
+		ServerCommunicator.current?.getEventNow { (event) in
+			guard let event = event else {
+				return
+			}
+			
+			let content = UNMutableNotificationContent()
+			content.title = "Welcome to " + event.name
+			content.subtitle = "Voting 🗳 is available for this event"
+			content.sound = UNNotificationSound(named: "coins")
+			
+			let notification = UNNotificationRequest(identifier: "votingNotification", content: content, trigger: nil)
+			UNUserNotificationCenter.current().add(notification) { (error) in
+				
+			}
+		}
 	}
 	
 	func breakDownNotificationListeners() {

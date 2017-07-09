@@ -37,9 +37,9 @@ class ServerCommunicator {
 		}
 		ServerCommunicator.current = self
 		
-		NotificationCenter.default.addObserver(forName: Notification.Name.Custom.EnteredOrExitedDALI, object: nil, queue: nil, using: self.enterExitDALI(notification:))
-		NotificationCenter.default.addObserver(forName: Notification.Name.Custom.CheckInEnteredOrExited, object: nil, queue: nil, using: self.enterExitCheckIn(notification:))
-		NotificationCenter.default.addObserver(forName: Notification.Name.Custom.TimsOfficeEnteredOrExited, object: nil, queue: nil, using: self.timsOfficeEnterExit(notification:))
+		NotificationCenter.default.addObserver(self, selector: #selector(ServerCommunicator.enterExitDALI(notification:)), name: Notification.Name.Custom.EnteredOrExitedDALI, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(ServerCommunicator.enterExitCheckIn(notification:)), name: Notification.Name.Custom.CheckInEnteredOrExited, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(ServerCommunicator.timsOfficeEnterExit(notification:)), name: Notification.Name.Custom.TimsOfficeEnteredOrExited, object: nil)
 	}
 	
 	/**
@@ -48,7 +48,7 @@ class ServerCommunicator {
 	- Parameters:
 		- notification: Notification - The notification that triggered the call
 	*/
-	func timsOfficeEnterExit(notification: Notification) {
+	@objc func timsOfficeEnterExit(notification: Notification) {
 		let entered = (notification.userInfo?["entered"] as? Bool) ?? false
 		guard let user = GIDSignIn.sharedInstance().currentUser else {
 			return
@@ -73,7 +73,7 @@ class ServerCommunicator {
 	- Parameters:
 		- notification: Notification - The notification that triggered the call
 	*/
-	func enterExitCheckIn(notification: Notification) {
+	@objc func enterExitCheckIn(notification: Notification) {
 		let entered = (notification.userInfo?["entered"] as? Bool) ?? false
 		guard let user = GIDSignIn.sharedInstance().currentUser else {
 			return
@@ -85,7 +85,11 @@ class ServerCommunicator {
 		]
 		
 		if let jsonData = try? JSONSerialization.data(withJSONObject: json) {
-			ServerCommunicator.post(url: "https://dalilab.herokuapp.com/checkIn", data: jsonData, callback: {})
+			ServerCommunicator.post(url: "https://dalilab.herokuapp.com/checkIn", data: jsonData, callback: {
+				if entered {
+					NotificationCenter.default.post(name: Notification.Name.Custom.CheckInComeplte, object: nil)
+				}
+			})
 		}
 	}
 	
@@ -95,7 +99,7 @@ class ServerCommunicator {
 	- Parameters:
 		- notification: Notification - The notification that triggered the call
 	*/
-	func enterExitDALI(notification: Notification) {
+	@objc func enterExitDALI(notification: Notification) {
 		let entered = (notification.userInfo?["entered"] as? Bool) ?? false
 		guard let user = GIDSignIn.sharedInstance().currentUser else {
 			return
@@ -213,6 +217,36 @@ class ServerCommunicator {
 		}
 	}
 	
+	func getEventNow(_ callback: @escaping (_ event: Event?) -> Void) {
+		ServerCommunicator.get(url: "https://dalilab.herokuapp.com/voting/current" + ServerCommunicator.getAPIKey()) { (data) in
+			guard data is [String: Any] else {
+				return
+			}
+			
+/*{
+"name": "Computer Science Unleashed",
+"image": "https://github.com/dali-lab/Dali-App/raw/vote-order/components/Assets/pitchLightBulb.png",
+"description": "Best Presentation Prize",
+"resultsReleased": false,
+"options": [
+{
+"name": "In Relationship",
+"awards": null,
+"id": "5961475ffba9a30011b7dbd9"
+},
+{
+"name": "BorrowIt",
+"awards": null,
+"id": "5961475ffba9a30011b7dbe0"
+}
+],
+"id": "5961475ffba9a30011b7dbd6"
+}*/
+			
+//			guard let 
+		}
+	}
+	
 	/**
 		Pulls the location of Tim from the server
 	
@@ -280,16 +314,19 @@ class ServerCommunicator {
 					recurrence = Recurrence(frequency: Recurrence.Frequency(rawValue: rec["frequency"] as! String)!, interval: rec["interval"] as? String == nil ? nil : Int(rec["interval"] as! String), periodData: rec["periodData"] as? [Int], rrule: rec["rrule"] as! String, until: until)
 				}
 			
-				let event = Event(
+				let eventObj = Event(
 					name: event["name"] as! String,
 					location: event["location"] as! String,
 					description: event["description"] as! String,
 					googleID: event["googleID"] as! String,
 					recurrence: recurrence,
 					id: event["id"] as! String,
-					startTime: startTime, endTime: endTime)
+					startTime: startTime,
+					endTime: endTime,
+					voting: event["eventObj"] as? Bool ?? false,
+					options: nil)
 				
-				eventOutput.append(event)
+				eventOutput.append(eventObj)
 			}
 			
 			callback(eventOutput)

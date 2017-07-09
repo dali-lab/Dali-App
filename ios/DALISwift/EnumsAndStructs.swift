@@ -39,15 +39,21 @@ struct Recurrence {
 	let until: Date?
 }
 
+struct VotingOption {
+	
+}
+
 struct Event {
 	let name: String
 	let location: String
 	let description: String
-	let googleID: String
+	let googleID: String?
 	let recurrence: Recurrence?
 	let id: String
 	let startTime: Date
 	let endTime: Date
+	let voting: Bool
+	let options: [VotingOption]?
 }
 
 func userIsTim(user: GIDGoogleUser) -> Bool {

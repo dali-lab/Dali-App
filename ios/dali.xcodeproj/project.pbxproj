@@ -40,6 +40,7 @@
 		5227FDEC1EFDE933003D1A66 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5227FDEB1EFDE933003D1A66 /* GoogleService-Info.plist */; };
 		523585AE1E60C5C5008B9FD9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */; };
 		5252937A1E688677004BFAF5 /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 52BF8A771E60C3C9000465F8 /* GoogleSignIn.bundle */; };
+		52540A861F1183F30088499D /* VotingEventMangerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52540A851F1183F30088499D /* VotingEventMangerViewController.swift */; };
 		5255919C1F0DD9240006F323 /* PrivateInformation.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5255919B1F0DD9240006F323 /* PrivateInformation.plist */; };
 		525F46491EE79DE600C5492D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F46481EE79DE600C5492D /* AppDelegate.swift */; };
 		525F464B1EE79DE600C5492D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F464A1EE79DE600C5492D /* ViewController.swift */; };
@@ -435,6 +436,7 @@
 		5227FDEB1EFDE933003D1A66 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5236B7151EE9CD4700643865 /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
+		52540A851F1183F30088499D /* VotingEventMangerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingEventMangerViewController.swift; sourceTree = "<group>"; };
 		5255919B1F0DD9240006F323 /* PrivateInformation.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivateInformation.plist; sourceTree = "<group>"; };
 		5259642C1E51173B009C970E /* dali.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = dali.entitlements; path = dali/dali.entitlements; sourceTree = "<group>"; };
 		525F46461EE79DE600C5492D /* DALI Lab tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DALI Lab tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -732,6 +734,7 @@
 				5227FD7E1EFDC0FA003D1A66 /* LoginViewController.swift */,
 				52FC72D71F0E82A900FBCEF1 /* SettingsViewController.swift */,
 				52BC7CBB1F00ABAF003285C7 /* PeopleInLabViewController.swift */,
+				52540A851F1183F30088499D /* VotingEventMangerViewController.swift */,
 				5227FD801EFDC0FA003D1A66 /* Main.storyboard */,
 				5227FD831EFDC0FA003D1A66 /* Assets.xcassets */,
 				5227FD851EFDC0FB003D1A66 /* LaunchScreen.storyboard */,
@@ -1878,6 +1881,7 @@
 			files = (
 				52BC7CBC1F00ABAF003285C7 /* PeopleInLabViewController.swift in Sources */,
 				52B0672D1F07DC2B0098FDAA /* BeaconController.swift in Sources */,
+				52540A861F1183F30088499D /* VotingEventMangerViewController.swift in Sources */,
 				52A8F6D31F0067DA00C033D9 /* MainViewController.swift in Sources */,
 				5227FD7F1EFDC0FA003D1A66 /* LoginViewController.swift in Sources */,
 				5227FD7D1EFDC0FA003D1A66 /* AppDelegate.swift in Sources */,
