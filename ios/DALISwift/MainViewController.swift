@@ -68,18 +68,12 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 				}
 			}
 			
-//			if today.count > 0 {
-				self.events.append(today)
-				self.sections.append("Today")
-//			}
-//			if week.count > 0 {
-				self.events.append(week)
-				self.sections.append("This Week")
-//			}
-			if next.count > 0 {
-				self.events.append(next)
-				self.sections.append("Next Week")
-			}
+			self.events.append(today)
+			self.sections.append("Today")
+			self.events.append(week)
+			self.sections.append("This Week")
+			self.events.append(next)
+			self.sections.append("Next Week")
 			
 			DispatchQueue.main.async {
 				self.tableView.reloadData()
