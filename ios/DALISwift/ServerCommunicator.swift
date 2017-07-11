@@ -316,7 +316,7 @@ class ServerCommunicator {
 			
 				let eventObj = Event(
 					name: event["name"] as! String,
-					location: event["location"] as! String,
+					location: event["location"] as? String ?? "",
 					description: event["description"] as! String,
 					googleID: event["googleID"] as! String,
 					recurrence: recurrence,

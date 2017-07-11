@@ -43,6 +43,8 @@ struct VotingOption {
 	
 }
 
+let abvWeekDays = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
+
 struct Event {
 	let name: String
 	let location: String

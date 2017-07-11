@@ -31,6 +31,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 		self.locationUpdated()
 		self.updateData()
 		(UIApplication.shared.delegate as! AppDelegate).mainViewController = self
+		
+		tableView.estimatedRowHeight = 140
 	}
 	
 	
@@ -53,9 +55,14 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 				let cal = Calendar.current
 				var comps = cal.dateComponents([.weekOfYear, .yearForWeekOfYear], from: Date())
 				comps.weekday = 7 // Saturday
+				comps.hour = 23
+				comps.minute = 59
+				comps.second = 59
 				let endWeek = cal.date(from: comps)!
 				return endWeek
 			}
+			
+			print(getWeekEnd())
 			
 			for event in events {
 				print(event)
@@ -67,13 +74,16 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 					next.append(event)
 				}
 			}
-			
-			self.events.append(today)
-			self.sections.append("Today")
+			if today.count > 0 {
+				self.events.append(today)
+				self.sections.append("Today")
+			}
 			self.events.append(week)
 			self.sections.append("This Week")
-			self.events.append(next)
-			self.sections.append("Next Week")
+			if next.count > 0 {
+				self.events.append(next)
+				self.sections.append("Next Week")
+			}
 			
 			DispatchQueue.main.async {
 				self.tableView.reloadData()
@@ -121,6 +131,10 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 	
 	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 		let view = UIView()
+		let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.regular))
+		backgroundView.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+		backgroundView.layer.cornerRadius = 8
+		backgroundView.clipsToBounds = true
 		
 		let active = events[section].count > 0
 		
@@ -135,27 +149,20 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 		let rightView = UIView()
 		rightView.backgroundColor = active ? UIColor.white : UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
 		
+		view.addSubview(backgroundView)
 		view.addSubview(label)
-		view.addSubview(leftView)
-		view.addSubview(rightView)
 		
 		NSLayoutConstraint.activate([
-			label.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: section == 0 ? 6 : 0),
+			label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
 			label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 			
-			leftView.heightAnchor.constraint(equalToConstant: 1),
-			leftView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: section == 0 ? 6 : 0),
-			leftView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8),
-			leftView.rightAnchor.constraint(equalTo: label.leftAnchor, constant: -8),
-			
-			rightView.heightAnchor.constraint(equalTo: leftView.heightAnchor),
-			rightView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: section == 0 ? 6 : 0),
-			rightView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8),
-			rightView.leftAnchor.constraint(equalTo: label.rightAnchor, constant: 8),
+			backgroundView.leftAnchor.constraint(equalTo: view.leftAnchor),
+			backgroundView.rightAnchor.constraint(equalTo: view.rightAnchor),
+			backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+			backgroundView.topAnchor.constraint(equalTo: view.topAnchor)
 			])
 		label.translatesAutoresizingMaskIntoConstraints = false
-		rightView.translatesAutoresizingMaskIntoConstraints = false
-		leftView.translatesAutoresizingMaskIntoConstraints = false
+		backgroundView.translatesAutoresizingMaskIntoConstraints = false
 		
 		
 		leftView.layer.cornerRadius = 0.5
@@ -167,8 +174,12 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 		return view
 	}
 	
+	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+		return UITableViewAutomaticDimension
+	}
+	
 	func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-		return 30 + (section == 0 ? 8 : 0)
+		return 30// + (section == 0 ? 8 : 0)
 	}
 	
 	func showAlert(alert: SCLAlertView, title: String, subTitle: String, color: UIColor, image: UIImage) {
@@ -210,6 +221,11 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 }
 
 class EventCell: UITableViewCell {
+	@IBOutlet weak var titleLabel: UILabel!
+	@IBOutlet weak var timeLabel: UILabel!
+	@IBOutlet weak var locationLabel: UILabel!
+	
+	
 	private var eventVal: Event?
 	var event: Event? {
 		get {
@@ -217,7 +233,32 @@ class EventCell: UITableViewCell {
 		}
 		set {
 			self.eventVal = newValue
-			self.textLabel?.text = newValue?.name
+			if let newValue = newValue {
+				self.titleLabel.text = newValue.name
+//				self.timeLabel.text = newValue.name
+				self.locationLabel.text = newValue.location
+				
+				let startComponents = Calendar.current.dateComponents([.weekday, .hour, .minute], from: newValue.startTime)
+				let endComponents = Calendar.current.dateComponents([.weekday, .hour, .minute], from: newValue.endTime)
+				
+				let weekdayStart = abvWeekDays[startComponents.weekday! - 1]
+				let weekdayEnd = startComponents.weekday! != endComponents.weekday! ? abvWeekDays[endComponents.weekday! - 1] : nil
+				
+				let startHour = startComponents.hour!
+				let endHour = endComponents.hour!
+				
+				let startMinute = startComponents.minute!
+				let endMinute = endComponents.minute!
+				
+				let startDaytime = startHour >= 12
+				let endDaytime = endHour >= 12
+				
+				let daytimeDifferent = startDaytime != endDaytime
+				
+				self.timeLabel.text = "\(weekdayStart) \(startHour % 13):\(startMinute)\(daytimeDifferent ? " \(startDaytime ? "PM" : "AM")" : "") - \(weekdayEnd == nil ? "" : weekdayEnd! + " ")\(endHour % 13):\(endMinute) \(endDaytime ? "PM" : "AM")"
+			}else{
+				self.titleLabel.text = ""
+			}
 		}
 	}
 }
