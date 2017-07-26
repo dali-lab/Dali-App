@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SCLAlertView
 import UserNotifications
+import daliAPI
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AlertShower {
 	@IBOutlet weak var daliImage: UIImageView!
@@ -31,6 +32,9 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 		self.locationUpdated()
 		self.updateData()
 		(UIApplication.shared.delegate as! AppDelegate).mainViewController = self
+		
+		CalendarController()
+		daliAPI.hello()
 		
 		tableView.estimatedRowHeight = 140
 	}
@@ -132,8 +136,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 		let view = UIView()
 		let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.regular))
-		backgroundView.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
-		backgroundView.layer.cornerRadius = 8
+		backgroundView.backgroundColor = #colorLiteral(red: 0.1450980392, green: 0.5843137255, blue: 0.6588235294, alpha: 0.6546819982)
+		backgroundView.layer.cornerRadius = 4
 		backgroundView.clipsToBounds = true
 		
 		let active = events[section].count > 0
@@ -143,11 +147,6 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 		label.text = sections[section]
 		label.textColor = active ? UIColor.white : UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
 		label.sizeToFit()
-		
-		let leftView = UIView()
-		leftView.backgroundColor = active ? UIColor.white : UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
-		let rightView = UIView()
-		rightView.backgroundColor = active ? UIColor.white : UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
 		
 		view.addSubview(backgroundView)
 		view.addSubview(label)
@@ -164,13 +163,6 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 		label.translatesAutoresizingMaskIntoConstraints = false
 		backgroundView.translatesAutoresizingMaskIntoConstraints = false
 		
-		
-		leftView.layer.cornerRadius = 0.5
-		leftView.layer.masksToBounds = true
-		
-		rightView.layer.cornerRadius = 0.5
-		rightView.layer.masksToBounds = true
-		
 		return view
 	}
 	
@@ -179,7 +171,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 	}
 	
 	func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-		return 30// + (section == 0 ? 8 : 0)
+		return 30
 	}
 	
 	func showAlert(alert: SCLAlertView, title: String, subTitle: String, color: UIColor, image: UIImage) {
@@ -218,6 +210,31 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 			self.viewShown = true
 		}
 	}
+	
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		let event = events[indexPath.section][indexPath.row]
+		
+		let appearance = SCLAlertView.SCLAppearance(
+			showCloseButton: false
+		)
+		
+		let alert = SCLAlertView(appearance: appearance)
+		alert.addButton("Add to your calendar") {
+			tableView.deselectRow(at: indexPath, animated: true)
+			
+			CalendarController.current.showCalendarChooser(on: self)
+		}
+		alert.addButton("Set up checkin") {
+			tableView.deselectRow(at: indexPath, animated: true)
+			
+		}
+		alert.addButton("Cancel") {
+			tableView.deselectRow(at: indexPath, animated: true)
+			
+		}
+		
+		alert.showInfo("Whats up?", subTitle: "What do you want to do with \(event.name)?")
+	}
 }
 
 class EventCell: UITableViewCell {
@@ -244,8 +261,8 @@ class EventCell: UITableViewCell {
 				let weekdayStart = abvWeekDays[startComponents.weekday! - 1]
 				let weekdayEnd = startComponents.weekday! != endComponents.weekday! ? abvWeekDays[endComponents.weekday! - 1] : nil
 				
-				let startHour = startComponents.hour!
-				let endHour = endComponents.hour!
+				let startHour = startComponents.hour! > 12 ? startComponents.hour! - 12 : startComponents.hour!
+				let endHour = endComponents.hour! > 12 ? endComponents.hour! - 12 : endComponents.hour!
 				
 				let startMinute = startComponents.minute!
 				let endMinute = endComponents.minute!
@@ -255,7 +272,10 @@ class EventCell: UITableViewCell {
 				
 				let daytimeDifferent = startDaytime != endDaytime
 				
-				self.timeLabel.text = "\(weekdayStart) \(startHour % 13):\(startMinute)\(daytimeDifferent ? " \(startDaytime ? "PM" : "AM")" : "") - \(weekdayEnd == nil ? "" : weekdayEnd! + " ")\(endHour % 13):\(endMinute) \(endDaytime ? "PM" : "AM")"
+				let startString = "\(startHour):\(startMinute  < 10 ? "0" : "")\(startMinute)\(daytimeDifferent ? " \(startDaytime ? "AM" : "PM")" : "")"
+				let endString = "\(endHour):\(endMinute < 10 ? "0" : "")\(endMinute) \(endDaytime ? "AM" : "PM")"
+				
+				self.timeLabel.text = "\(weekdayStart) \(startString) - \(weekdayEnd == nil ? "" : weekdayEnd! + " ")\(endString)"
 			}else{
 				self.titleLabel.text = ""
 			}

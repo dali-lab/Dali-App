@@ -3,7 +3,7 @@
 //  DALISwift
 //
 //  Created by John Kotz on 7/5/17.
-//  Copyright © 2017 Facebook. All rights reserved.
+//  Copyright © 2017 DALI Lab. All rights reserved.
 //
 
 import Foundation
@@ -75,6 +75,10 @@ class ServerCommunicator {
 	*/
 	@objc func enterExitCheckIn(notification: Notification) {
 		let entered = (notification.userInfo?["entered"] as? Bool) ?? false
+		if !entered {
+			return
+		}
+		
 		guard let user = GIDSignIn.sharedInstance().currentUser else {
 			return
 		}
@@ -85,10 +89,8 @@ class ServerCommunicator {
 		]
 		
 		if let jsonData = try? JSONSerialization.data(withJSONObject: json) {
-			ServerCommunicator.post(url: "https://dalilab.herokuapp.com/checkIn", data: jsonData, callback: {
-				if entered {
-					NotificationCenter.default.post(name: Notification.Name.Custom.CheckInComeplte, object: nil)
-				}
+			ServerCommunicator.post(url: "https://dalilab-api.herokuapp.com/api/events/checkin" + ServerCommunicator.getAPIKey(), data: jsonData, callback: {
+				NotificationCenter.default.post(name: Notification.Name.Custom.CheckInComeplte, object: nil)
 			})
 		}
 	}
@@ -302,8 +304,9 @@ class ServerCommunicator {
 			
 			let dateFormatter = DateFormatter()
 			dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+			dateFormatter.timeZone = TimeZone.current
 			
-			for event in events {
+			for event in events {				
 				let startTime: Date = dateFormatter.date(from: event["startTime"] as! String)!
 				let endTime: Date = dateFormatter.date(from: event["endTime"] as! String)!
 				
@@ -396,6 +399,7 @@ class ServerCommunicator {
 			
 			if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
 				print("statusCode should be 200, but is \(httpStatus.statusCode)")
+				print(String.init(data: data!, encoding: .utf8)!)
 			}
 			callback()
 		}

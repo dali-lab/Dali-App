@@ -1,0 +1,10 @@
+framework module daliAPI {
+  umbrella header "daliAPI.h"
+
+  export *
+  module * { export * }
+}
+
+module daliAPI.Swift {
+    header "daliAPI-Swift.h"
+}

@@ -201,32 +201,49 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="81" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="4wA-9M-hJZ">
-                                        <rect key="frame" x="29" y="187" width="316" height="425"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="evJ-TR-YuG">
+                                        <rect key="frame" x="172.5" y="625.5" width="30" height="20.5"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="HNk-JT-iwH"/>
+                                            <constraint firstAttribute="width" secondItem="evJ-TR-YuG" secondAttribute="height" multiplier="35:24" id="RI7-Wz-6Sg"/>
+                                        </constraints>
+                                        <state key="normal" image="people"/>
+                                        <connections>
+                                            <segue destination="B8g-Hg-By4" kind="show" id="bgg-gr-qef"/>
+                                        </connections>
+                                    </button>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="81" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="4wA-9M-hJZ">
+                                        <rect key="frame" x="29" y="192" width="316" height="425"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="separatorColor" white="1" alpha="0.5" colorSpace="calibratedWhite"/>
                                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         <color key="sectionIndexColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="eventCell" rowHeight="81" id="yea-vg-nPl" customClass="EventCell" customModule="DALISwift" customModuleProvider="target">
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="eventCell" rowHeight="81" id="yea-vg-nPl" customClass="EventCell" customModule="DALISwift" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="28" width="316" height="81"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yea-vg-nPl" id="oZh-7U-oAt">
-                                                    <rect key="frame" x="0.0" y="0.0" width="316" height="80.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="283" height="80.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All-Lab Mid-term HACK DALI" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2wT-ju-dSh">
-                                                            <rect key="frame" x="8" y="8" width="130" height="65"/>
+                                                            <rect key="frame" x="8" y="8" width="122" height="65"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="width" constant="130" id="niZ-75-pJI"/>
+                                                                <constraint firstAttribute="width" constant="122" id="niZ-75-pJI"/>
                                                             </constraints>
                                                             <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="17"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wed 5:30 - 7 PM" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bXb-Zo-2fy">
-                                                            <rect key="frame" x="146" y="8" width="162" height="36"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Kemeny 007" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aTj-bc-QBd">
+                                                            <rect key="frame" x="146" y="44" width="129" height="29"/>
+                                                            <fontDescription key="fontDescription" name="AvenirNext-Italic" family="Avenir Next" pointSize="14"/>
+                                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wed 5:30 - 7 PM" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bXb-Zo-2fy">
+                                                            <rect key="frame" x="146" y="8" width="129" height="36"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="36" id="q53-LV-u7Y"/>
                                                             </constraints>
@@ -234,19 +251,13 @@
                                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Kemeny 007" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aTj-bc-QBd">
-                                                            <rect key="frame" x="146" y="44" width="162" height="29"/>
-                                                            <fontDescription key="fontDescription" name="AvenirNext-Italic" family="Avenir Next" pointSize="12"/>
-                                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
                                                     </subviews>
                                                     <constraints>
-                                                        <constraint firstItem="bXb-Zo-2fy" firstAttribute="leading" secondItem="2wT-ju-dSh" secondAttribute="trailing" constant="8" id="6va-1i-2we"/>
+                                                        <constraint firstItem="bXb-Zo-2fy" firstAttribute="leading" secondItem="2wT-ju-dSh" secondAttribute="trailing" constant="16" id="6va-1i-2we"/>
                                                         <constraint firstItem="2wT-ju-dSh" firstAttribute="top" secondItem="oZh-7U-oAt" secondAttribute="top" constant="8" id="AGz-nF-M2z"/>
                                                         <constraint firstItem="bXb-Zo-2fy" firstAttribute="trailing" secondItem="oZh-7U-oAt" secondAttribute="trailingMargin" id="D80-EH-NMC"/>
                                                         <constraint firstAttribute="trailing" secondItem="aTj-bc-QBd" secondAttribute="trailing" constant="8" id="Ga9-7G-Wqb"/>
-                                                        <constraint firstItem="aTj-bc-QBd" firstAttribute="leading" secondItem="2wT-ju-dSh" secondAttribute="trailing" constant="8" id="Iqh-cn-IY3"/>
+                                                        <constraint firstItem="aTj-bc-QBd" firstAttribute="leading" secondItem="2wT-ju-dSh" secondAttribute="trailing" constant="16" id="Iqh-cn-IY3"/>
                                                         <constraint firstItem="2wT-ju-dSh" firstAttribute="leading" secondItem="oZh-7U-oAt" secondAttribute="leading" constant="8" id="KqE-dD-hWT"/>
                                                         <constraint firstItem="aTj-bc-QBd" firstAttribute="top" secondItem="bXb-Zo-2fy" secondAttribute="bottom" id="bbS-b7-sOl"/>
                                                         <constraint firstItem="bXb-Zo-2fy" firstAttribute="top" secondItem="oZh-7U-oAt" secondAttribute="topMargin" id="eOG-ah-bhq"/>
@@ -267,17 +278,6 @@
                                             <outlet property="delegate" destination="ELf-kA-nte" id="bT1-fM-CNY"/>
                                         </connections>
                                     </tableView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="evJ-TR-YuG">
-                                        <rect key="frame" x="172.5" y="625.5" width="30" height="20.5"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="30" id="HNk-JT-iwH"/>
-                                            <constraint firstAttribute="width" secondItem="evJ-TR-YuG" secondAttribute="height" multiplier="35:24" id="RI7-Wz-6Sg"/>
-                                        </constraints>
-                                        <state key="normal" image="people"/>
-                                        <connections>
-                                            <segue destination="B8g-Hg-By4" kind="show" id="bgg-gr-qef"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -843,7 +843,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Background" width="1920" height="1080"/>
+        <image name="Background" width="376" height="667"/>
         <image name="DALI_whiteLogo" width="2569" height="970"/>
         <image name="backgroundGradient" width="375" height="667"/>
         <image name="people" width="675" height="501"/>

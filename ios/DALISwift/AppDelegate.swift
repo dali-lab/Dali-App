@@ -38,7 +38,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 	
 		assert(error == nil)
 		
-		
 		GIDSignIn.sharedInstance().delegate = self
 		GIDSignIn.sharedInstance().signInSilently()
 		
