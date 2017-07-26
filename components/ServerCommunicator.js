@@ -6,13 +6,12 @@ Also sets up listeners for checkin's, enter, exit, and tim's office, sending rel
 AUTHOR: John Kotz
 */
 
-import { Platform, NativeModules } from 'react-native';
+import { NativeModules } from 'react-native';
 
 const { RNGoogleSignin } = NativeModules;
 import { GoogleSignin } from 'react-native-google-signin';
 
 
-const BeaconController = require('./BeaconController').default;
 const env = require('./Environment');
 const StorageController = require('./StorageController').default;
 const GlobalFunctions = require('./GlobalFunctions').default;
@@ -88,7 +87,7 @@ class ServerCommunicator {
          } else {
             // We didnt get a user... I am going to try to wait for sign in
             GoogleSignin.currentUserAsync().then((user) => {
-               if (user == null) {
+               if (user === null) {
                   // Experimental...
                   this.awaitingUser = true;
                } else {
@@ -172,7 +171,7 @@ class ServerCommunicator {
    * NOTE: Only admins can access scores
    */
    getEventNowWithScores() {
-      if (this.user == null || !GlobalFunctions.userIsAdmin()) {
+      if (this.user === null || !GlobalFunctions.userIsAdmin()) {
          // Autoreject
          return new Promise(((resolve, reject) => { reject(); }));
       }
@@ -194,7 +193,7 @@ class ServerCommunicator {
    * NOTE: Only admins may call this function
    */
    releaseAwards(event) {
-      if (this.user == null || !GlobalFunctions.userIsAdmin()) {
+      if (this.user === null || !GlobalFunctions.userIsAdmin()) {
          // Autoreject
          return new Promise(((resolve, reject) => { reject(); }));
       }
@@ -211,7 +210,7 @@ class ServerCommunicator {
    * NOTE: Only admins may call this function.
    */
    saveAwards(awards, event) {
-      if (this.user == null || !GlobalFunctions.userIsAdmin()) {
+      if (this.user === null || !GlobalFunctions.userIsAdmin()) {
          // Autoreject
          return new Promise(((resolve, reject) => { reject(); }));
       }
@@ -285,13 +284,13 @@ class ServerCommunicator {
 
             const taHours = hours.filter((hour) => {
                const innerPrefix = `==${prefix}${hour.name}: `;
-               if (hour.status != 'confirmed') {
+               if (hour.status !== 'confirmed') {
                   return false;
                }
 
                // This method worked for the first week, but no longer!
                // Because we only get one event for each that recurrs
-               if (hour.recurrence == undefined || hour.recurrence.length == 0) {
+               if (hour.recurrence === undefined || hour.recurrence.length === 0) {
                   if (debugging) {
                      console.log(`${innerPrefix}No recurrence`);
                      console.log(`${innerPrefix}Should show:`, (hour.startDate > now || hour.endDate > now && hour.startDate < now) && hour.startDate <= midnight);
@@ -305,8 +304,8 @@ class ServerCommunicator {
 
                const recurrence = hour.recurrence[0];
                const parts = recurrence.replace('RRULE:', '').split(';');
-               const freq = parts[0].replace('FREQ=', '');
-               const count = parseInt(parts[1].replace('COUNT=', ''));
+               //const freq = parts[0].replace('FREQ=', '');
+               const count = parseInt(parts[1].replace('COUNT=', ''), 10);
                const day = parts[2].replace('BYDAY=', '');
 
                const lastDuplicate = new Date(hour.end.dateTime);
@@ -317,7 +316,7 @@ class ServerCommunicator {
 
                   if (debugging) { console.log(`${innerPrefix}Past expiration`); }
                   return false;
-               } else if (days[now.getDay()] != day) {
+               } else if (days[now.getDay()] !== day) {
                   // Not the right day of the week
                   if (debugging) { console.log(`${innerPrefix}Not today!`); }
                   return false;
@@ -344,7 +343,7 @@ class ServerCommunicator {
                const hour = taHours[i];
                const otherI = findWithAttr(taHours, 'id', hour.id, i);
 
-               if (otherI != -1) {
+               if (otherI !== -1) {
                   if (debugging) { console.log(`${prefix}Found duplicate`, otherI, 'to', i); }
                   const otherHour = taHours[otherI];
                   taHours.splice(otherI, 1);
@@ -373,7 +372,7 @@ class ServerCommunicator {
       const prefix = '==> getLabHours: ';
       if (debugging) { console.log('Running getLabHours'); }
       return GoogleSignin.currentUserAsync().then((user) => {
-         if (user == null) {
+         if (user === null) {
             return new Promise(((resolve, reject) => {
                reject();
             }));
@@ -383,10 +382,10 @@ class ServerCommunicator {
          // I can access the calendar
          return new Promise(function (resolve, reject) {
             // There is some wierd accessToken stuff on Android, so I will check if I have it...
-            this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken;
+            this.accessToken = this.accessToken === undefined ? user.accessToken : this.accessToken;
             if (debugging) { console.log(`${prefix}Access token?`, this.accessToken); }
 
-            if (this.accessToken == undefined) {
+            if (this.accessToken === undefined) {
                if (debugging) { console.log(`${prefix}Nope...`); }
                // If not, I will request it...
                RNGoogleSignin.getAccessToken(user).then((token) => {
@@ -423,7 +422,7 @@ class ServerCommunicator {
                if (debugging) { console.log(`${prefix}Got it:`, responseJson); }
 
                // Handle no data
-               if (responseJson == null || responseJson.items == null) {
+               if (responseJson === null || responseJson.items === null) {
                   console.log(responseJson);
                   reject('No data!');
                   return;
@@ -452,10 +451,10 @@ class ServerCommunicator {
       return new Promise((success, failure) => {
          GoogleSignin.currentUserAsync().then((user) => {
             if (user != null) {
-               this.accessToken = this.accessToken == undefined ? user.accessToken : this.accessToken;
+               this.accessToken = this.accessToken === undefined ? user.accessToken : this.accessToken;
 
 
-               if (this.accessToken == undefined) {
+               if (this.accessToken === undefined) {
                   return GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
                      return GoogleSignin.currentUserAsync();
                   }).then((user) => {
@@ -473,7 +472,7 @@ class ServerCommunicator {
 
             const accessToken = this.accessToken;
 
-            fetch(`https://www.googleapis.com/calendar/v3/calendars/${user != null ? env.eventsCalendarId : env.publicEventsCalendarId}/events${user == null ? `?key=${env.googleConfig.publicKey}` : ''}`, {
+            fetch(`https://www.googleapis.com/calendar/v3/calendars/${user != null ? env.eventsCalendarId : env.publicEventsCalendarId}/events${user === null ? `?key=${env.googleConfig.publicKey}` : ''}`, {
                method: 'GET',
                headers: user != null ? {
                   Authorization: `Bearer ${accessToken}`,
@@ -481,7 +480,7 @@ class ServerCommunicator {
             }).then((response) => { return response.json(); })
             .then((responseJson) => {
                // Handle no data
-               if (responseJson.items == null) {
+               if (responseJson.items === null) {
                   failure();
                   console.log('Failed!', responseJson);
                   return;
@@ -512,14 +511,14 @@ class ServerCommunicator {
                // Filter events so they fit between those days
                const events = responseJson.items.filter((event) => {
                   event.today = false;
-                  if (event.status != 'confirmed') {
+                  if (event.status !== 'confirmed') {
                      return false;
                   }
 
                   event.startDate = new Date(event.start.dateTime);
                   event.endDate = new Date(event.end.dateTime);
 
-                  if (event.recurrence == undefined || event.recurrence.length == 0) {
+                  if (event.recurrence === undefined || event.recurrence.length === 0) {
                      event.nextWeek = event.startDate > weekend;
                      event.today = event.startDate > now && event.startDate < midnight;
                      return event.startDate > now && event.startDate < weekFromNow;
@@ -536,22 +535,22 @@ class ServerCommunicator {
                      const strings = part.split('=');
                      // Now I will parse the information the best I can
 
-                     if (strings[0] == 'COUNT') {
-                        const count = parseInt(strings[1]);
+                     if (strings[0] === 'COUNT') {
+                        const count = parseInt(strings[1], 10);
                         const lastDuplicate = new Date(event.start.dateTime);
                         lastDuplicate.setDate(event.startDate.getDate() + 7 * count);
 
                         obj.lastDuplicate = lastDuplicate;
-                     } else if (strings[0] == 'FREQ') {
+                     } else if (strings[0] === 'FREQ') {
                         obj.frequency = strings[1];
-                     } else if (strings[0] == 'UNTIL') {
+                     } else if (strings[0] === 'UNTIL') {
                         const year = strings[1].substring(0, 4);
                         const month = strings[1].substring(4, 6);
                         const day = strings[1].substring(6, 8);
 
                         obj.lastDuplicate = new Date(year, month - 1, day);
                         obj.lastDuplicate.setHours(event.startDate.getHours(), event.startDate.getMinutes());
-                     } else if (strings[0] == 'BYDAY') {
+                     } else if (strings[0] === 'BYDAY') {
                         obj.day = strings[1];
                      } else {
                         obj[strings[0]] = strings[1];
@@ -614,7 +613,7 @@ class ServerCommunicator {
    enterExitDALI=(inDALI) => {
       // Get the user
       GoogleSignin.currentUserAsync().then((user) => {
-         if (user == null) {
+         if (user === null) {
             throw 'Not posting because there is no user';
          }
          this.user = user;

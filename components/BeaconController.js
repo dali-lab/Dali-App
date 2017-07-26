@@ -11,14 +11,13 @@ import PushNotification from 'react-native-push-notification';
 import BackgroundTimer from 'react-native-background-timer';
 import {
 	DeviceEventEmitter,
-	Platform,
-	Alert
+	Platform
 } from 'react-native';
 import {GoogleSignin} from 'react-native-google-signin';
 
 // My other modules
-const StorageController = require('./StorageController').default
-const GlobalFunctions = require('./GlobalFunctions').default
+const StorageController = require('./StorageController').default;
+const GlobalFunctions = require('./GlobalFunctions').default;
 let ServerCommunicator = require('./ServerCommunicator').default;
 let env = require('./Environment');
 
@@ -46,11 +45,10 @@ class BeaconController {
 	constructor() {
 		// Making sure I have no doplegangers
 		if (BeaconController.current != null) {
-			throw "Cannot create more than one BeaconController!"
-			return
+			throw 'Cannot create more than one BeaconController!';
 		}
 
-		if (Platform.OS == 'ios') {
+		if (Platform.OS === 'ios') {
 			// iOS has its own way of doing things...
 			// For one, Android doesn't ask for permission from the user
 			Beacons.requestAlwaysAuthorization();
@@ -61,40 +59,40 @@ class BeaconController {
 				// authorization is a string which is either "authorizedAlways",
 				// "authorizedWhenInUse", "denied", "notDetermined" or "restricted"
 				this.authorization = authorization;
-				console.log("Got authorization: " + authorization);
+				console.log('Got authorization: ' + authorization);
 			});
 
-			console.log("Starting monitoring...");
+			console.log('Starting monitoring...');
 			// For the other iOS only requires the object { identifier: "Some ID", uuid: "long-string-ofcharacters" }
 			Beacons.startMonitoringForRegion(env.labRegion);
 			Beacons.startMonitoringForRegion(env.checkInRegion);
 			// Beacons.startMonitoringForRegion(env.votingRegion);
 			Beacons.startUpdatingLocation();
-		}else{
+		} else {
 			// Android needs explicit declaration of type of beacon detected
-			Beacons.detectIBeacons()
-			Beacons.detectEstimotes()
+			Beacons.detectIBeacons();
+			Beacons.detectEstimotes();
 
 			// Android needs major and minor values
-			env.labRegion.major = 1
-			env.labRegion.minor = 1
+			env.labRegion.major = 1;
+			env.labRegion.minor = 1;
 
-			env.checkInRegion.major = 1
-			env.checkInRegion.minor = 1
+			env.checkInRegion.major = 1;
+			env.checkInRegion.minor = 1;
 
-			env.votingRegion.major = 1
-			env.votingRegion.minor = 1
+			env.votingRegion.major = 1;
+			env.votingRegion.minor = 1;
 
 			// Android may fail!
 			Beacons.startMonitoringForRegion(env.labRegion).then(()=> {
-				console.log("Started monitoring", env.labRegion)
+				console.log('Started monitoring', env.labRegion);
 			}).catch((error) => {
-				console.log("Failed to start monitoring!", error)
+				console.log('Failed to start monitoring!', error);
 			});
 			Beacons.startMonitoringForRegion(env.checkInRegion).then(()=> {
-				console.log("Started monitoring", env.checkInRegion)
+				console.log('Started monitoring', env.checkInRegion);
 			}).catch((error) => {
-				console.log("Failed to start monitoring!", error)
+				console.log('Failed to start monitoring!', error);
 			});
 			// Beacons.startMonitoringForRegion(env.votingRegion).then(() => {
 			// 	console.log("Started monitoring", env.votingRegion);
@@ -151,7 +149,7 @@ class BeaconController {
 			},
 
 			// ANDROID ONLY: GCM Sender ID (optional - not required for local notifications, but is need to receive remote push notifications)
-			senderID: "YOUR GCM SENDER ID",
+			senderID: 'YOUR GCM SENDER ID',
 
 			// IOS ONLY (optional): default: all - Permissions to register.
 			permissions: {
@@ -179,25 +177,25 @@ class BeaconController {
 	startRanging() {
 		// To track the number of times I get beacons before I force cancel ranging
 		// Helped a bit towards infinite ranging problem
-		this.numRanged = 0
+		this.numRanged = 0;
 
 		// Again Android does things differently
-		if (Platform.OS == 'ios') {
+		if (Platform.OS === 'ios') {
 			Beacons.startUpdatingLocation();
 			Beacons.startRangingBeaconsInRegion(env.labRegion);
-			console.log("Starting to range DALI");
-		}else{
+			console.log('Starting to range DALI');
+		} else {
 			Beacons.startRangingBeaconsInRegion(env.labRegion.identifier, env.labRegion.uuid).then(() => {
-				console.log("Started ranging")
+				console.log('Started ranging');
 			}).catch((error) => {
-				console.log("Failed to range")
-				console.log(error)
+				console.log('Failed to range');
+				console.log(error);
 				// Failed to range, report not in the lab
 				BeaconController.performCallbacks(this.enterExitListeners, false);
-			})
+			});
 		}
 
-		if (this.rangingListener == null) {
+		if (this.rangingListener === null) {
 			this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange.bind(this));
 		}
 	}
@@ -221,55 +219,55 @@ class BeaconController {
 	Called when the device exits a montiored region
 	*/
 	didExitRegion(exitRegion) {
-		console.log("Exited region");
+		console.log('Exited region');
 		console.log(exitRegion);
 
-		if (exitRegion.region == env.checkInRegion.identifier || exitRegion.identifier == env.checkInRegion.identifier) {
+		if (exitRegion.region === env.checkInRegion.identifier || exitRegion.identifier === env.checkInRegion.identifier) {
 			// If we have exited the check-in-region, so we don't want to be notified about the lab
 			// We will instead deal with the check in listeners
-			BeaconController.performCallbacks(this.checkInListeners, false)
-			return
+			BeaconController.performCallbacks(this.checkInListeners, false);
+			return;
 		}
 
 		// Check for Tim's office
-		if (exitRegion.region == env.timsOfficeRegion.identifier || exitRegion.identifier == env.timsOfficeRegion.identifier) {
+		if (exitRegion.region === env.timsOfficeRegion.identifier || exitRegion.identifier === env.timsOfficeRegion.identifier) {
 			BeaconController.performCallbacks(this.timsOfficeListeners, false);
-			if (this.locationTextCurrentPriority == timsOfficePriority) {
-				BeaconController.performCallbacks(this.locationInformationListeners, "Loading location...");
+			if (this.locationTextCurrentPriority === timsOfficePriority) {
+				BeaconController.performCallbacks(this.locationInformationListeners, 'Loading location...');
 				this.locationTextCurrentPriority = 0;
 				this.startRanging();
 			}
-			return
+			return;
 		}
 
 		// Check for Voting event
 		console.log(exitRegion);
-		if (exitRegion.region == env.votingRegion.identifier || exitRegion.identifier == env.votingRegion.identifier) {
+		if (exitRegion.region === env.votingRegion.identifier || exitRegion.identifier === env.votingRegion.identifier) {
 			this.inVotingEvent = false;
 			this.votingEventMajor = null;
 			BeaconController.performCallbacks(this.votingRegionListeners, false);
-			if (this.locationTextCurrentPriority == votingEventPriority) {
-				BeaconController.performCallbacks(this.locationInformationListeners, "Loading location...");
+			if (this.locationTextCurrentPriority === votingEventPriority) {
+				BeaconController.performCallbacks(this.locationInformationListeners, 'Loading location...');
 				this.locationTextCurrentPriority = 0;
 				this.startRanging();
 			}
-			return
+			return;
 		}
 
 		// I will only send enter and exit notifications if the user is signed in
 		GoogleSignin.currentUserAsync().then((user) => {
 			if (user != null) {
 				// Plus I have to chek their preferences
-				return StorageController.getLabAccessPreference()
+				return StorageController.getLabAccessPreference();
 			}
 		}).then((value) => {
 			// Only if they are logged in and they want to receive these notifications...
 			if (value) {
 				// Send a notification
-				console.log("Notifying...");
+				console.log('Notifying...');
 				PushNotification.localNotification({
-					title: "Exited DALI",
-					message: "See you next time!"
+					title: 'Exited DALI',
+					message: 'See you next time!'
 				});
 			}
 		});
@@ -279,8 +277,8 @@ class BeaconController {
 		this.inDALI = false;
 
 		if (this.locationTextCurrentPriority <= inLabPriority) {
-			BeaconController.performCallbacks(this.locationInformationListeners, "Not in DALI Lab");
-			this.locationTextCurrentPriority = outOfLabPriority
+			BeaconController.performCallbacks(this.locationInformationListeners, 'Not in DALI Lab');
+			this.locationTextCurrentPriority = outOfLabPriority;
 		}
 
 		this.setUpBackgroundUpdates(this.inDALI);
@@ -295,13 +293,13 @@ class BeaconController {
 		if (GoogleSignin.currentUser() != null) {
 			StorageController.getCheckinNotifPreference().then((value) => {
 				if (value) {
-					console.log("Notifying...");
+					console.log('Notifying...');
 					PushNotification.localNotification({
-						title:"Checked In",
-						message: "Just checked you into this event. Have fun!"
+						title:'Checked In',
+						message: 'Just checked you into this event. Have fun!'
 					});
 				}
-			})
+			});
 		}
 	}
 
@@ -310,67 +308,67 @@ class BeaconController {
 	Called by the didEnterRegion listener I set up
 	*/
 	didEnterRegion(enterRegion) {
-		console.log("Entered region");
+		console.log('Entered region');
 		console.log(enterRegion);
 
 		// Check for check-in
-		if (enterRegion.region == env.checkInRegion.identifier || enterRegion.identifier == env.checkInRegion.identifier) {
+		if (enterRegion.region === env.checkInRegion.identifier || enterRegion.identifier === env.checkInRegion.identifier) {
 			BeaconController.performCallbacks(this.checkInListeners, true);
-			return
+			return;
 		}
 
 		// Check for Tim's office
-		if (enterRegion.region == env.timsOfficeRegion.identifier || enterRegion.identifier == env.timsOfficeRegion.identifier) {
+		if (enterRegion.region === env.timsOfficeRegion.identifier || enterRegion.identifier === env.timsOfficeRegion.identifier) {
 			BeaconController.performCallbacks(this.timsOfficeListeners, true);
 			if (this.locationTextCurrentPriority < timsOfficePriority) {
 				BeaconController.performCallbacks(this.locationInformationListeners, "In Tim's Office");
 				this.locationTextCurrentPriority = timsOfficePriority;
 			}
-			return
+			return;
 		}
 
 		// Check for Voting events
 		console.log(enterRegion);
-		if (enterRegion.region == env.votingRegion.identifier || enterRegion.identifier == env.votingRegion.identifier) {
+		if (enterRegion.region === env.votingRegion.identifier || enterRegion.identifier === env.votingRegion.identifier) {
 			this.inVotingEvent = true;
 			this.startRanging();
 			BeaconController.performCallbacks(this.votingRegionListeners, true);
 
 			if (this.locationTextCurrentPriority < votingEventPriority) {
 				ServerCommunicator.current.getEventNow().then((event) => {
-					if (event == null) {
-						return
+					if (event === null) {
+						return;
 					}
 
-					BeaconController.performCallbacks(this.locationInformationListeners, "At " + event.name);
+					BeaconController.performCallbacks(this.locationInformationListeners, 'At ' + event.name);
 					this.locationTextCurrentPriority = votingEventPriority;
 
 					PushNotification.localNotification({
 						title: event.name,
-						message: "Welcome to " + event.name + "!"
+						message: 'Welcome to ' + event.name + '!'
 					});
 				}).catch((error) => {
-					if (error.code == 404) {
+					if (error.code === 404) {
 						return;
 					}
 				});
 			}
-			return
+			return;
 		}
 
 		// Check user
 		GoogleSignin.currentUserAsync().then((user) => {
 			if (user != null) {
 				// Plus I have to check their preferences
-				return StorageController.getLabAccessPreference()
+				return StorageController.getLabAccessPreference();
 			}
 		}).then((value) => {
 			// If both are valid, we send
 			if (value) {
-				console.log("Notifying...");
+				console.log('Notifying...');
 				PushNotification.localNotification({
-					title: "Entered DALI",
-					message: "Welcome back to DALI lab!"
+					title: 'Entered DALI',
+					message: 'Welcome back to DALI lab!'
 				});
 			}
 		});
@@ -379,8 +377,8 @@ class BeaconController {
 		this.inDALI = true;
 
 		if (this.locationTextCurrentPriority < inLabPriority) {
-			BeaconController.performCallbacks(this.locationInformationListeners, "In DALI Lab");
-			this.locationTextCurrentPriority = inLabPriority
+			BeaconController.performCallbacks(this.locationInformationListeners, 'In DALI Lab');
+			this.locationTextCurrentPriority = inLabPriority;
 		}
 
 		this.setUpBackgroundUpdates(this.inDALI);
@@ -394,15 +392,15 @@ class BeaconController {
 		this.stopRanging();
 		if (data.beacons.length > 0 && this.locationTextCurrentPriority < votingEventPriority) {
 			ServerCommunicator.current.getEventNow().then((event) => {
-				if (event == null) {
-					return
+				if (event === null) {
+					return;
 				}
 
-				BeaconController.performCallbacks(this.locationInformationListeners, "At " + event.name);
+				BeaconController.performCallbacks(this.locationInformationListeners, 'At ' + event.name);
 				this.locationTextCurrentPriority = votingEventPriority;
 			}).catch((error) => {
-				if (error.code == 404) return;
-			})
+				if (error.code === 404) {return;}
+			});
 		}
 	}
 
@@ -413,10 +411,10 @@ class BeaconController {
 	beaconsDidRange(data) {
 		// An attempt to stop the ranging if it gets out of controll
 		if (this.numRanged > 20) {
-			this.stopRanging()
-			return
+			this.stopRanging();
+			return;
 		}
-		this.numRanged+=1
+		this.numRanged += 1;
 
 		/*
 		Since I cannot actually range multiple regions at the same time,
@@ -432,7 +430,7 @@ class BeaconController {
 		*/
 
 		// Check to see if this region is Tim's Office
-		if (Platform.OS != "ios" ? (data.identifier == env.timsOfficeRegion.identifier) : (data.region.identifier == env.timsOfficeRegion.identifier)) {
+		if (Platform.OS !== 'ios' ? (data.identifier === env.timsOfficeRegion.identifier) : (data.region.identifier === env.timsOfficeRegion.identifier)) {
 			console.log("Tim's");
 			// Get tim
 			if (GlobalFunctions.userIsTim()) {
@@ -443,73 +441,73 @@ class BeaconController {
 				}
 			}
 			// Since this is to be the last in the chain
-			if (data.beacons.length == 0 && this.locationTextCurrentPriority == 0) {
+			if (data.beacons.length === 0 && this.locationTextCurrentPriority === 0) {
 				Beacons.startRangingBeaconsInRegion(env.labRegion);
 				this.startRanging();
-			}else{
+			} else {
 				this.stopRanging();
 			}
 			this.setUpBackgroundUpdates(data.beacons.length > 0);
 
 			// Check to see if this region is a voting region
-		}else if (Platform.OS != "ios" ? (data.identifier == env.votingRegion.identifier) : (data.region.identifier == env.votingRegion.identifier)) {
-			console.log("Voting");
+		} else if (Platform.OS !== 'ios' ? (data.identifier === env.votingRegion.identifier) : (data.region.identifier === env.votingRegion.identifier)) {
+			console.log('Voting');
 			this.votingBeaconsDidRange(data);
 
 
 
 			// Starts the next (Tim's Office) only if user is Tim
 			if (GlobalFunctions.userIsTim()) {
-				if (Platform.OS == "ios") {
+				if (Platform.OS === 'ios') {
 					Beacons.startRangingBeaconsInRegion(env.timsOfficeRegion);
-				}else{
+				} else {
 					Beacons.startRangingBeaconsInRegion(env.timsOfficeRegion.identifier, env.timsOfficeRegion.uuid);
 				}
-			}else{
+			} else {
 				// Otherwise this is the end of the line
-				if (data.beacons.length == 0 && this.locationTextCurrentPriority == 0) {
+				if (data.beacons.length === 0 && this.locationTextCurrentPriority === 0) {
 					Beacons.startRangingBeaconsInRegion(env.labRegion);
 					this.startRanging();
-				}else{
+				} else {
 					this.stopRanging();
 				}
 			}
 
 			// Check to see if this region is a event checkin
-		}else if (Platform.OS != "ios" ? (data.identifier == env.checkInRegion.identifier) : (data.region.identifier == env.checkInRegion.identifier)) {
-			console.log("Check in");
+		} else if (Platform.OS !== 'ios' ? (data.identifier === env.checkInRegion.identifier) : (data.region.identifier === env.checkInRegion.identifier)) {
+			console.log('Check in');
 			// Doing the same thing but for check-in beacons
 			BeaconController.performCallbacks(this.checkInListeners, data.beacons.length > 0);
 
 			// Start the next region (Voting events)
-			if (Platform.OS != "ios") {
+			if (Platform.OS !== 'ios') {
 				Beacons.startRangingBeaconsInRegion(env.votingRegion.identifier, env.votingRegion.uuid);
-			}else{
+			} else {
 				Beacons.startRangingBeaconsInRegion(env.votingRegion);
 			}
 
 			// Last possible case: it is DALI
-		}else{
-			console.log("DALI");
+		} else {
+			console.log('DALI');
 			// Keeping track of wheter I'm in DALI or not
 			this.inDALI = data.beacons.length > 0;
 			this.rangedDALI = true;
 			BeaconController.performCallbacks(this.beaconRangeListeners, data.beacons);
 			ServerCommunicator.current.enterExitDALI(this.inDALI);
 			if (data.beacons.length > 0 && this.locationTextCurrentPriority < inLabPriority) {
-				BeaconController.performCallbacks(this.locationInformationListeners, "In DALI Lab");
+				BeaconController.performCallbacks(this.locationInformationListeners, 'In DALI Lab');
 				this.locationTextCurrentPriority = inLabPriority;
-			}else if (data.beacons.length == 0 && this.locationTextCurrentPriority < outOfLabPriority){
-				BeaconController.performCallbacks(this.locationInformationListeners, "Not in DALI Lab");
+			} else if (data.beacons.length === 0 && this.locationTextCurrentPriority < outOfLabPriority){
+				BeaconController.performCallbacks(this.locationInformationListeners, 'Not in DALI Lab');
 				this.locationTextCurrentPriority = outOfLabPriority;
 			}
 
 			this.setUpBackgroundUpdates(this.inDALI);
 
 			// Start the next region (Check-in)
-			if (Platform.OS != "ios") {
+			if (Platform.OS !== 'ios') {
 				Beacons.startRangingBeaconsInRegion(env.checkInRegion.identifier, env.checkInRegion.uuid);
-			}else{
+			} else {
 				Beacons.startRangingBeaconsInRegion(env.checkInRegion);
 			}
 		}
@@ -523,12 +521,12 @@ class BeaconController {
 					BackgroundTimer.clearInterval(interval);
 					StorageController.saveServerUpdateInterval(null);
 				}
-			}else{
-				if (interval == null) {
+			} else {
+				if (interval === null) {
 					const intervalId = BackgroundTimer.setInterval(() => {
 						// this will be executed every 10 minutes
 						// even when app is the the background
-						console.log("Refreshing the server");
+						console.log('Refreshing the server');
 						this.startRanging();
 					}, 10 * 60 * 1000); // 10 minutes
 
@@ -557,19 +555,19 @@ class BeaconController {
 			// Although if I have already set it up I wont do either
 			if (Platform.OS === 'ios' && !this.setUpTimsOffice) {
 				Beacons.startMonitoringForRegion(env.timsOfficeRegion);
-			}else if (!this.setUpTimsOffice) {
-				env.timsOfficeRegion.major = 1
-				env.timsOfficeRegion.minor = 1
+			} else if (!this.setUpTimsOffice) {
+				env.timsOfficeRegion.major = 1;
+				env.timsOfficeRegion.minor = 1;
 
 				Beacons.startMonitoringForRegion(env.timsOfficeRegion).then(()=> {
-					console.log("Started monitoring", env.timsOfficeRegion)
+					console.log('Started monitoring', env.timsOfficeRegion);
 				}).catch((error) => {
-					console.log(error)
+					console.log(error);
 				});
 			}
 
 			// Its set up now
-			this.setUpTimsOffice = true
+			this.setUpTimsOffice = true;
 
 			// Save listener
 			this.timsOfficeListeners.push(listener);
@@ -652,10 +650,10 @@ class BeaconController {
 	static removeCallback(callback, list) {
 		// Get te index
 		let index = list.indexOf(callback);
-		if (index == -1) {
+		if (index === -1) {
 			// Doesn't exist
 			return false;
-		}else{
+		} else {
 			// Does... Remove
 			list.splice(index, 1);
 			return true;
@@ -665,7 +663,7 @@ class BeaconController {
 	// Performs all the callbacks given to it with the remaining arguments in the call
 	static performCallbacks(callbacks) {
 		// This is my method of getting all the arguments except for the list of callbacks
-		var args = Array.prototype.slice.call(arguments, 1);;
+		var args = Array.prototype.slice.call(arguments, 1);
 		callbacks.forEach(function(callback) {
 			// To use the arguments I have to use the apply method of the function
 			callback.apply(null, args);

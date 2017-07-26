@@ -8,7 +8,6 @@ AUTHOR: John Kotz
 
 import React, { Component } from 'react';
 import {
-	AppRegistry,
 	StyleSheet,
 	Text,
 	View,
@@ -18,7 +17,6 @@ import {
 	Navigator,
 	Switch
 } from 'react-native';
-import {GoogleSignin} from 'react-native-google-signin'
 
 // My modules
 const StorageController = require('../StorageController').default;
@@ -44,7 +42,7 @@ class Settings extends Component {
 	}
 
 	constructor(props) {
-		super(props)
+		super(props);
 
 		// The list view dataSource
 		const dataSource = new ListView.DataSource({
@@ -59,11 +57,11 @@ class Settings extends Component {
 			labAccessNotif: false,
 			inLabLocShare: false,
 			rightButtonDisabled: false
-		}
+		};
 
 		// Gets the lab access preference from the storage
 		StorageController.getLabAccessPreference().then((value) => {
-			if (value == null) {
+			if (value === null) {
 				// Save the default value if there isn't one
 				StorageController.saveLabAccessPreference(this.state.labAccessNotif);
 				return;
@@ -76,7 +74,7 @@ class Settings extends Component {
 
 		// Get the preference for notifying the user on check-in
 		StorageController.getCheckinNotifPreference().then((value) => {
-			if (value == null) {
+			if (value === null) {
 				// Save default...
 				StorageController.saveCheckInNotifPreference(this.state.checkInNotif);
 				return;
@@ -89,7 +87,7 @@ class Settings extends Component {
 
 		// Get the preference of lab presence sharing
 		StorageController.getLabPresencePreference().then((value) => {
-			if (value == null) {
+			if (value === null) {
 				// Save default...
 				StorageController.saveCheckInNotifPreference(this.state.inLabLocShare);
 				return;
@@ -107,64 +105,64 @@ class Settings extends Component {
 	getData() {
 		var notificationsRows = [
 			{
-				title: "Event Check-in",
-				detail: "Allow notifications when you are checked in to a DALI event.",
+				title: 'Event Check-in',
+				detail: 'Allow notifications when you are checked in to a DALI event.',
 				switchChanged: (value) => {
 					this.setState({
 						checkInNotif: value,
 						dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
-					})
+					});
 					StorageController.saveCheckInNotifPreference(value);
 				},
-				stateName: "checkInNotif"
+				stateName: 'checkInNotif'
 			},{
-				title: "Lab Access",
-				detail: "Notify me when I enter or exit the lab",
+				title: 'Lab Access',
+				detail: 'Notify me when I enter or exit the lab',
 				switchChanged: (value) => {
 					this.setState({
 						labAccessNotif: value,
 						dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
-					})
+					});
 
 					StorageController.saveLabAccessPreference(value);
 				},
-				stateName: "labAccessNotif"
+				stateName: 'labAccessNotif'
 			}
-		]
+		];
 
 		var signInOutRow = {
-			title: this.props.user != null ? "Sign Out" : "Sign In",
+			title: this.props.user != null ? 'Sign Out' : 'Sign In',
 			action: this.props.onLogout,
 			image: this.props.user != null ? this.props.user.photo : null
-		}
+		};
 
 		var locationRows = [
 			{
-				title: "Lab Presence Sharing",
-				detail: "Share your presence in the lab with other members looking for your assistance",
+				title: 'Lab Presence Sharing',
+				detail: 'Share your presence in the lab with other members looking for your assistance',
 				switchChanged: (value) => {
 					this.setState({
 						inLabLocShare: value,
 						dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
-					})
+					});
 
 					StorageController.saveLabPresencePreference(value);
 					ServerCommunicator.current.updateSharePreference(value);
 				},
-				stateName: "inLabLocShare"
+				stateName: 'inLabLocShare'
 			}
-		]
+		];
 
 		var votingEventSetupRows = [
 			{
-				title: "Voting Event",
+				title: 'Voting Event',
 				action: () => {
 					this.navigator.push({
 						name: 'Voting Event',
 					});
 				}
 			}
-		]
+		];
 
 		if (GlobalFunctions.userIsTim()) {
 			// Tim gets automatic access to the voting rows, but because he is already tracked he can't share his information
@@ -172,8 +170,8 @@ class Settings extends Component {
 				user: [signInOutRow],
 				notifications: notificationsRows,
 				voting: votingEventSetupRows
-			}
-		}else if (this.props.user != null){
+			};
+		} else if (this.props.user != null){
 			// This is a regular non-tim user
 			if (GlobalFunctions.userIsAdmin()) {
 				// This is theo, so he gets the voting options
@@ -182,20 +180,20 @@ class Settings extends Component {
 					notifications: notificationsRows,
 					location: locationRows,
 					voting: votingEventSetupRows
-				}
-			}else{
+				};
+			} else {
 				// A non-tim non-theo user
 				return {
 					user: [signInOutRow],
 					notifications: notificationsRows,
 					location: locationRows
-				}
+				};
 			}
-		}else{
+		} else {
 			// A non-user. All they get to do is sign in
 			return {
 				user: [signInOutRow]
-			}
+			};
 		}
 	}
 
@@ -203,7 +201,7 @@ class Settings extends Component {
 	Renders the rows
 	*/
 	renderRow(data, section, row) {
-		if (section == 'user' || section == 'voting') {
+		if (section === 'user' || section === 'voting') {
 			// The user cells are different
 			return (
 				<TouchableHighlight onPress={data.action}>
@@ -216,7 +214,7 @@ class Settings extends Component {
 				<View style={styles.seperator}/>
 				</View>
 				</TouchableHighlight>
-			)
+			);
 		}
 
 		// The other rows are all pretty simple
@@ -232,24 +230,24 @@ class Settings extends Component {
 			onValueChange={data.switchChanged}
 			style={styles.notificationRowSwitch}/>
 			</View>
-			<View style={row == 0 ? styles.seperatorSmall : styles.seperator}/>
+			<View style={row === 0 ? styles.seperatorSmall : styles.seperator}/>
 			</View>
-		)
+		);
 	}
 
 	/**
 	Gets a view of a section header
 	*/
 	renderSectionHeader(data, sectionName) {
-		if (sectionName == "user") {
-			return <View/>
+		if (sectionName === 'user') {
+			return <View/>;
 		}
 
 		return (
 			<View style={styles.sectionHeader}>
 			<Text style={styles.sectionHeaderText}>{sectionName.toUpperCase()}</Text>
 			</View>
-		)
+		);
 	}
 
 	/**
@@ -260,7 +258,7 @@ class Settings extends Component {
 			<View style={styles.sectionFooter}>
 			<Text style={styles.sectionFooterText}>Developed by John Kotz; Designs by Kate Stinson and Jenny Seong</Text>
 			</View>
-		)
+		);
 	}
 
 	/// Renders the scene in the navigator. This is necessary, as Settings controlls all the subsequent Views.
@@ -268,7 +266,7 @@ class Settings extends Component {
 	renderScene(route, navigator) {
 		this.navigator = navigator;
 
-		if (route.name == 'Settings') {
+		if (route.name === 'Settings') {
 			// Settings is a simple Listview that I have been setting up so far
 			return (
 				<ListView
@@ -278,56 +276,56 @@ class Settings extends Component {
 				renderFooter={this.renderFooter.bind(this)}
 				renderRow={this.renderRow.bind(this)}/>
 			);
-		}else if (route.name == 'Voting Event') {
+		} else if (route.name === 'Voting Event') {
 			// Return the subview with the correct properties
 			return (
 				<VotingEventSettings
 				rightButtonDisable={(bool) => this.setState({ rightButtonDisabled: bool }) }
 				ref={(votingEventSettings) => {
-					if (votingEventSettings == null) return;
+					if (votingEventSettings === null) {return;}
 
 					// If the reference has changed then I will reload the whole navigator
-					if (this.votingEventSettings != votingEventSettings) {
+					if (this.votingEventSettings !== votingEventSettings) {
 						this.forceUpdate();
-						console.log("Force updating voting...");
+						console.log('Force updating voting...');
 						this.votingEventSettings = votingEventSettings;
 					}
 				}}
 				navigator={navigator}/>
 			);
-		}else if (route.name == 'Create Voting Event') {
+		} else if (route.name === 'Create Voting Event') {
 			// Return the subview with the correct properties
 			// I give this view a callback to call when it is done so I can force update the voting event settings view
 			return (
 				<CreateVotingEventSettings
 				rightButtonDisable={(bool) => this.setState({ rightButtonDisabled: bool }) }
 				ref={(createEventView) => {
-					if (createEventView == null) return;
+					if (createEventView === null) {return;}
 
 					// If the reference has changed then I will reload the whole navigator
-					if (this.createEventView != createEventView) {
+					if (this.createEventView !== createEventView) {
 						this.forceUpdate();
-						console.log("Force updating creating...");
+						console.log('Force updating creating...');
 						this.createEventView = createEventView;
 					}
 				}}
 				complete={() => this.votingEventSettings.forceUpdate()}
 				navigator={navigator}/>
 			);
-		}else{
-			console.error("Unknown route name: ", route.name);
-			return <View/>
+		} else {
+			console.error('Unknown route name: ', route.name);
+			return <View/>;
 		}
 	}
 
 	/// Called by the navigator to determine what the left button should be
 	getLeftButton() {
-		return null
+		return null;
 	}
 
 	/// Called by the navigator to get the title of the navigator
 	getNavigationTitle() {
-		return "Settings"
+		return 'Settings';
 	}
 
 	/**
@@ -344,20 +342,20 @@ class Settings extends Component {
 					LeftButton: (route, navigator, index, navState) => {
 						// This is pretty cool. First I determine a reference to the view that is currently being displayed
 						var currentView = null;
-						if (route.name == "Create Voting Event") {
+						if (route.name === 'Create Voting Event') {
 							currentView = this.createEventView;
-						}else if (route.name == "Voting Event") {
+						} else if (route.name === 'Voting Event') {
 							currentView = this.votingEventSettings;
-						}else{
+						} else {
 							currentView = this;
 						}
 
 
-						if (currentView != null && currentView.getLeftButton != undefined) {
+						if (currentView != null && currentView.getLeftButton !== undefined) {
 							// If the current view has a preference on their left button...
 							let leftButton = currentView.getLeftButton();
 							// Get it and check it
-							if (leftButton == null) {
+							if (leftButton === null) {
 								return null;
 							}
 
@@ -373,7 +371,7 @@ class Settings extends Component {
 								</Text>
 								</TouchableHighlight>
 							);
-						}else{
+						} else {
 							// If we cannot get any information on what view we are on
 							// or what that view wants for a left button, we will assume a back button
 							return (
@@ -381,7 +379,7 @@ class Settings extends Component {
 								underlayColor="rgba(0,0,0,0)"
 								style={styles.navBarBackButton}
 								onPress={navigator.pop}>
-								<Text style={styles.navBarBackText}>{"< Back"}</Text>
+								<Text style={styles.navBarBackText}>{'< Back'}</Text>
 								</TouchableHighlight>
 							);
 						}
@@ -390,18 +388,18 @@ class Settings extends Component {
 						// Very similar to the left button stuff
 						// We get the current view
 						var currentView = null;
-						if (route.name == "Create Voting Event") {
+						if (route.name === 'Create Voting Event') {
 							currentView = this.createEventView;
-						}else if (route.name == "Voting Event") {
+						} else if (route.name === 'Voting Event') {
 							currentView = this.votingEventSettings;
-						}else{
+						} else {
 							currentView = this;
 						}
 
-						if (currentView != null && currentView.getRightButton != undefined) {
+						if (currentView != null && currentView.getRightButton !== undefined) {
 							// If the view has a preference
 							let rightButton = currentView.getRightButton();
-							if (rightButton == null) {
+							if (rightButton === null) {
 								return null;
 							}
 
@@ -417,7 +415,7 @@ class Settings extends Component {
 								</Text>
 								</TouchableHighlight>
 							);
-						}else{
+						} else {
 							// Otherwise assume Done button
 							return (
 								<TouchableHighlight
@@ -443,7 +441,7 @@ class Settings extends Component {
 			}
 			renderScene={this.renderScene.bind(this)}
 			style={{paddingTop: 65}}/>
-		)
+		);
 	}
 }
 
@@ -581,4 +579,4 @@ const styles = StyleSheet.create({
 	}
 });
 
-module.exports = Settings
+module.exports = Settings;

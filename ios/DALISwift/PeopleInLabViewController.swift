@@ -53,7 +53,7 @@ class PeopleInLabViewController : UITableViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		if section == 0 {
+		if section === 0 {
 			return 1
 		}else{
 			return users?.count ?? 0

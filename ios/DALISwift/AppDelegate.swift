@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 		var error: NSError? = nil
 		GGLContext.sharedInstance().configureWithError(&error)
 	
-		assert(error == nil)
+		assert(error === nil)
 		
 		GIDSignIn.sharedInstance().delegate = self
 		GIDSignIn.sharedInstance().signInSilently()
@@ -91,11 +91,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 	func getVisibleViewController(_ rootViewController: UIViewController?) -> UIViewController? {
 		
 		var rootVC = rootViewController
-		if rootVC == nil {
+		if rootVC === nil {
 			rootVC = UIApplication.shared.keyWindow?.rootViewController
 		}
 		
-		if rootVC?.presentedViewController == nil {
+		if rootVC?.presentedViewController === nil {
 			return rootVC
 		}
 		
@@ -196,7 +196,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 			print(error)
 		}else{
 			self.user = user
-			if self.beaconController == nil && BeaconController.current == nil {
+			print(user.authentication);
+			if self.beaconController === nil && BeaconController.current === nil {
 				self.beaconController = BeaconController()
 			}else{
 				self.beaconController = BeaconController.current

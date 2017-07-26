@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import {
 	StyleSheet,
-	Text,
 	View,
 	TouchableHighlight,
 	ListView,
 } from 'react-native';
 
-const colorOptions = ["red", "yellow", "green", "purple", "blue", "orange", "pink", "brown", "gold"];
+const colorOptions = ['red', 'yellow', 'green', 'purple', 'blue', 'orange', 'pink', 'brown', 'gold'];
 
 
 class ColorPicker extends Component {
@@ -21,32 +20,32 @@ class ColorPicker extends Component {
 
     var temp = [];
     var rows = [];
-    for (index in colorOptions) {
+    for (const index in colorOptions) {
       const color = colorOptions[index];
       const rowIndex = index % 4;
 
       if (rowIndex < 3) {
         temp.push(color);
-      }else{
+      } else {
         temp.push(color);
         rows.push(temp);
         temp = [];
       }
     }
-    if (temp.length != 0) {
+    if (temp.length !== 0) {
       rows.push(temp);
     }
 
     this.state = {
       dataSource: dataSource.cloneWithRows(rows),
       selectedColor: null
-    }
+    };
   }
 
   selectedColor(color) {
     this.setState({
       selectedColor: color
-    })
+    });
 
     if (this.props.colorSelected != null) {
       this.props.colorSelected(color);
@@ -71,7 +70,7 @@ class ColorPicker extends Component {
           style={[styles.colorPickCell, {backgroundColor: rowData[3]}]}><View/></TouchableHighlight> : null}
         <View style={{flex:1}}/>
       </View>
-    )
+    );
   }
 
   render() {
@@ -82,7 +81,7 @@ class ColorPicker extends Component {
               dataSource={this.state.dataSource}
               style={styles.listView}
               renderRow={this.renderRow.bind(this)}/>
-            <View style={{backgroundColor: this.state.selectedColor || "white", flex: 1}}/>
+            <View style={{backgroundColor: this.state.selectedColor || 'white', flex: 1}}/>
           </View>
         </View>
     );
@@ -91,7 +90,7 @@ class ColorPicker extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "column",
+    flexDirection: 'column',
   },
   listView: {
   },
@@ -101,12 +100,12 @@ const styles = StyleSheet.create({
     margin: 15,
     borderRadius: 5,
     shadowOffset: {width: 4, height: 4},
-    shadowColor: "gray",
+    shadowColor: 'gray',
     shadowOpacity: 0.7
   },
   row: {
-    flexDirection: "row",
+    flexDirection: 'row',
   }
 });
 
-module.exports = ColorPicker
+module.exports = ColorPicker;

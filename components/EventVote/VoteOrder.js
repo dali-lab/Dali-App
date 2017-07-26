@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import {
-   AppRegistry,
    StyleSheet,
    Text,
    View,
    TouchableHighlight,
-   ListView,
-   Image,
 } from 'react-native';
 import SortableListView from 'react-native-sortable-listview';
 
@@ -22,12 +19,12 @@ class VoteOrder extends Component {
       this.state = {
          order: Object.keys(this.props.selectedOptions),
          selectedOptions: props.selectedOptions
-      }
+      };
    }
 
    renderRow(data, sectionID, rowID) {
       const row = this.state.order.indexOf(rowID);
-      const choiceNames = ["1st Choice", "2nd Choice", "3rd Choice"];
+      const choiceNames = ['1st Choice', '2nd Choice', '3rd Choice'];
       return (
          <TouchableHighlight
          underlayColor={'#eee'}
@@ -46,7 +43,7 @@ class VoteOrder extends Component {
       return (
          <View style={styles.container}>
          <Text style={styles.headerText}>Order your votes by dragging</Text>
-         <View style={styles.headerSeperator}></View>
+         <View style={styles.headerSeperator} />
          <SortableListView
          style={styles.tableView}
          data={this.state.selectedOptions}
@@ -76,7 +73,7 @@ const styles = StyleSheet.create({
       flex: 1
    },
    headerText: {
-      fontFamily: "Avenir Next",
+      fontFamily: 'Avenir Next',
    },
    headerSeperator: {
       height: 1,
@@ -98,16 +95,16 @@ const styles = StyleSheet.create({
    },
    orderLabel: {
       color: 'grey',
-      fontFamily: "Avenir Next",
+      fontFamily: 'Avenir Next',
       fontSize: 12,
       marginBottom: 5,
       marginTop: 5,
    },
    optionNameLabel: {
-      fontFamily: "Avenir Next",
+      fontFamily: 'Avenir Next',
       paddingLeft: 10,
       fontSize: 16
    }
 });
 
-module.exports = VoteOrder
+module.exports = VoteOrder;

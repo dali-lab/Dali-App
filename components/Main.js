@@ -11,11 +11,9 @@
 
 import React, { Component } from 'react';
 import {
-	AppRegistry,
 	StyleSheet,
 	Text,
 	View,
-	DeviceEventEmitter,
 	TouchableHighlight,
 	ListView,
 	Image,
@@ -37,10 +35,9 @@ let Settings = require('./Settings/Settings');
 let PeopleInLab = require('./PeopleInLab');
 let EventVote = require('./EventVote/VoteMain');
 let StorageController = require('./StorageController').default;
-let GlobalFunctions = require('./GlobalFunctions').default;
 
 
-var window = Dimensions.get('window')
+var window = Dimensions.get('window');
 
 /**
 Formats the given events into a simple start - end format
@@ -53,28 +50,28 @@ PARAMETERS:
 RETURNS: String
 */
 function formatEvent(start, end) {
-	let weekDays = ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat']
+	let weekDays = ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'];
 
 	function formatTime(time) {
-		var hours = time.getHours()
+		var hours = time.getHours();
 
 		if (hours > 12) {
-			hours -= 12
+			hours -= 12;
 		}
 
-		return hours.toString() + (time.getMinutes() == 0 ? '' : ':' + time.getMinutes().toString())
+		return hours.toString() + (time.getMinutes() === 0 ? '' : ':' + time.getMinutes().toString());
 	}
 
-	return weekDays[start.getDay()] + ' ' + formatTime(start) + ' - ' + formatTime(end) + ' ' + ((start.getHours() + 1) >= 12 ? "PM" : "AM")
+	return weekDays[start.getDay()] + ' ' + formatTime(start) + ' - ' + formatTime(end) + ' ' + ((start.getHours() + 1) >= 12 ? 'PM' : 'AM');
 }
 
 // A bunch of constants
 // TODO: Refactor into better practice format
-const taHoursExpanded = window.height/2 + 70
-const officeHoursDefault =  window.height/2 - 100
-const eventsExpanded = window.height/2 + 50
-const eventsDefault = 240
-const shrunkSize = 70
+const taHoursExpanded = window.height / 2 + 70;
+const officeHoursDefault =  window.height / 2 - 100;
+const eventsExpanded = window.height / 2 + 50;
+const eventsDefault = 240;
+const shrunkSize = 70;
 
 /**
 Controlls the the interface for the Main component
@@ -90,7 +87,7 @@ class Main extends Component {
 	}
 
 	constructor() {
-		super()
+		super();
 
 		// All very important and not at all understandable:
 		this.state = {
@@ -109,7 +106,7 @@ class Main extends Component {
 			votingDone: false,
 			// Holds the data I will get about the office hours
 			officeHours: null,
-			locationText: "Loading location...",
+			locationText: 'Loading location...',
 			inVotingEvent:  __DEV__,
 			votingVisibile: false,
 			// The current state of the application (background or foreground)
@@ -118,7 +115,7 @@ class Main extends Component {
 			// Animated values defining the height of the office hours list view (for animating)
 			// (Read more: toggleSectionGrow)
 			officeHoursAnimationValue: new Animated.Value()
-		}
+		};
 
 		// Initialize the value of the office hours list to its default
 		this.state.officeHoursAnimationValue.setValue(officeHoursDefault);
@@ -148,7 +145,7 @@ class Main extends Component {
 		AppState.removeEventListener('change', this._handleAppStateChange);
 
 		clearInterval(this.reloadInterval);
-		this.reloadInterval = null
+		this.reloadInterval = null;
 	}
 
 	_handleAppStateChange = (nextAppState) => {
@@ -156,9 +153,9 @@ class Main extends Component {
 		if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
 			console.log('App has come to the foreground!');
 			this.refreshData();
-		}else{
+		} else {
 			clearInterval(this.reloadInterval);
-			this.reloadInterval = null
+			this.reloadInterval = null;
 		}
 		this.setState({appState: nextAppState});
 	}
@@ -173,7 +170,7 @@ class Main extends Component {
 				});
 			}
 		}).catch((error) => {
-			if (error.code == 404) {
+			if (error.code === 404) {
 				this.setState({
 					votingDone: false,
 					inVotingEvent: false
@@ -190,8 +187,8 @@ class Main extends Component {
 	- Current location (ie. in lab or not)
 	*/
 	refreshData() {
-		if (this.reloadInterval == null) {
-			console.log("Making interval");
+		if (this.reloadInterval === null) {
+			console.log('Making interval');
 			this.reloadInterval = setInterval(() => {
 				this.refreshData();
 			}, 1000 * 60);
@@ -199,11 +196,11 @@ class Main extends Component {
 
 		this.refreshVotingData();
 
-		console.log("Refreshing...");
+		console.log('Refreshing...');
 		// Retrieve office hours
 		if (this.props.user != null) {
 			ServerCommunicator.current.getTonightsLabHours().then((officeHours) => {
-				console.log("Got office hours...");
+				console.log('Got office hours...');
 				this.setState({
 					officeHours: officeHours,
 					// In order to update the list view I tell to to clone the previous dataSource with the new data
@@ -225,18 +222,18 @@ class Main extends Component {
 		}
 
 		ServerCommunicator.current.getUpcomingEvents().then((events) => {
-			console.log("Got events...");
+			console.log('Got events...');
 			var i = 0;
 			while (i < events.length) {
 				let event = events[i];
-				if (event.today && i == 0) {
-					events.splice(i, 0, "TODAY SEPERATOR")
+				if (event.today && i === 0) {
+					events.splice(i, 0, 'TODAY SEPERATOR');
 					i++;
-				}else if (!event.nextWeek && !event.today && (i > 0 ? events[i-1].today : true)) {
-					events.splice(i, 0, "THIS WEEK SEPERATOR");
+				} else if (!event.nextWeek && !event.today && (i > 0 ? events[i - 1].today : true)) {
+					events.splice(i, 0, 'THIS WEEK SEPERATOR');
 					i++;
-				}else if (event.nextWeek) {
-					events.splice(i, 0, "NEXT WEEK SEPERATOR");
+				} else if (event.nextWeek) {
+					events.splice(i, 0, 'NEXT WEEK SEPERATOR');
 					break;
 				}
 				i++;
@@ -245,14 +242,14 @@ class Main extends Component {
 			this.setState({
 				// Same as above, but with the events
 				eventsDataSource: this.state.eventsDataSource.cloneWithRows(events)
-			})
+			});
 
 			if (events.length > 0) {
 				// Again, same as before:
 				// Auto refresh when an event ends
 				var i = 0;
 				var first = events[0];
-				while (i < events.length && first.endDate == undefined) {
+				while (i < events.length && first.endDate === undefined) {
 					first = events[++i];
 				}
 				if (first.today) {
@@ -266,7 +263,7 @@ class Main extends Component {
 		});
 		BeaconController.current.startRanging();
 
-		if (this.reloadInterval == null) {
+		if (this.reloadInterval === null) {
 			this.reloadInterval = setInterval(() => {
 				this.refreshData();
 			}, 1000 * 60 * 5);
@@ -277,7 +274,7 @@ class Main extends Component {
 	Logout and notify the index.__.js to switch to Login
 	*/
 	logout() {
-		if (this.props.user == null) {
+		if (this.props.user === null) {
 			this.props.onLogout();
 		}
 
@@ -307,35 +304,35 @@ class Main extends Component {
 			<Text style={styles.detailText}>{hour.skills}</Text>
 			</View>
 			</View>
-		)
+		);
 	}
 
 	/// Renders a row for an event and returns it
 	renderEventRow(event) {
-		if (event == "TODAY SEPERATOR") {
+		if (event === 'TODAY SEPERATOR') {
 			return (
 				<View style={styles.weekSeperator}>
 				<View style={styles.weekSeperatorLine}/>
 				<Text style={styles.weekSeperatorText}>Today</Text>
 				<View style={styles.weekSeperatorLine}/>
 				</View>
-			)
-		}else if (event == "THIS WEEK SEPERATOR") {
+			);
+		} else if (event === 'THIS WEEK SEPERATOR') {
 			return (
 				<View style={styles.weekSeperator}>
 				<View style={styles.weekSeperatorLine}/>
 				<Text style={styles.weekSeperatorText}>This Week</Text>
 				<View style={styles.weekSeperatorLine}/>
 				</View>
-			)
-		}else if (event == "NEXT WEEK SEPERATOR") {
+			);
+		} else if (event === 'NEXT WEEK SEPERATOR') {
 			return (
 				<View style={styles.weekSeperator}>
 				<View style={styles.weekSeperatorLine}/>
 				<Text style={styles.weekSeperatorText}>Next Week</Text>
 				<View style={styles.weekSeperatorLine}/>
 				</View>
-			)
+			);
 		}
 
 		// It is touchable so the user can click it an open the event in a web-browser
@@ -348,11 +345,11 @@ class Main extends Component {
 			<Text style={styles.leftRowText}>{event.summary}</Text>
 			<View style={styles.rightRowView}>
 			<Text style={styles.rowTitle}>{formatEvent(event.startDate, event.endDate)}</Text>
-			<Text style={styles.detailText}>{event.location == "" ? event.description : event.location}</Text>
+			<Text style={styles.detailText}>{event.location === '' ? event.description : event.location}</Text>
 			</View>
 			</View>
 			</TouchableHighlight>
-		)
+		);
 	}
 
 	/// Opens an event in a web-browser
@@ -377,16 +374,16 @@ class Main extends Component {
 
 	votingButtonPressed() {
 		if (!BeaconController.current.inVotingEvent && !__DEV__) {
-			Alert.alert("You are not at any event",
-			"No voting event beacon was found nearby. The beacons use Bluetooth, so this may be because bluetooth is off. You might also not allow the app to access location, which is needed",
+			Alert.alert('You are not at any event',
+			'No voting event beacon was found nearby. The beacons use Bluetooth, so this may be because bluetooth is off. You might also not allow the app to access location, which is needed',
 			[
 				{text: 'Okay', onPress: () => {}},
 				{text: 'Settings', onPress: () => Linking.openURL('app-settings:')}
 			]);
-			return
+			return;
 		}
 
-		console.log("Voting now visible");
+		console.log('Voting now visible');
 		this.setState({
 			votingVisibile: true
 		});
@@ -410,12 +407,12 @@ class Main extends Component {
 		// 			office hours but the office hours are not expaned (either expanded or shrunk), go to expaned height
 		// 			events and the events section was expanded, we must colapse back to default
 		//      events and the events section was not expaned, expand events by shrinking
-		let end = section == "officeHoursSelected" ? (this.state.officeHoursSelected ? officeHoursDefault : taHoursExpanded) : (this.state.eventsSelected ? officeHoursDefault : shrunkSize);
+		let end = section === 'officeHoursSelected' ? (this.state.officeHoursSelected ? officeHoursDefault : taHoursExpanded) : (this.state.eventsSelected ? officeHoursDefault : shrunkSize);
 
 		// Update the state
 		this.setState({
-			officeHoursSelected: section == "officeHoursSelected" && !this.state.officeHoursSelected,
-			eventsSelected: section == "eventsSelected" && !this.state.eventsSelected,
+			officeHoursSelected: section === 'officeHoursSelected' && !this.state.officeHoursSelected,
+			eventsSelected: section === 'eventsSelected' && !this.state.eventsSelected,
 		});
 
 		// Animate towards that beutifully calculated end height
@@ -434,7 +431,7 @@ class Main extends Component {
 			{/* Creates a gradient view that acts as the background*/}
 			{/* Controlls the modal presented views that branch off. Transitions using a slide up*/}
 			<Modal
-			animationType={"slide"}
+			animationType={'slide'}
 			transparent={false}
 			visible={this.state.settingsVisible || this.state.peopleInLabVisible || this.state.votingVisibile}
 			onRequestClose={this.hideModals.bind(this)}>
@@ -455,7 +452,7 @@ class Main extends Component {
 				width: window.width,
 				alignItems: 'center',
 				flexDirection: 'row',
-				marginTop: 20 + (Platform.OS == "ios" ? 10 : 0)
+				marginTop: 20 + (Platform.OS === 'ios' ? 10 : 0)
 			}}>
 			{/* Voting button*/}
 			<TouchableHighlight
@@ -482,16 +479,16 @@ class Main extends Component {
 				<Text style={styles.locationText}>{this.state.locationText}</Text>
 				: <View style={{alignItems: 'center'}}>
 				<TouchableHighlight onPress={() => {
-					Linking.openURL("http://maps.apple.com/?address=5,Maynard+St,Hanover,New+Hampshire");
+					Linking.openURL('http://maps.apple.com/?address=5,Maynard+St,Hanover,New+Hampshire');
 				}}
 				underlayColor="rgba(0,0,0,0)">
-				<Text style={[styles.locationText, {textDecorationLine: "underline", marginBottom: 0}]}>Open in Maps</Text>
+				<Text style={[styles.locationText, {textDecorationLine: 'underline', marginBottom: 0}]}>Open in Maps</Text>
 				</TouchableHighlight>
 				<TouchableHighlight onPress={() => {
-					Linking.openURL("https://dali.dartmouth.edu");
+					Linking.openURL('https://dali.dartmouth.edu');
 				}}
 				underlayColor="rgba(0,0,0,0)">
-				<Text style={[styles.locationText, {textDecorationLine: "underline"}]}>Website</Text>
+				<Text style={[styles.locationText, {textDecorationLine: 'underline'}]}>Website</Text>
 				</TouchableHighlight>
 				</View>
 			}
@@ -513,14 +510,14 @@ class Main extends Component {
 			onPress={this.toggleSectionGrow.bind(this, 'officeHoursSelected')}>
 			<Text style={styles.titleText}>{
 				(this.props.user != null ?
-					(this.state.officeHours == null ?
-						"Loading TA office hours..." :
+					(this.state.officeHours === null ?
+						'Loading TA office hours...' :
 						(this.state.officeHours.length > 0 ?
-							"TA office hours tonight!" :
-							"No TA office hours tonight"
+							'TA office hours tonight!' :
+							'No TA office hours tonight'
 						)
 					)
-					: "Description"
+					: 'Description'
 				)
 			}
 			</Text>
@@ -586,7 +583,7 @@ class Main extends Component {
 					onPress={() => {}}>
 					<Image source={require('./Assets/food.png')} style={styles.settingsButtonImage}/>
 					</TouchableHighlight>
-					</View>: null}
+					</View> : null}
 
 					{/* Empty and clear view to make the buttons equidistant*/}
 					<View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0)'}}/>
@@ -603,7 +600,7 @@ class Main extends Component {
 					</LinearGradient> : null
 				}
 				</LinearGradient>
-			)
+			);
 		}
 	}
 
@@ -646,7 +643,7 @@ class Main extends Component {
 			flex: 1
 		},
 		topView: {
-			height: window.height/2 - 110,
+			height: window.height / 2 - 110,
 			alignItems: 'center'
 		},
 		titleText: {
@@ -736,4 +733,4 @@ class Main extends Component {
 		}
 	});
 
-	module.exports = Main
+	module.exports = Main;

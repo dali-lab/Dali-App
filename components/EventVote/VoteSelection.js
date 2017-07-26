@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-   AppRegistry,
    StyleSheet,
    Text,
    View,
@@ -8,20 +7,17 @@ import {
    ListView,
    Image,
    Alert,
-   Dimensions,
 } from 'react-native';
 let ServerCommunicator = require('../ServerCommunicator').default;
-
-const window = Dimensions.get('window')
 
 class VoteSelection extends Component {
 
    constructor(props) {
-      super(props)
+      super(props);
       // The list view dataSource
       const dataSource = new ListView.DataSource({
          rowHasChanged: (prev, next) => {
-            let dirty = prev.dirty == null ? true : prev.dirty;
+            let dirty = prev.dirty === null ? true : prev.dirty;
             prev.dirty = false;
             return prev !== next || dirty;
          },
@@ -32,15 +28,15 @@ class VoteSelection extends Component {
          options: [],
          dataSource: dataSource,
          numSelected: 0
-      }
+      };
       this.visible = true;
 
       ServerCommunicator.current.getEventNow().then((event) => {
-         if (event == null) return;
+         if (event === null) {return;}
 
          event.options.forEach((option) => {
-            option.selected = false
-            option.dirty = false
+            option.selected = false;
+            option.dirty = false;
             option.action = () => {
                option.dirty = true;
                option.selected = !option.selected;
@@ -51,7 +47,7 @@ class VoteSelection extends Component {
                   });
                }
 
-               var numSelected = this.state.numSelected + (option.selected ? 1 : -1)
+               var numSelected = this.state.numSelected + (option.selected ? 1 : -1);
                if (numSelected >= 3) {
                   this.state.options.forEach((option) => {
                      option.dirty = true;
@@ -64,15 +60,15 @@ class VoteSelection extends Component {
                      dataSource: this.state.dataSource.cloneWithRows(this.state.options)
                   });
                }
-            }
+            };
          });
 
          event.options = event.options.sort((option1, option2) => {
-            if (option1.name == option2.name) {
+            if (option1.name === option2.name) {
                return 0;
             }
 
-            return option1.name > option2.name ? 1 : -1
+            return option1.name > option2.name ? 1 : -1;
          });
 
          if (this.visible) {
@@ -89,8 +85,8 @@ class VoteSelection extends Component {
 
    nextPressed=(navigator) => {
       // Deal with stuff
-      if (this.state.numSelected != 3) {
-         Alert.alert("Select the top 3 to continue");
+      if (this.state.numSelected !== 3) {
+         Alert.alert('Select the top 3 to continue');
          return;
       }
 
@@ -98,21 +94,21 @@ class VoteSelection extends Component {
          return option.selected;
       });
 
-      navigator.push({name: "VoteOrder", selectedOptions: selected});
+      navigator.push({name: 'VoteOrder', selectedOptions: selected});
    }
 
    renderRow(option) {
 
       return (
          <TouchableHighlight
-         underlayColor='rgb(112, 187, 173)'
+         underlayColor="rgb(112, 187, 173)"
          onPress={this.state.numSelected < 3 || option.selected ? () => {
             option.action();
          } : null}>
          <View style={styles.row}>
          <View style={styles.rowInnerContainer}>
          <Text style={styles.rowText}>{option.name}</Text>
-         {option.selected ? <Image source={require("../Assets/checkmark.png")} style={styles.rowSelectionImage}/> : null}
+         {option.selected ? <Image source={require('../Assets/checkmark.png')} style={styles.rowSelectionImage}/> : null}
          </View>
          <View style={styles.seperator}/>
          </View>
@@ -124,10 +120,10 @@ class VoteSelection extends Component {
       return (
          <View style={styles.container}>
          <View style={styles.headerView}>
-         <Text style={styles.headerText}>{this.state.eventData == null ? "Loading..." : this.state.eventData.description}</Text>
+         <Text style={styles.headerText}>{this.state.eventData === null ? 'Loading...' : this.state.eventData.description}</Text>
          </View>
          <Text style={styles.headerText}>Choose 3 of the following...</Text>
-         <View style={styles.headerSeperator}></View>
+         <View style={styles.headerSeperator} />
          <ListView
          style={styles.listView}
          dataSource={this.state.dataSource}
@@ -147,19 +143,19 @@ const styles = StyleSheet.create({
       backgroundColor: 'rgb(238, 238, 238)'
    },
    headerText: {
-      fontFamily: "Avenir Next",
+      fontFamily: 'Avenir Next',
    },
    row: {
       marginLeft: 10,
    },
    rowInnerContainer: {
-      flexDirection: "row",
+      flexDirection: 'row',
       flex: 1
    },
    rowText: {
       fontSize: 20,
       padding: 10,
-      fontFamily: "Avenir Next",
+      fontFamily: 'Avenir Next',
       flex: 1
    },
    rowSelectionImage: {
@@ -181,6 +177,6 @@ const styles = StyleSheet.create({
       height: 1,
       backgroundColor: 'rgb(186, 186, 186)',
    }
-})
+});
 
-module.exports = VoteSelection
+module.exports = VoteSelection;

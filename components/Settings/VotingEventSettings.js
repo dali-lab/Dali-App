@@ -36,7 +36,7 @@ class VotingEventSettings extends Component {
 
       const dataSource = new ListView.DataSource({
          rowHasChanged: (prev, next) => {
-            let dirty = prev.dirty == null ? true : prev.dirty;
+            let dirty = prev.dirty === null ? true : prev.dirty;
             prev.dirty = false;
             return prev !== next || dirty;
          },
@@ -58,12 +58,12 @@ class VotingEventSettings extends Component {
          if (newEvent != null) {
             var event = this.state.event;
 
-            if (event == null) {
+            if (event === null) {
                event = newEvent;
             }else{
                newEvent.options.forEach((option) => {
                   const corespondingIndex = findWithAttr(event.options, "id", option.id);
-                  if (corespondingIndex == -1) {
+                  if (corespondingIndex === -1) {
                      event.options.splice(0,0, option);
                   }else{
                      var localOption = event.options[corespondingIndex];
@@ -75,14 +75,14 @@ class VotingEventSettings extends Component {
             }
 
             event.options.sort((first, second) => {
-               if (first.score == second.score) {
+               if (first.score === second.score) {
                   return 0;
                }
 
                return first.score > second.score ? -1 : 1;
             });
 
-            if (this.reloadInterval == null) {
+            if (this.reloadInterval === null) {
                this.reloadInterval = setInterval(() => {
                   this.reloadData();
                }, 1000 * 5);
@@ -95,7 +95,7 @@ class VotingEventSettings extends Component {
             dataSource: this.state.dataSource.cloneWithRows(event != null ? event.options : [])
          });
       }).catch((error) => {
-         if (error.code == 404) {
+         if (error.code === 404) {
             this.setState({
                event: null
             });
@@ -143,7 +143,7 @@ class VotingEventSettings extends Component {
    }
 
    editOptionDescription(option) {
-      if (option.awards == null || option.awards.length == 0) {
+      if (option.awards === null || option.awards.length === 0) {
          option.awards = [];
 
          this.setState({
@@ -234,7 +234,7 @@ class VotingEventSettings extends Component {
    releasePressed() {
       let awards = this.getAwards();
 
-      if (awards.length == 0) {
+      if (awards.length === 0) {
          Alert.alert("You need to give at least one award, Theo", null, [{text: 'Fine', onPress:() => {}}], {cancelable: false});
          return;
       }
@@ -311,12 +311,12 @@ class VotingEventSettings extends Component {
 
             <TouchableHighlight
             onPress={() => {
-               if (this.state.modalText == "") {
+               if (this.state.modalText === "") {
                   Alert.alert("You need some text!");
                   return;
                }
 
-               if (this.state.event.options[this.state.editingOption].awards == null) {
+               if (this.state.event.options[this.state.editingOption].awards === null) {
                   this.state.event.options[this.state.editingOption].awards = [];
                }
                this.state.event.options[this.state.editingOption].awards.push(this.state.modalText);
@@ -339,7 +339,7 @@ class VotingEventSettings extends Component {
          }
          </Modal>
          <View style={styles.topView}>
-         {this.state.event == null ?
+         {this.state.event === null ?
             <Text style={styles.currentEventText}>{emptyText}</Text>
             :
             <View>

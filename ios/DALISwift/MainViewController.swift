@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import SCLAlertView
 import UserNotifications
-import daliAPI
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AlertShower {
 	@IBOutlet weak var daliImage: UIImageView!
@@ -34,7 +33,6 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 		(UIApplication.shared.delegate as! AppDelegate).mainViewController = self
 		
 		CalendarController()
-		daliAPI.hello()
 		
 		tableView.estimatedRowHeight = 140
 	}
@@ -275,7 +273,7 @@ class EventCell: UITableViewCell {
 				let startString = "\(startHour):\(startMinute  < 10 ? "0" : "")\(startMinute)\(daytimeDifferent ? " \(startDaytime ? "AM" : "PM")" : "")"
 				let endString = "\(endHour):\(endMinute < 10 ? "0" : "")\(endMinute) \(endDaytime ? "AM" : "PM")"
 				
-				self.timeLabel.text = "\(weekdayStart) \(startString) - \(weekdayEnd == nil ? "" : weekdayEnd! + " ")\(endString)"
+				self.timeLabel.text = "\(weekdayStart) \(startString) - \(weekdayEnd === nil ? "" : weekdayEnd! + " ")\(endString)"
 			}else{
 				self.titleLabel.text = ""
 			}

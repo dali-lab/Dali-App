@@ -10,7 +10,6 @@ AUTHOR: John Kotz
 import React, { Component } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {
-   AppRegistry,
    StyleSheet,
    Text,
    View,
@@ -19,12 +18,9 @@ import {
    Animated,
    Easing,
    Alert,
-   AlertIOS,
    StatusBar
 } from 'react-native';
-import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
-
-let GlobalFunctions = require('./GlobalFunctions').default;
+import {GoogleSignin} from 'react-native-google-signin';
 
 /**
 Login interface Component.
@@ -51,7 +47,7 @@ class Login extends Component {
          slidingAnimationValue: new Animated.ValueXY({ x: 0, y: 75 }),
          // Animated value of the opacity of the signin button
          fadeAnim: new Animated.Value(0)
-      }
+      };
    }
 
    componentDidMount() {
@@ -64,7 +60,7 @@ class Login extends Component {
 
       const value = this.state.slidingAnimationValue;
       // Set up the animation
-      const slidingInAnimation = Animated.timing(value, {
+      Animated.timing(value, {
          ...animationConfig, // ES6 spread operator
          toValue: {
             x: 0, // Destination x, y
@@ -101,7 +97,7 @@ class Login extends Component {
             : <StatusBar
             barStyle="light-content"/>}
             {/* Background image is a low poly*/}
-            <Image source={require("./Assets/lowPolyBackground.png")} style={styles.container}>
+            <Image source={require('./Assets/lowPolyBackground.png')} style={styles.container}>
             {/* ... which has a gradient overlay (end slightly transparent so low poly is visible)*/}
             <LinearGradient colors={['#2f97aa', 'rgba(250,250,250,0.4)']} style={styles.container}>
             <View>
@@ -126,10 +122,10 @@ class Login extends Component {
                style={{alignSelf: 'center', marginTop: 15}}
                underlayColor="rgba(0,0,0,0.1)"
                onPress={() => {
-                  GoogleSignin.signOut()
-                  this.props.onSkipLogin()
+                  GoogleSignin.signOut();
+                  this.props.onSkipLogin();
                }}>
-               <Text style={{color: "white"}}>Skip Sign In</Text>
+               <Text style={{color: 'white'}}>Skip Sign In</Text>
                </TouchableHighlight>
                </Animated.View> : <View style={{height: 80}}/>}
                {/* If we don't want to show it yet, I placehold so the DALI logo isn't incorrectly placed*/}
@@ -152,13 +148,13 @@ class Login extends Component {
             });
             GoogleSignin.signIn()
             .then((user) => {
-               if (user == null || !user.email.includes("@dali.dartmouth.edu")) {
+               if (user === null || !user.email.includes('@dali.dartmouth.edu')) {
                   GoogleSignin.signOut();
                   this.setState({
                      loggingIn: false
                   });
                   setTimeout(() => {
-                     Alert.alert("Not DALI account!", "To access features specific to DALI members use a DALI email");
+                     Alert.alert('Not DALI account!', 'To access features specific to DALI members use a DALI email');
                   }, 600);
                   return;
                }
@@ -171,16 +167,16 @@ class Login extends Component {
                })
                .catch((err) => {
                   // Google Play not enabled!
-                  console.log("Play services error", err.code, err.message);
+                  console.log('Play services error', err.code, err.message);
                   setTimeout(() => {
-                     Alert.alert("No Google Play", "You don't have Google Play services enabled. You won't be able to use the application if you don't (we need to access the DALI calendars)")
-                  }, 600)
+                     Alert.alert('No Google Play', "You don't have Google Play services enabled. You won't be able to use the application if you don't (we need to access the DALI calendars)");
+                  }, 600);
                   GoogleSignin.signOut();
                });
             })
             .catch((err) => {
-               if (err.code == -5) {
-                  return // Very specific error for when the user cancels login
+               if (err.code === -5) {
+                  return; // Very specific error for when the user cancels login
                }
 
                console.log(err);
@@ -210,9 +206,9 @@ class Login extends Component {
          },
          googleText: {
             backgroundColor: 'rgba(0,0,0,0)',
-            color: "rgba(174, 174, 174, 1.0)",
-            fontFamily: "Avenir Next",
-            fontWeight: "600",
+            color: 'rgba(174, 174, 174, 1.0)',
+            fontFamily: 'Avenir Next',
+            fontWeight: '600',
             marginLeft: 10
          },
          button: {
@@ -227,7 +223,7 @@ class Login extends Component {
          },
          buttonShadow: {
             shadowOffset: {width: 0, height: 2},
-            shadowColor: "gray",
+            shadowColor: 'gray',
             shadowOpacity: 0.4
          },
          daliImage: {

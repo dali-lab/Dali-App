@@ -9,11 +9,7 @@ import React, { Component } from 'react';
 import {
 	AppRegistry,
 	StyleSheet,
-	Text,
 	View,
-	DeviceEventEmitter,
-	TouchableHighlight,
-	ListView,
 	StatusBar
 } from 'react-native';
 import {GoogleSignin} from 'react-native-google-signin';
@@ -39,9 +35,9 @@ GoogleSignin.currentUserAsync().then((user) => {
 	if (dali.current) {
 		dali.current.setState({
 			user: user
-		})
+		});
 	}
-})
+});
 
 // The entrance Component for the application. This will be rendered first
 export default class dali extends Component {
@@ -55,30 +51,30 @@ export default class dali extends Component {
 			user: null,
 			skippedLogin: false
 		};
-		dali.current = this
+		dali.current = this;
 	}
 
 	componentWillMount() {
 		// I may have already successfully retrieved the user!
-		if (startingUser == null && this.state.user == null) {
+		if (startingUser === null && this.state.user === null) {
 			// I guess not
 			// So load it...
 			GoogleSignin.currentUserAsync().then((user) => {
 				if (user) {
 					// Updating my controllers
-					serverCommunicator.loggedIn(user)
-				};
+					serverCommunicator.loggedIn(user);
+				}
 
 				// Now move on to the main screen
 				this.setState({
 					user: user
 				});
 			}).done();
-		}else if (startingUser != null) {
+		} else if (startingUser != null) {
 			// I had a preloaded user!
 			this.setState({
 				user: startingUser
-			})
+			});
 		}
 		// Otherwise I dont care. I already have a user
 	}
@@ -105,21 +101,21 @@ export default class dali extends Component {
 				user: null,
 				skippedLogin: false
 			});
-		})
+		});
 	}
 
 	onSkipLogin() {
 		this.setState({
 			skippedLogin: true,
-		})
+		});
 	}
 
 	render() {
 		// Determines which view to use as the internal view
 		var internalView = null;
-		if (this.state.user == null && !this.state.skippedLogin){
+		if (this.state.user === null && !this.state.skippedLogin){
 			internalView = <Login onLogin={this.onLogin.bind(this)} onSkipLogin={this.onSkipLogin.bind(this)}/>;
-		}else{
+		} else {
 			internalView = <Main onLogout={this.onLogout.bind(this)} user={this.state.user}/>;
 		}
 
@@ -133,7 +129,7 @@ export default class dali extends Component {
 			{internalView}
 			</View>
 			</View>
-		)
+		);
 	}
 }
 

@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import {
-   AppRegistry,
    StyleSheet,
    Text,
    View,
-   TouchableHighlight,
    ListView,
-   Image,
    Dimensions
 } from 'react-native';
-
-let ServerCommunicator = require('../ServerCommunicator').default;
 
 class VoteResults extends Component {
    propTypes: {
@@ -21,11 +16,11 @@ class VoteResults extends Component {
    constructor(props) {
       super(props);
 
-      const dataSource= new ListView.DataSource({
+      const dataSource = new ListView.DataSource({
          rowHasChanged: (prev, next) => {
-            let dirty = prev.dirty == null ? true : prev.dirty;
+            let dirty = prev.dirty === null ? true : prev.dirty;
             prev.dirty = false;
-            return prev!== next || dirty;
+            return prev !== next || dirty;
          },
       });
 
@@ -41,9 +36,9 @@ class VoteResults extends Component {
       });
 
       results.sort((result1, result2) => {
-         return result1.name < result2.name
+         return result1.name < result2.name;
       });
-      return results
+      return results;
    }
 
    componentWillReceiveProps(nextProps) {
@@ -61,13 +56,13 @@ class VoteResults extends Component {
          <Text style={styles.rowText}>{option.name}</Text>
          <View style={styles.awardContainer}>{
             option.awards.map((award) => {
-               return <Text key={award} style={styles.awardText}>{award}</Text>
+               return <Text key={award} style={styles.awardText}>{award}</Text>;
             })
          }</View>
          </View>
          <View style={styles.separator}/>
          </View>
-      )
+      );
    }
 
    render() {

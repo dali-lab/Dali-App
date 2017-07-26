@@ -46,7 +46,7 @@ class BeaconController: NSObject, RPKManagerDelegate {
 	
 	var inDALI: Bool {
 		return regions.filter({ (region) -> Bool in
-			return region.name == "DALI Lab Region"
+			return region.name === "DALI Lab Region"
 		}).count >= 1
 	}
 	
@@ -133,7 +133,7 @@ class BeaconController: NSObject, RPKManagerDelegate {
 		}
 		
 		numToRange -= 1
-		if beacons.count == 0 && regions.contains(region) {
+		if beacons.count === 0 && regions.contains(region) {
 			// I am not going to deal with exits here. That will be the job of the exit region code
 			return
 		}

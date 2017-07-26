@@ -7,13 +7,11 @@ AUTHOR: John Kotz
 
 import React, { Component } from 'react';
 import {
-	AppRegistry,
 	StyleSheet,
 	Text,
 	View,
 	TouchableHighlight,
 	ListView,
-	Image,
 	Navigator,
 	Alert
 } from 'react-native';
@@ -31,7 +29,7 @@ class PeopleInLab extends Component {
 	}
 
 	constructor(props) {
-		super(props)
+		super(props);
 
 		// Data source for the list view
 		const dataSource = new ListView.DataSource({
@@ -40,34 +38,34 @@ class PeopleInLab extends Component {
 		});
 
 		// I need to alert the user if I can't connect, but I only want to do it once
-		this.alerted = false
-		this.dismissed = false
+		this.alerted = false;
+		this.dismissed = false;
 
 		this.state = {
 			timInDALI: null,
 			timInOffice: null,
 			peopleInLab: null,
 			dataSource: dataSource.cloneWithRowsAndSections({})
-		}
+		};
 
 		// After setup, retrieve the data
-		this.getData()
+		this.getData();
 	}
 
 	/// Retrieves the data from the server
 	getData() {
 		ServerCommunicator.current.getSharedMembersInLab().then((people) => {
-			if (people == null) {
+			if (people === null) {
 				// Failed to connect
 				if (!this.alerted) {
 					setTimeout(() => {
-						Alert.alert("Failed to connect", "Failed to connect to the server. It may be down. Contact John Kotz", [
+						Alert.alert('Failed to connect', 'Failed to connect to the server. It may be down. Contact John Kotz', [
 							{text: 'OK', onPress: this.props.dismiss}
-						], { cancelable: false })
+						], { cancelable: false });
 					}, 600);
 				}
-				this.alerted = true
-				return
+				this.alerted = true;
+				return;
 			}
 
 			if (!this.dismissed) {
@@ -76,82 +74,82 @@ class PeopleInLab extends Component {
 					dataSource: this.state.dataSource.cloneWithRowsAndSections({
 						tim: [{inDALI: null, inOffice: null}], others: people
 					})
-				})
+				});
 			}
 		}).catch((error) => {
 			console.error(error);
-		})
+		});
 
 
 		ServerCommunicator.current.getTimLocation().then((locations) => {
-			if (locations == null) {
+			if (locations === null) {
 				// Failed to connect
 				if (!this.alerted) {
 					setTimeout(() => {
-						Alert.alert("Failed to connect", "Failed to connect to the server. It may be down. Contact John Kotz", [
+						Alert.alert('Failed to connect', 'Failed to connect to the server. It may be down. Contact John Kotz', [
 							{text: 'OK', onPress: this.props.dismiss}
-						], { cancelable: false })
+						], { cancelable: false });
 					}, 600);
 				}
-				this.alerted = true
-				return
+				this.alerted = true;
+				return;
 			}
 
 			if (!this.dismissed) {
 				this.setState({
 					timInDALI: locations.inDALI,
 					timInOffice: locations.inOffice,
-					dataSource: this.state.dataSource.cloneWithRowsAndSections({tim: [locations], others: this.state.peopleInLab == null ? [] : this.state.peopleInLab})
+					dataSource: this.state.dataSource.cloneWithRowsAndSections({tim: [locations], others: this.state.peopleInLab === null ? [] : this.state.peopleInLab})
 				});
 			}
 		}).catch((error) => {
 			console.log(error);
-		})
+		});
 
 		// Refresh data every 10 seconds
 		if (!this.stopTimer) {
 			setTimeout(() => {
-				this.getData()
+				this.getData();
 			}, 10000);
 		}
 	}
 
 	componentWillUnmount() {
-		this.stopTimer = true
+		this.stopTimer = true;
 	}
 
 	/// Render the rows
 	renderRow(data, section, row) {
-		if (section == 'tim') {
-			let locKnown = this.state.timInOffice || this.state.timInDALI
-			let locationString = "In " + (this.state.timInOffice ? "his office" : (this.state.timInDALI ? "DALI Lab" : ""))
+		if (section === 'tim') {
+			let locKnown = this.state.timInOffice || this.state.timInDALI;
+			let locationString = 'In ' + (this.state.timInOffice ? 'his office' : (this.state.timInDALI ? 'DALI Lab' : ''));
 
 			return (<View style={styles.timRow}>
 				<Text style={styles.timNameText}>Tim Tregubov</Text>
 				<View style={{flex:1}}/>
-				<Text style={styles.timLocationText}>{locKnown ? locationString : "Location Unknown"}</Text>
-				</View>)
-			}else{
+				<Text style={styles.timLocationText}>{locKnown ? locationString : 'Location Unknown'}</Text>
+				</View>);
+			} else {
 				return (
 					<View style={styles.personRow}>
 					<Text style={styles.personNameText}>{data.name}</Text>
 					</View>
-				)
+				);
 			}
 		}
 
 		/// Render the header
 		renderSectionHeader(data, sectionName) {
-			if (sectionName == "tim") {
+			if (sectionName === 'tim') {
 				return (
 					<View/>
-				)
-			}else if (sectionName == "others") {
+				);
+			} else if (sectionName === 'others') {
 				return (
 					<View style={styles.sectionHeader}>
 					<Text style={styles.sectionHeaderText}>IN DALI NOW</Text>
 					</View>
-				)
+				);
 			}
 		}
 
@@ -170,8 +168,8 @@ class PeopleInLab extends Component {
 							underlayColor="rgba(0,0,0,0)"
 							style={styles.navBarDoneButton}
 							onPress={() => {
-								this.dismissed = true
-								this.props.dismiss()
+								this.dismissed = true;
+								this.props.dismiss();
 							}}>
 							<Text style={styles.navBarDoneText}>Done</Text>
 							</TouchableHighlight>
@@ -190,7 +188,7 @@ class PeopleInLab extends Component {
 					renderRow={this.renderRow.bind(this)}/>
 				}
 				style={{paddingTop: 65}}/>
-			)
+			);
 		}
 	}
 
@@ -245,6 +243,6 @@ class PeopleInLab extends Component {
 		personNameText: {
 			fontSize: 16
 		}
-	})
+	});
 
-	module.exports = PeopleInLab
+	module.exports = PeopleInLab;

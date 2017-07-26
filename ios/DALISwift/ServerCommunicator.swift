@@ -135,7 +135,7 @@ class ServerCommunicator {
 		}
 		
 		
-		if self.refreshTimer == nil {
+		if self.refreshTimer === nil {
 			registerBackgroundTask()
 			self.refreshTimer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(ServerCommunicator.updateDALI), userInfo: nil, repeats: true)
 			RunLoop.main.add(self.refreshTimer!, forMode: .commonModes)
@@ -155,7 +155,7 @@ class ServerCommunicator {
 			if BeaconController.current?.inDALI ?? BeaconController().inDALI {
 				// I am in DALI
 				// So if the server says I'm there
-				if users.contains(where: { (userObj) -> Bool in return userObj.email == user.profile.email }) {
+				if users.contains(where: { (userObj) -> Bool in return userObj.email === user.profile.email }) {
 					// Then the server is correct
 					self.endBackgroundTask()
 					self.refreshTimer?.invalidate()
@@ -166,7 +166,7 @@ class ServerCommunicator {
 			}else{
 				// I am not in DALI
 				// So if the server says I'm not there
-				if !users.contains(where: { (userObj) -> Bool in return userObj.email == user.profile.email }) {
+				if !users.contains(where: { (userObj) -> Bool in return userObj.email === user.profile.email }) {
 					// Then the server is correct
 					self.endBackgroundTask()
 					self.refreshTimer?.invalidate()
@@ -312,9 +312,9 @@ class ServerCommunicator {
 				
 				var recurrence: Recurrence?
 				if let rec = event["recurrence"] as? [String:Any] {
-					let until: Date? = rec["until"] as? String == nil ? nil : dateFormatter.date(from: rec["until"] as! String)
+					let until: Date? = rec["until"] as? String === nil ? nil : dateFormatter.date(from: rec["until"] as! String)
 					
-					recurrence = Recurrence(frequency: Recurrence.Frequency(rawValue: rec["frequency"] as! String)!, interval: rec["interval"] as? String == nil ? nil : Int(rec["interval"] as! String), periodData: rec["periodData"] as? [Int], rrule: rec["rrule"] as! String, until: until)
+					recurrence = Recurrence(frequency: Recurrence.Frequency(rawValue: rec["frequency"] as! String)!, interval: rec["interval"] as? String === nil ? nil : Int(rec["interval"] as! String), periodData: rec["periodData"] as? [Int], rrule: rec["rrule"] as! String, until: until)
 				}
 			
 				let eventObj = Event(
@@ -392,7 +392,7 @@ class ServerCommunicator {
 		
 		// Set up the task
 		let task = URLSession.shared.dataTask(with: request) { data, response, error in
-			guard let _ = data, error == nil else {                                                 // check for fundamental networking error
+			guard let _ = data, error === nil else {                                                 // check for fundamental networking error
 				print("error=\(String(describing: error))")
 				return
 			}

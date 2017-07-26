@@ -27,6 +27,7 @@
 		2A4B864DCA854B358BF25A4B /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20135D497CC642AA9E276B95 /* AddressBook.framework */; };
 		32D489D54703478398FDBC8A /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D29B9663FF7489E9A947ABF /* libRNGoogleSignin.a */; };
 		3F79E02F59D3E655B40C2C13 /* Pods_DALISwiftUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FDFB698A929871F3C18FD02 /* Pods_DALISwiftUITests.framework */; };
+		421EF7C42B66375E3EC82827 /* Pods_DALISwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FDAA78DFD7B8C1F2BE65819 /* Pods_DALISwift.framework */; };
 		5221949E1F1008FB0082143D /* DALI Lab Stickers.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5266189D1EE759EB00E0E3FF /* DALI Lab Stickers.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		522194A61F1009490082143D /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3B91E67E87B00BA1EFE /* Fabric.framework */; };
 		522194A71F1009490082143D /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */; };
@@ -72,8 +73,6 @@
 		52C2CA201F165709001D1B98 /* CalendarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C2CA1F1F165709001D1B98 /* CalendarController.swift */; };
 		52DA17971F0DADED00E96EA0 /* ServerCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52DA17961F0DADED00E96EA0 /* ServerCommunicator.swift */; };
 		52EDBF4C1F2476A900253ECE /* Pods_DALISwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EDBF4B1F2476A900253ECE /* Pods_DALISwift.framework */; };
-		52EDBF4D1F2476B500253ECE /* daliAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EDBF471F24761D00253ECE /* daliAPI.framework */; };
-		52EDBF4E1F2476B500253ECE /* daliAPI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 52EDBF471F24761D00253ECE /* daliAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		52EE3C5D1E4BC7D50089140E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EE3C5C1E4BC7D50089140E /* CoreLocation.framework */; };
 		52EFF1131EE8407700D40811 /* dali_UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EFF1121EE8407700D40811 /* dali_UITests.swift */; };
 		52EFF1211EE8408400D40811 /* dali_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EFF1201EE8408400D40811 /* dali_Tests.swift */; };
@@ -397,17 +396,6 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		52EDBF4F1F2476B500253ECE /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				52EDBF4E1F2476B500253ECE /* daliAPI.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -495,7 +483,6 @@
 		52C2CA1F1F165709001D1B98 /* CalendarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarController.swift; sourceTree = "<group>"; };
 		52D962561F0D47E90091D49D /* ProximityKit.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ProximityKit.plist; sourceTree = "<group>"; };
 		52DA17961F0DADED00E96EA0 /* ServerCommunicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCommunicator.swift; sourceTree = "<group>"; };
-		52EDBF471F24761D00253ECE /* daliAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = daliAPI.framework; sourceTree = "<group>"; };
 		52EDBF4B1F2476A900253ECE /* Pods_DALISwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_DALISwift.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/dali-gcjeavctyguukoflpvpxgiiaukhx/Build/Products/Debug-iphonesimulator/Pods_DALISwift.framework"; sourceTree = "<group>"; };
 		52EE3C5C1E4BC7D50089140E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		52EFF1101EE8407700D40811 /* dali UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "dali UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -575,9 +562,9 @@
 				52EDBF4C1F2476A900253ECE /* Pods_DALISwift.framework in Frameworks */,
 				528A011C1F07E5B1009897DF /* libsqlite3.tbd in Frameworks */,
 				528A01091F07E275009897DF /* CoreBluetooth.framework in Frameworks */,
-				52EDBF4D1F2476B500253ECE /* daliAPI.framework in Frameworks */,
 				522194A61F1009490082143D /* Fabric.framework in Frameworks */,
 				522194A71F1009490082143D /* Crashlytics.framework in Frameworks */,
+				421EF7C42B66375E3EC82827 /* Pods_DALISwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -889,7 +876,6 @@
 			isa = PBXGroup;
 			children = (
 				52EDBF4B1F2476A900253ECE /* Pods_DALISwift.framework */,
-				52EDBF471F24761D00253ECE /* daliAPI.framework */,
 				528A011B1F07E5B1009897DF /* libsqlite3.tbd */,
 				528A01081F07E275009897DF /* CoreBluetooth.framework */,
 				52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */,
@@ -1061,7 +1047,6 @@
 				25B7D62DBE52960218138128 /* [CP] Copy Pods Resources */,
 				5221949C1F1008C00082143D /* ShellScript */,
 				522194A11F1008FB0082143D /* Embed App Extensions */,
-				52EDBF4F1F2476B500253ECE /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

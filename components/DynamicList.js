@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
 import {
-   AppRegistry,
-   StyleSheet,
-   View,
-   ListView,
    Animated
 } from 'react-native';
 
@@ -18,7 +14,7 @@ class DynamicListRow extends Component {
        Animated.timing(this.state._rowHeight, {
            toValue  : 1,
            duration : this._defaultTransition
-       }).start()
+       }).start();
    }
 
    render() {
@@ -31,4 +27,4 @@ class DynamicListRow extends Component {
    }
 }
 
-module.exports = {DynamicListRow}
+module.exports = {DynamicListRow};

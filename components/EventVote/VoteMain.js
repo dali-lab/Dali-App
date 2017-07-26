@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import {
-   AppRegistry,
    StyleSheet,
    Text,
    View,
    TouchableHighlight,
-   ListView,
-   Image,
    Alert,
-   Dimensions,
    Navigator
 } from 'react-native';
 let ServerCommunicator = require('../ServerCommunicator').default;
@@ -34,21 +30,21 @@ class VoteMain extends Component {
       };
 
       ServerCommunicator.current.getEventNow().then((event) => {
-         if (event == null) {
+         if (event === null) {
             setTimeout(() => {
-               Alert.alert("No Current Event", "There is no event going on currently", [
+               Alert.alert('No Current Event', 'There is no event going on currently', [
                   {text: 'OK', onPress: this.props.dismiss}
-               ], { cancelable: false })
+               ], { cancelable: false });
             }, 600);
             return;
          }
 
          event.options = event.options.sort((option1, option2) => {
-            if (option1.name == option2.name) {
+            if (option1.name === option2.name) {
                return 0;
             }
 
-            return option1.name > option2.name ? 1 : -1
+            return option1.name > option2.name ? 1 : -1;
          });
 
          this.setState({
@@ -61,11 +57,11 @@ class VoteMain extends Component {
             });
          });
       }).catch((error) => {
-         if (error.code == 404) {
+         if (error.code === 404) {
             setTimeout(() => {
-               Alert.alert("No Current Event", "There is no event going on currently", [
+               Alert.alert('No Current Event', 'There is no event going on currently', [
                   {text: 'OK', onPress: this.props.dismiss}
-               ], { cancelable: false })
+               ], { cancelable: false });
             }, 600);
          }
       });
@@ -76,31 +72,31 @@ class VoteMain extends Component {
    }
 
    componentWillUnmount() {
-      console.log("Clearing");
+      console.log('Clearing');
       clearInterval(this.reloadInterval);
       this.reloadInterval = null;
    }
 
    updateResults() {
-      console.log("Wating...");
+      console.log('Wating...');
       ServerCommunicator.current.getVotingResults().then((results) => {
          this.setState({
             results: results
          });
       }).catch((error) => {
-         if (error.code != 400) {
+         if (error.code !== 400) {
             console.log(error);
          }
       });
    }
 
    renderInternal(route, navigator) {
-      var internalView = <VoteWait loading={true}/>
+      var internalView = <VoteWait loading={true}/>;
 
       if (this.state.event != null) {
          internalView = <VoteSelection ref={(voteSelection) => { this.voteSelection = voteSelection; }}/>;
 
-         if (route.name == "VoteOrder") {
+         if (route.name === 'VoteOrder') {
             internalView = <VoteOrder voteComplete={() => {
                this.updateResults();
                this.setState({
@@ -110,7 +106,7 @@ class VoteMain extends Component {
                this.updateResults();
             }}
             selectedOptions={route.selectedOptions}
-            ref={(voteOrder) => { this.voteOrder = voteOrder; }}/>
+            ref={(voteOrder) => { this.voteOrder = voteOrder; }}/>;
          }
 
          console.log(this.state);
@@ -136,8 +132,8 @@ class VoteMain extends Component {
       var choices = this.voteOrder.state.selectedOptions;
 
       var orderedChoices = [];
-      for (var i = 0; i < order.length; i ++) {
-         var index = parseInt(order[i]);
+      for (var i = 0; i < order.length; i++) {
+         var index = parseInt(order[i], 10);
          orderedChoices.push(choices[index]);
       }
       console.log(orderedChoices);
@@ -153,11 +149,11 @@ class VoteMain extends Component {
          });
          StorageController.setVoteDone(this.state.event).then(() => {});
       }).catch((error) => {
-         if (error.code == 405) {
+         if (error.code === 405) {
             StorageController.setVoteDone(this.state.event).then(() => {});
          }
          console.log(error.message);
-         Alert.alert("Encountered an error", error.message);
+         Alert.alert('Encountered an error', error.message);
       });
    }
 
@@ -165,23 +161,23 @@ class VoteMain extends Component {
 
       return (
          <Navigator
-         initialRoute={{name: "VoteSelection"}}
+         initialRoute={{name: 'VoteSelection'}}
          navigationBar={
             <Navigator.NavigationBar
             routeMapper={{
                LeftButton: (route, navigator, index, navState) => {
                   if (this.state.hasVoted || this.state.results != null) {
                      return null;
-                  }else if (route.name == "VoteOrder"){
+                  } else if (route.name === 'VoteOrder'){
                      return (
                         <TouchableHighlight
                         underlayColor="rgba(0,0,0,0)"
                         style={styles.navBarCancelButton}
                         onPress={navigator.pop}>
-                        <Text style={styles.navBarCancelText}>{"Back"}</Text>
+                        <Text style={styles.navBarCancelText}>{'Back'}</Text>
                         </TouchableHighlight>
                      );
-                  }else{
+                  } else {
                      return (
                         <TouchableHighlight
                         underlayColor="rgba(0,0,0,0)"
@@ -195,20 +191,20 @@ class VoteMain extends Component {
                RightButton: (route, navigator, index, navState) => {
                   // Done Button
 
-                  var text = ""
-                  var func = () => {}
+                  var text = '';
+                  var func = () => {};
 
-                  if (!this.state.hasVoted && this.state.results == null) {
+                  if (!this.state.hasVoted && this.state.results === null) {
                      // We are on Voting selection
-                     if (route.name == "VoteSelection") {
+                     if (route.name === 'VoteSelection') {
                         func = () => this.voteSelection.nextPressed(navigator);
-                        text = "Next";
-                     }else{
+                        text = 'Next';
+                     } else {
                         func = this.submitVotes.bind(this);
-                        text = "Done";
+                        text = 'Done';
                      }
-                  }else{
-                     text = "Done";
+                  } else {
+                     text = 'Done';
                      func = this.props.dismiss;
                   }
 
@@ -222,7 +218,7 @@ class VoteMain extends Component {
                   );
                },
                Title: (route, navigator, index, navState) => {
-                  return (<Text style={styles.navBarTitleText}>{this.state.results != null ? "Results" : "Voting"} for {this.state.event == null ? 'Event...' : this.state.event.name}</Text>);
+                  return (<Text style={styles.navBarTitleText}>{this.state.results != null ? 'Results' : 'Voting'} for {this.state.event === null ? 'Event...' : this.state.event.name}</Text>);
                }
             }}
             style={{backgroundColor: 'rgb(33, 122, 136)'}}/>

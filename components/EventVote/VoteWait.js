@@ -1,15 +1,10 @@
 import React, { Component } from 'react';
 import {
-   AppRegistry,
    StyleSheet,
    Text,
-   View,
-   TouchableHighlight,
-   ListView,
    Image,
    Dimensions
 } from 'react-native';
-let ServerCommunicator = require('../ServerCommunicator').default;
 import LinearGradient from 'react-native-linear-gradient';
 
 class VoteWait extends Component {
@@ -20,11 +15,11 @@ class VoteWait extends Component {
    render() {
       return (
          <LinearGradient colors={['#2696a9', 'rgb(146, 201, 210)']} style={styles.container}>
-         <Image source={require("../Assets/pitchLightBulb.png")} style={styles.image}/>
+         <Image source={require('../Assets/pitchLightBulb.png')} style={styles.image}/>
          <Text style={styles.text}>{this.props.loading ?
-            "Thank you for voting. Waiting for results to be released..."
+            'Thank you for voting. Waiting for results to be released...'
             :
-            "Loading..."
+            'Loading...'
          }</Text>
          </LinearGradient>
       );
@@ -34,19 +29,19 @@ class VoteWait extends Component {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      alignItems: "center",
+      alignItems: 'center',
    },
    text: {
-      color: "white",
+      color: 'white',
       padding: 10,
-      fontFamily: "Futura",
+      fontFamily: 'Futura',
       fontSize: 24,
-      textAlign: "center"
+      textAlign: 'center'
    },
    image: {
       flex: 1,
-      width: Dimensions.get("window").width,
-      resizeMode: "cover"
+      width: Dimensions.get('window').width,
+      resizeMode: 'cover'
    }
 });
 

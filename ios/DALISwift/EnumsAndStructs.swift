@@ -59,7 +59,7 @@ struct Event {
 }
 
 func userIsTim(user: GIDGoogleUser) -> Bool {
-	return (env["tim"] as! String) == user.profile.email
+	return (env["tim"] as! String) === user.profile.email
 }
 
 func userIsAdmin(user: GIDGoogleUser) -> Bool {

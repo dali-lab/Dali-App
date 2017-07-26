@@ -66,7 +66,7 @@ class VotingEventManagerViewController: UITableViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-		if indexPath.section == 1 {
+		if indexPath.section === 1 {
 			return 80
 		}
 		return 50

@@ -19,7 +19,7 @@ class SettingsViewController: UITableViewController, AlertShower {
 	
 	override func viewDidLoad() {
 		let user = GIDSignIn.sharedInstance().currentUser
-		signOutCell.textLabel?.text = user == nil ? "Sign In" : "Sign out"
+		signOutCell.textLabel?.text = user === nil ? "Sign In" : "Sign out"
 		
 		enterSwitch.isOn = SettingsController.getEnterExitNotif()
 		checkInSwitch.isOn = SettingsController.getCheckInNotif()
@@ -58,7 +58,7 @@ class SettingsViewController: UITableViewController, AlertShower {
 	}
 	
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		if indexPath.section == 0 {
+		if indexPath.section === 0 {
 			// Sign out
 			AppDelegate.shared?.signOut()
 		}
