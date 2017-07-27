@@ -140,12 +140,6 @@ class Main extends Component {
    });
  }
 
-  // / Opens an event in a web-browser
- openEvent(event) {
-   console.log(event);
-   Linking.openURL(event.htmlLink);
- }
-
   /**
 	Logout and notify the index.__.js to switch to Login
 	*/
@@ -331,18 +325,13 @@ class Main extends Component {
    // It is touchable so the user can click it an open the event in a web-browser
    // underlayColor="rgba(0,0,0,0.1)" makes there be a slightly opaque overlay to be placed on the row when pressed
    return (
-     <TouchableHighlight
-       underlayColor="rgba(0,0,0,0.1)"
-       onPress={this.openEvent.bind(this, event)}
-     >
-       <View style={styles.row}>
-         <Text style={styles.leftRowText}>{event.summary}</Text>
-         <View style={styles.rightRowView}>
-           <Text style={styles.rowTitle}>{formatEvent(event.startDate, event.endDate)}</Text>
-           <Text style={styles.detailText}>{event.location === '' ? event.description : event.location}</Text>
-         </View>
+     <View style={styles.row}>
+       <Text style={styles.leftRowText}>{event.summary}</Text>
+       <View style={styles.rightRowView}>
+         <Text style={styles.rowTitle}>{formatEvent(event.startDate, event.endDate)}</Text>
+         <Text style={styles.detailText}>{event.location === '' ? event.description : event.location}</Text>
        </View>
-     </TouchableHighlight>
+     </View>
    );
  }
   // / Renders a row for a office hour and returns it

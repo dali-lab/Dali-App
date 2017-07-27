@@ -102,7 +102,7 @@ class ServerCommunicator {
      this.enterExitDALI(this.beaconController.inDALI);
    }
 
-   // / Posts to the relevant data to the relevant server
+   // Posts to the relevant data to the relevant server
    postCheckin(user) {
      if (user != null) {
        return this.post(`${env.serverURL}/api/events/checkin`, { username: user.email });
@@ -157,16 +157,43 @@ class ServerCommunicator {
          .catch((error) => {
            reject(error);
          });
+     }).catch((error) => {
+       if (error.code === 400) {
+         return this.loadTokenAndUser();
+       }
      });
    }
 
    loadTokenAndUser(gUser, logout) {
+     const googleUser = gUser || GoogleSignin.currentUser();
+
      return new Promise((resolve, reject) => {
+       if (this.serverToken && this.userObject) {
+         resolve(this.serverToken);
+       }
+
        StorageController.getToken().then((token) => {
          if (token) {
-           this.token = token;
+           this.serverToken = token;
+           fetch(`https://dalilab-api.herokuapp.com/api/users/${googleUser.id}?isGoogle=true`, {
+             method: 'GET',
+             headers: {
+               authorization: token,
+             },
+           })
+             .then(responseJson => responseJson.json())
+             .then((user) => {
+               this.userObject = user;
+               resolve(token);
+             }).catch((error) => {
+               if (logout) logout();
+               console.log(error);
+               reject(error);
+             });
          } else {
-           logout();
+           if (logout) logout();
+           console.log('Failed to get token');
+           reject();
          }
        });
      });
@@ -178,83 +205,58 @@ class ServerCommunicator {
    */
    getEventNow() {
      // Get
-     return fetch('https://dalilab-api.herokuapp.com/api/voting/events/current', { method: 'GET' })
+     return this.loadTokenAndUser().then(token => fetch(`${env.serverURL}/api/voting/events/current`, {
+       method: 'GET',
+       headers: {
+         authorization: this.serverToken
+       }
+     }))
        .then(ApiUtils.checkStatus) // This will search the response for error indicators and throw if there are problems
-       .then(response =>
-         // Handle the response
-         new Promise(function (resolve, reject) {
-           response.json().then((responseJson) => {
-             // Saving the event in case I need it later
-             this.event = responseJson;
-             resolve(responseJson);
-           }).catch((error) => {
-             reject(error);
-           });
-         })
-       );
-   }
-
-   /**
-   * Queries the server for the event happening now, but it won't strip the scores before returning them
-   * NOTE: Only admins can access scores
-   */
-   getEventNowWithScores() {
-     if (this.user === null || !GlobalFunctions.userIsAdmin()) {
-       // Autoreject
-       return new Promise(((resolve, reject) => { reject(); }));
-     }
-
-     return fetch(env.voting.currentResultsURL + this.authString(), { method: 'GET' })
-       .then(ApiUtils.checkStatus).then(response => response.json());
-   }
-
-   /**
-   * Creates a new event on the server with the given object as a guide
-   */
-   submitNewEvent(event) {
-     return this.post(env.voting.createURL + this.authString(), event, 'POST', true)
-       .then(ApiUtils.checkStatus);
-   }
-
-   /**
-   * Release the currently saved awards
-   * NOTE: Only admins may call this function
-   */
-   releaseAwards(event) {
-     if (this.user === null || !GlobalFunctions.userIsAdmin()) {
-       // Autoreject
-       return new Promise(((resolve, reject) => { reject(); }));
-     }
-
-     return this.post(
-       env.voting.releaseURL + this.authString(),
-       { event: event.id },
-     )
-       .then(ApiUtils.checkStatus);
-   }
-
-   /**
-   * Saves the given set of awards on the server
-   * NOTE: Only admins may call this function.
-   */
-   saveAwards(awards, event) {
-     if (this.user === null || !GlobalFunctions.userIsAdmin()) {
-       // Autoreject
-       return new Promise(((resolve, reject) => { reject(); }));
-     }
-
-     return this.post(env.voting.awardsSavingURL + this.authString(), {
-       event: event.id,
-       winners: awards,
-     }).then(ApiUtils.checkStatus);
+       .then(response => response.json())
+       .then((responseJson) => {
+         // Saving the event in case I need it later
+         this.event = responseJson;
+         return new Promise((resolve, reject) => {
+           if (responseJson == null || responseJson.length === 0) {
+             reject({ code: 404 });
+             return;
+           }
+           resolve(responseJson);
+         });
+       })
+       .catch(error => new Promise((resolve, reject) => {
+         reject(error);
+       }));
    }
 
    /**
    * Pulls the voting results for the current event from the server
    */
    getVotingResults() {
-     return fetch(env.voting.finalResultsURL + this.authString(), { method: 'GET' })
-       .then(ApiUtils.checkStatus).then(response => response.json());
+     return this.loadTokenAndUser(this.user).then(token => fetch('https://dalilab-api.herokuapp.com/api/voting/events', {
+       method: 'GET',
+       headers: {
+         authorization: token,
+       },
+     }))
+       .then(ApiUtils.checkStatus)
+       .then(responseJson => responseJson.json())
+       .then((response) => {
+         if (response == null || response.length === 0) {
+           throw new Error('No voting events have results released');
+         }
+
+         const mostRecent = response[0];
+
+         return fetch(`https://dalilab-api.herokuapp.com/api/voting/events/${mostRecent.id}`, {
+           method: 'GET',
+           headers: {
+             authorization: this.serverToken,
+           },
+         });
+       })
+       .then(ApiUtils.checkStatus)
+       .then(responseJson => responseJson.json());
    }
 
    /**
@@ -265,37 +267,35 @@ class ServerCommunicator {
    *  - third: Third choice (id)
    */
    submitVotes(first, second, third, event) {
-     return this.post(env.voting.submitURL + this.authString(), {
-       event: event.id,
-       first,
-       second,
-       third,
-       user: this.user.email,
-     }, 'POST', true);
+     return this.loadTokenAndUser(this.user)
+       .then(() => this.post(`${env.serverURL}/api/voting/events/${event.id}`, {
+         options: [
+           first,
+           second,
+           third
+         ],
+         user: this.userObject.id,
+       }, 'POST', true));
    }
 
    // / Simple convenience post method
-   post(path, params, method, allowNoUser) {
+   post(path, params, method, token) {
      // I allow the caller to pass a flag that bypasses the user check for the given post
-     if (this.user != null || allowNoUser) {
-       console.log(`Posting to: ${path}`);
-       return fetch(path, {
-         method: method || 'POST',
-         headers: {
-           Accept: 'application/json',
-           'Content-Type': 'application/json',
-         },
-         body: JSON.stringify(params),
-       }).then(ApiUtils.checkStatus);
-     }
-     return new Promise(((resolve, reject) => {
-       reject('Can\'t post if you are not a member');
-     }));
+     console.log(`Posting to: ${path}`);
+     return fetch(path, {
+       method: method || 'POST',
+       headers: {
+         Accept: 'application/json',
+         'Content-Type': 'application/json',
+         authorization: token || this.serverToken
+       },
+       body: JSON.stringify(params),
+     }).then(ApiUtils.checkStatus);
    }
 
    // / Gets the events in the next week
    getUpcomingEvents() {
-     return StorageController.getToken().then(token => fetch('https://dalilab-api.herokuapp.com/api/events/week', {
+     return this.loadTokenAndUser().then(token => fetch(`${env.serverURL}/api/events/week`, {
        method: 'GET',
        headers: {
          authorization: token,
@@ -309,27 +309,34 @@ class ServerCommunicator {
        });
 
        resolve(response);
-     })));
+     })))
+       .catch((error) => {
+         console.error(error);
+       });
    }
 
    // / Query the server for Tim's location
    getTimLocation() {
-     if (this.user != null) {
-       return fetch(env.timLocationInfoURL, { method: 'GET' })
-         .then(response => response.json()).catch((error) => {
-           console.log(error);
-         });
-     }
+     return StorageController.getToken().then(token => fetch(`${env.serverURL}/api/location/tim`, {
+       method: 'GET',
+       headers: {
+         authorization: token,
+       },
+     })).then(response => response.json()).catch((error) => {
+       console.log(error);
+     });
    }
 
    // / Query the server for the location of sharing members
    getSharedMembersInLab() {
-     if (this.user != null) {
-       return fetch(env.sharedLabURL, { method: 'GET' })
-         .then(response => response.json()).catch((error) => {
-           console.log(error);
-         });
-     }
+     return StorageController.getToken().then(token => fetch(`${env.serverURL}/api/location/shared`, {
+       method: 'GET',
+       headers: {
+         authorization: token,
+       },
+     })).then(response => response.json()).catch((error) => {
+       console.log(error);
+     });
    }
 
    // / Handle enter exit event
@@ -341,26 +348,25 @@ class ServerCommunicator {
        }
        this.user = user;
        // Get sharing preference
-       return StorageController.getLabPresencePreference();
-     }).then((share) => {
-       const user = this.user;
-       console.log(user);
-       // Post...
-       return this.post(env.daliEnterURL, {
-         user: {
-           email: user.email,
-           id: user.id,
-           familyName: user.familyName,
-           givenName: user.givenName,
-           name: user.name,
-         },
-         inDALI,
-         share,
-       })
-         .catch((error) => {
-           console.log(error);
-         });
+       return this.loadTokenAndUser(user);
      })
+       .then(() => StorageController.getLabPresencePreference())
+       .then((share) => {
+         console.log(this.serverToken);
+         const serverUser = this.userObject;
+         console.log(serverUser.id);
+         // Post...
+         return this.post(`${env.serverURL}/api/location/shared`, {
+           user: serverUser.id,
+           inDALI,
+           share,
+           entering: inDALI,
+           exiting: !inDALI
+         })
+           .catch((error) => {
+             console.log(error);
+           });
+       })
        .then((response) => {
        // Done
          console.log(response);
@@ -385,11 +391,25 @@ class ServerCommunicator {
    // / Posts the location info given to the server
    postForTim(location, enter) {
      if (this.user != null && GlobalFunctions.userIsTim()) {
-       this.post(env.timLocationInfoURL, { location, enter })
+       let inDALI = null;
+       let inOffice = null;
+
+       if (location === 'DALI') {
+         inDALI = enter;
+       } else if (location === 'OFFICE') {
+         inOffice = enter;
+       }
+
+       this.loadTokenAndUser(this.user).then(() => this.post(`${env.serverURL}/api/location/tim`, {
+         user: this.serverUser.id,
+         inDALI,
+         inOffice
+       }))
          .then(response => response.json()).then((responseJson) => {
 
-         }).catch((error) => {
-           // Failed...
+         })
+         .catch((error) => {
+         // Failed...
          });
      }
    }

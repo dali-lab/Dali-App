@@ -103,17 +103,27 @@ class Login extends Component {
           return;
         }
 
-        // For some reason on Android the user needs Google Play for me to access the callendars
-        GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
+        function signIn(user) {
           ServerCommunicator.current.signin(user).then(() => {
             this.props.onLogin(user);
+          }).catch((error) => {
+            if (error.code === 400) {
+              ServerCommunicator.current.loadTokenAndUser(user).then(() => {
+                this.props.onLogin(user);
+              }).catch((error) => {
+                GoogleSignin.signOut();
+              });
+            }
           });
+        }
+
+        // For some reason on Android the user needs Google Play for me to access the callendars
+        GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
+          signIn(user);
         })
           .catch((err) => {
             if (Platform.OS === 'ios') {
-              ServerCommunicator.current.signin(user).then(() => {
-                this.props.onLogin(user);
-              });
+              signIn(user);
               return;
             }
             // Google Play not enabled!

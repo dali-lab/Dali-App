@@ -1,5 +1,7 @@
 // ApiUtils.js
 
+const debug = false;
+
 const ApiUtils = {
   checkStatus(response) {
     return new Promise(((resolve, reject) => {
@@ -11,6 +13,7 @@ const ApiUtils = {
         error.response = response;
         response.text().then((text) => {
           error.message = text;
+          if (debug) console.log('Encountered error:', text, 'on request:', response.url);
           reject(error);
         });
       }

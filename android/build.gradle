@@ -6,6 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'com.google.gms:google-services:3.0.0' // <--- add this
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -19,17 +20,6 @@ allprojects {
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
-        }
-    }
-    configurations.all {
-        resolutionStrategy {
-            eachDependency { DependencyResolveDetails details ->
-                if (details.requested.group === 'com.facebook.react' && details.requested.name === 'react-native') {
-                    def file = new File("$rootDir/../node_modules/react-native/package.json")
-                    def version = new groovy.json.JsonSlurper().parseText(file.text).version
-                    details.useVersion version
-                }
-            }
         }
     }
 }

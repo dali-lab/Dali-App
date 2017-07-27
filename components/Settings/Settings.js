@@ -153,23 +153,11 @@ class Settings extends Component {
      }
    ];
 
-   const votingEventSetupRows = [
-     {
-       title: 'Voting Event',
-       action: () => {
-         this.navigator.push({
-           name: 'Voting Event',
-         });
-       }
-     }
-   ];
-
    if (GlobalFunctions.userIsTim()) {
      // Tim gets automatic access to the voting rows, but because he is already tracked he can't share his information
      return {
        user: [signInOutRow],
-       notifications: notificationsRows,
-       voting: votingEventSetupRows
+       notifications: notificationsRows
      };
    } else if (this.props.user != null) {
      // This is a regular non-tim user
@@ -178,8 +166,7 @@ class Settings extends Component {
        return {
          user: [signInOutRow],
          notifications: notificationsRows,
-         location: locationRows,
-         voting: votingEventSetupRows
+         location: locationRows
        };
      } else {
        // A non-tim non-theo user
