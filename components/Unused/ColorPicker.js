@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import {
-	StyleSheet,
-	View,
-	TouchableHighlight,
-	ListView,
+  StyleSheet,
+  View,
+  TouchableHighlight,
+  ListView,
 } from 'react-native';
 
 const colorOptions = ['red', 'yellow', 'green', 'purple', 'blue', 'orange', 'pink', 'brown', 'gold'];
@@ -11,17 +11,17 @@ const colorOptions = ['red', 'yellow', 'green', 'purple', 'blue', 'orange', 'pin
 
 class ColorPicker extends Component {
   propTypes: {
-		colorSelected: ReactNative.PropTypes.func,
-	}
+  colorSelected: ReactNative.PropTypes.func,
+ }
 
   constructor() {
     super();
-    const dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    const dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
 
-    var temp = [];
-    var rows = [];
-    for (const index in colorOptions) {
-      const color = colorOptions[index];
+    let temp = [];
+    const rows = [];
+
+    colorOptions.forEach((color, index) => {
       const rowIndex = index % 4;
 
       if (rowIndex < 3) {
@@ -31,7 +31,8 @@ class ColorPicker extends Component {
         rows.push(temp);
         temp = [];
       }
-    }
+    });
+
     if (temp.length !== 0) {
       rows.push(temp);
     }
@@ -55,35 +56,40 @@ class ColorPicker extends Component {
   renderRow(rowData, sectionID, rowID) {
     return (
       <View style={styles.row}>
-        <View style={{flex:1}}/>
+        <View style={{ flex:1 }} />
         <TouchableHighlight
           onPress={this.selectedColor.bind(this, rowData[0])}
-          style={[styles.colorPickCell, {backgroundColor: rowData[0]}]}><View/></TouchableHighlight>
+          style={[styles.colorPickCell, { backgroundColor: rowData[0] }]}
+        ><View /></TouchableHighlight>
         {rowData.length > 1 ? <TouchableHighlight
           onPress={this.selectedColor.bind(this, rowData[1])}
-          style={[styles.colorPickCell, {backgroundColor: rowData[1]}]}><View/></TouchableHighlight> : null}
+          style={[styles.colorPickCell, { backgroundColor: rowData[1] }]}
+        ><View /></TouchableHighlight> : null}
         {rowData.length > 2 ? <TouchableHighlight
           onPress={this.selectedColor.bind(this, rowData[2])}
-          style={[styles.colorPickCell, {backgroundColor: rowData[2]}]}><View/></TouchableHighlight> : null}
+          style={[styles.colorPickCell, { backgroundColor: rowData[2] }]}
+        ><View /></TouchableHighlight> : null}
         {rowData.length > 3 ? <TouchableHighlight
           onPress={this.selectedColor.bind(this, rowData[3])}
-          style={[styles.colorPickCell, {backgroundColor: rowData[3]}]}><View/></TouchableHighlight> : null}
-        <View style={{flex:1}}/>
+          style={[styles.colorPickCell, { backgroundColor: rowData[3] }]}
+        ><View /></TouchableHighlight> : null}
+        <View style={{ flex:1 }} />
       </View>
     );
   }
 
   render() {
     return (
-        <View style={styles.container}>
-          <View>
-            <ListView
-              dataSource={this.state.dataSource}
-              style={styles.listView}
-              renderRow={this.renderRow.bind(this)}/>
-            <View style={{backgroundColor: this.state.selectedColor || 'white', flex: 1}}/>
-          </View>
+      <View style={styles.container}>
+        <View>
+          <ListView
+            dataSource={this.state.dataSource}
+            style={styles.listView}
+            renderRow={this.renderRow.bind(this)}
+          />
+          <View style={{ backgroundColor: this.state.selectedColor || 'white', flex: 1 }} />
         </View>
+      </View>
     );
   }
 }
@@ -99,7 +105,7 @@ const styles = StyleSheet.create({
     height: 50,
     margin: 15,
     borderRadius: 5,
-    shadowOffset: {width: 4, height: 4},
+    shadowOffset: { width: 4, height: 4 },
     shadowColor: 'gray',
     shadowOpacity: 0.7
   },

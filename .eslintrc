@@ -1,6 +1,6 @@
 {
   "root": true,
-
+  "extends": "airbnb",
   "parser": "babel-eslint",
 
   # "ecmaFeatures": {
@@ -64,6 +64,17 @@
 
   // General
 
+    "jsx-a11y/href-no-hash": 0,
+    "import/no-unresolved": 2,
+    "no-shadow": 0,
+    "no-param-reassign": 0,
+    "prefer-rest-params": 0,
+    "react/jsx-no-bind": 0,
+    "react/jsx-filename-extension": 0,
+    no-tabs: 0,
+    global-require: 0,
+    react/prefer-stateless-function: 0,
+    "class-methods-use-this": 0,
     "comma-dangle": 0,               // disallow trailing commas in object literals
     "no-cond-assign": 1,             // disallow assignment in conditional expressions
     "no-console": 0,                 // disallow use of console (off by default in the node environment)
