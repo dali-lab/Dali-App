@@ -41,6 +41,14 @@ class StorageController {
     });
   }
 
+  static getToken() {
+    return AsyncStorage.getItem(`${prefix}:serverToken`);
+  }
+
+  static saveToken(value) {
+    return AsyncStorage.setItem(`${prefix}:serverToken`, value);
+  }
+
   static saveLabAccessPreference(value) {
     return AsyncStorage.setItem(`${prefix}:labAccessNotifPref`, value.toString());
   }

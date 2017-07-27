@@ -31,7 +31,12 @@ const serverCommunicator = new ServerCommunicator(beaconController);
 let startingUser = null;
 GoogleSignin.currentUserAsync().then((user) => {
   startingUser = user;
-  serverCommunicator.loggedIn(user);
+  if (user) {
+    serverCommunicator.loadTokenAndUser(user, () => {
+      dali.current.onLogout();
+    });
+  }
+
   if (dali.current) {
     dali.current.setState({
       user
@@ -62,7 +67,7 @@ export default class dali extends Component {
      GoogleSignin.currentUserAsync().then((user) => {
        if (user) {
          // Updating my controllers
-         serverCommunicator.loggedIn(user);
+         serverCommunicator.loadTokenAndUser(user, this.onLogout);
        }
 
        // Now move on to the main screen
@@ -84,7 +89,6 @@ export default class dali extends Component {
 	Called by the Login module when logging in is complete
 	*/
  onLogin(user) {
-   serverCommunicator.loggedIn(user);
    this.setState({
      user,
    });

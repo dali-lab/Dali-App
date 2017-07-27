@@ -21,7 +21,6 @@ import {
   Dimensions,
   AppState,
   Linking,
-  Animated,
   Platform,
   Alert
 } from 'react-native';
@@ -65,14 +64,6 @@ function formatEvent(start, end) {
   return `${weekDays[start.getDay()]} ${formatTime(start)} - ${formatTime(end)} ${(start.getHours() + 1) >= 12 ? 'PM' : 'AM'}`;
 }
 
-// A bunch of constants
-// TODO: Refactor into better practice format
-const taHoursExpanded = (window.height / 2) + 70;
-const officeHoursDefault =  (window.height / 2) - 100;
-const eventsExpanded = (window.height / 2) + 50;
-const eventsDefault = 240;
-const shrunkSize = 70;
-
 /**
 Controlls the the interface for the Main component
 
@@ -112,13 +103,7 @@ class Main extends Component {
      // The current state of the application (background or foreground)
      // Will come in handy when reloading data on re-entry to the app
      appState: AppState.currentState,
-     // Animated values defining the height of the office hours list view (for animating)
-     // (Read more: toggleSectionGrow)
-     officeHoursAnimationValue: new Animated.Value()
    };
-
-   // Initialize the value of the office hours list to its default
-   this.state.officeHoursAnimationValue.setValue(officeHoursDefault);
 
    BeaconController.current.addLocationInformationListener((locationText) => {
      this.setState({
@@ -199,31 +184,9 @@ class Main extends Component {
 
    console.log('Refreshing...');
    // Retrieve office hours
-   if (this.props.user != null) {
-     ServerCommunicator.current.getTonightsLabHours().then((officeHours) => {
-       console.log('Got office hours...');
-       this.setState({
-         officeHours,
-         // In order to update the list view I tell to to clone the previous dataSource with the new data
-         // It does this, and notices how the old and new data are different, updating the list view accordingly
-         officeHoursDataSource: this.state.officeHoursDataSource.cloneWithRows(officeHours)
-       });
-
-       if (officeHours.length > 0) {
-         // In order to remove office hours from the list as soon as they end, I am setting a timer...
-         const first = officeHours[0];
-         setTimeout(() => {
-           this.refreshData();
-         }, Math.abs((new Date()) - first.endDate));
-         // ... for the number of milliseconds between now and the end of the most proximous office hour
-       }
-     }).catch((error) => {
-       console.log(error);
-     });
-   }
-
    ServerCommunicator.current.getUpcomingEvents().then((events) => {
      console.log('Got events...');
+     console.log(events);
      let i = 0;
      while (i < events.length) {
        const event = events[i];
@@ -322,29 +285,6 @@ class Main extends Component {
      peopleInLabVisible: false,
      votingVisibile: false
    });
- }
-
-  // / Toggles a section (office hours or events) to expand or contract
- toggleSectionGrow(section) {
-   // Complicated terniary
-   // Basically defines the height we want the office hours section to be after the animation
-   // If selection is on the:
-   //      office hours and the office hours are expanded, then return to default
-   // 			office hours but the office hours are not expaned (either expanded or shrunk), go to expaned height
-   // 			events and the events section was expanded, we must colapse back to default
-   //      events and the events section was not expaned, expand events by shrinking
-   const end = section === 'officeHoursSelected' ? (this.state.officeHoursSelected ? officeHoursDefault : taHoursExpanded) : (this.state.eventsSelected ? officeHoursDefault : shrunkSize);
-
-   // Update the state
-   this.setState({
-     officeHoursSelected: section === 'officeHoursSelected' && !this.state.officeHoursSelected,
-     eventsSelected: section === 'eventsSelected' && !this.state.eventsSelected,
-   });
-
-   // Animate towards that beutifully calculated end height
-   Animated.spring(this.state.officeHoursAnimationValue, {
-     toValue: end
-   }).start();
  }
 
  _handleAppStateChange = (nextAppState) => {
@@ -503,68 +443,17 @@ class Main extends Component {
 
        {/* A view to rull all views (actually not all, as the Modal and LinearGradient aren't controlled by this) */}
        <View style={styles.internalView}>
-         {/* An animated view allows me to use both basic CSS and pointers to changing Animated values */}
-         <Animated.View style={[
-           styles.topView,
-           { height: this.state.officeHoursAnimationValue }
-         ]}
-         >
-           {/* Now we enter the office hours section */}
-
-           {/* A top seperator */}
-           <View style={styles.separatorThick} />
-           {/* The text for office hours, which is selectable so the user can expand and contract it */}
-           <TouchableHighlight
-             underlayColor="rgba(0,0,0,0)"
-             onPress={this.toggleSectionGrow.bind(this, 'officeHoursSelected')}
-           >
-             <Text style={styles.titleText}>{
-               (this.props.user != null ?
-                 (this.state.officeHours === null ?
-                   'Loading TA office hours...' :
-                   (this.state.officeHours.length > 0 ?
-                     'TA office hours tonight!' :
-                     'No TA office hours tonight'
-                   )
-                 )
-                 : 'Description'
-               )
-             }
-             </Text>
-           </TouchableHighlight>
-
-           {/* Another separator */}
-           <View style={styles.separatorThin} />
-
-           {/* Here is where it gets interesting! This is the actual list view, but most of it's rendering is done in renderRow */}
-           {this.props.user != null ?
-             <ListView
-               enableEmptySections={true}
-               style={styles.listView}
-               dataSource={this.state.officeHoursDataSource}
-               renderRow={this.renderOfficeHoursRow.bind(this)}
-             />
-             : <Text style={styles.daliDescText}>We design and build technology tools to help our partners change behavior, enhance understanding and even create delight.  DALI uses mindful design to create solutions to a wide variety of problems.</Text>
-           }
-         </Animated.View>
-
          {/* Moving on to the events section */}
          {/* This one actually doesnt need to animate.
 					It seems to grow and shrink, as it is pushed and pulled down and up behind the toolbar below,
 					but nothing more than a cleverly hidden opaque toolbar view is needed for this effect.
 					I just use a terniary operator to switch between large and normal height */
          }
-         <View style={[styles.bottomView, this.state.eventsSelected ? { height: eventsExpanded } : null]}>
+         <View style={[styles.bottomView]}>
 
            {/* I swear, this is the last seperator */}
            <View style={styles.separatorThick} />
-           {/* Again, touchable text */}
-           <TouchableHighlight
-             underlayColor="rgba(0,0,0,0)"
-             onPress={this.toggleSectionGrow.bind(this, 'eventsSelected')}
-           >
-             <Text style={styles.titleText}>Upcoming Events</Text>
-           </TouchableHighlight>
+           <Text style={styles.titleText}>Upcoming Events</Text>
            {/* Sike! One more seperator */}
            <View style={styles.separatorThin} />
 
@@ -671,8 +560,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)'
   },
   bottomView: {
-    alignItems: 'center',
-    height: eventsDefault
+    alignItems: 'center'
   },
   listView: {
     flex: 1,

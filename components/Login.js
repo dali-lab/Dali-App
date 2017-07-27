@@ -11,6 +11,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {
   StyleSheet,
   Text,
+  Platform,
   View,
   Image,
   TouchableHighlight,
@@ -20,6 +21,8 @@ import {
   StatusBar
 } from 'react-native';
 import { GoogleSignin } from 'react-native-google-signin';
+
+const ServerCommunicator = require('./ServerCommunicator').default;
 
 /**
 Login interface Component.
@@ -102,9 +105,17 @@ class Login extends Component {
 
         // For some reason on Android the user needs Google Play for me to access the callendars
         GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
-          this.props.onLogin(user);
+          ServerCommunicator.current.signin(user).then(() => {
+            this.props.onLogin(user);
+          });
         })
           .catch((err) => {
+            if (Platform.OS === 'ios') {
+              ServerCommunicator.current.signin(user).then(() => {
+                this.props.onLogin(user);
+              });
+              return;
+            }
             // Google Play not enabled!
             console.log('Play services error', err.code, err.message);
             setTimeout(() => {
