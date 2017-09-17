@@ -41,7 +41,7 @@
   jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle"];
 #else
   // Run on device with code coming from dev server on PC (change the IP to your PCs IP)
-  jsCodeLocation = [NSURL URLWithString:@"http://10.0.1.141:8081/index.ios.bundle"];
+  jsCodeLocation = [NSURL URLWithString:@"http://10.0.1.20:8081/index.ios.bundle"];
 //  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 #else
@@ -50,10 +50,10 @@
   //
   // $ curl http://localhost:8081/index.ios.bundle -o main.jsbundle
 
-  if ([[NSUserDefaults standardUserDefaults] valueForKey:@"ENABLE_FABRIC"]) {
+//  if ([[NSUserDefaults standardUserDefaults] valueForKey:@"ENABLE_FABRIC"]) {
     NSLog(@"Enabling fabric");
     [Fabric with:@[[Crashlytics class]]];
-  }
+//  }
   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 

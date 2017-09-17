@@ -1,4 +1,6 @@
 PODS:
+  - DALI (0.2.4):
+    - SwiftyJSON
   - FirebaseAnalytics (3.9.0):
     - FirebaseCore (~> 3.6)
     - FirebaseInstanceID (~> 1.0)
@@ -29,20 +31,23 @@ PODS:
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
   - GTMOAuth2 (1.1.4):
     - GTMSessionFetcher (~> 1.1)
-  - GTMSessionFetcher (1.1.10):
-    - GTMSessionFetcher/Full (= 1.1.10)
-  - GTMSessionFetcher/Core (1.1.10)
-  - GTMSessionFetcher/Full (1.1.10):
-    - GTMSessionFetcher/Core (= 1.1.10)
+  - GTMSessionFetcher (1.1.11):
+    - GTMSessionFetcher/Full (= 1.1.11)
+  - GTMSessionFetcher/Core (1.1.11)
+  - GTMSessionFetcher/Full (1.1.11):
+    - GTMSessionFetcher/Core (= 1.1.11)
   - ProximityKit (1.2.9)
   - SCLAlertView (0.7.0)
+  - SwiftyJSON (3.1.4)
 
 DEPENDENCIES:
+  - DALI
   - Google/SignIn
   - ProximityKit (~> 1.2)
   - SCLAlertView
 
 SPEC CHECKSUMS:
+  DALI: 4eaaf8d395f7093d4ef878a22608011595500769
   FirebaseAnalytics: e5fe8486efc01bec33f6bf82e2fa9fce4b124052
   FirebaseCore: 9691ee2ade70c098d7cf92440f4303f16d83ca75
   FirebaseInstanceID: b9eedd6846fb5e1f0f7279e1deaa7a7e4cf8392e
@@ -50,10 +55,11 @@ SPEC CHECKSUMS:
   GoogleSignIn: d7ad83f13480e1f30453471d00d19b5293ac46af
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   GTMOAuth2: 7fc9c10f5c745f4d9850419ea88889fe3baa6b7d
-  GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
+  GTMSessionFetcher: 5ad62e8200fa00ed011fe5e08d27fef72c5b1429
   ProximityKit: e763235e2fca64711ed7a5bae08cea1508f80919
   SCLAlertView: 8a14ffc40590c619e183eed2298b854385f30be1
+  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 080ea4e74a24a5110a2d46f9e6026fe88179e8ad
+PODFILE CHECKSUM: 985f10d6dac69944f2cf660348104dad20ce12c0
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.3.1

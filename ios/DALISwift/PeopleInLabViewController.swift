@@ -8,12 +8,13 @@
 
 import Foundation
 import UIKit
+import DALI
 
 class PeopleInLabViewController : UITableViewController {
 	
 	var timLocation = "Loading..."
 	var timLocationLabel: UILabel?
-	var users: [SharedUser]?
+	var members: [DALIMember]?
 	var refreshTimer: Timer!
 	
 	override func viewDidLoad() {
@@ -33,30 +34,51 @@ class PeopleInLabViewController : UITableViewController {
 	}
 	
 	func reloadData() {
-		ServerCommunicator.current?.getTimLocation(callback: { (inDALI, inOffice) in
-			if inOffice {
-				self.timLocation = "In his office"
-			}else if inDALI {
-				self.timLocation = "In DALI"
-			}else{
-				self.timLocation = "Location unknown"
+		DALILocation.Tim.get { (tim, error) in
+			if let error = error {
+				print("Error: \(error)")
+				return
 			}
-			self.timLocationLabel?.text = self.timLocation
-			self.tableView.reloadData()
-		})
+			
+			guard let tim = tim else {
+				return
+			}
+			DispatchQueue.main.async {
+				if tim.inDALI {
+					self.timLocation = "In DALI"
+				}else if tim.inOffice {
+					self.timLocation = "In his office"
+				}else{
+					self.timLocation = "Location unknown"
+				}
+				
+				self.tableView.reloadData()
+			}
+		}
 		
-		ServerCommunicator.current?.getPeopleInLab(callback: { (users) in
-			self.users = users
-			self.tableView.reloadData()
-		})
+		DALILocation.Shared.get { (members, error) in
+			if let error = error {
+				print("Error: \(error)")
+				return
+			}
+			
+			guard let members = members else {
+				return
+			}
+			
+			self.members = members
+			DispatchQueue.main.async {
+				self.tableView.reloadData()
+			}
+		}
 		
 	}
 	
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		if section === 0 {
+		if section == 0 {
 			return 1
 		}else{
-			return users?.count ?? 0
+			return members?.count ?? 0
 		}
 	}
 	
@@ -92,8 +114,8 @@ class PeopleInLabViewController : UITableViewController {
 			break
 		case 1:
 			cell = tableView.dequeueReusableCell(withIdentifier: "memberCell", for: indexPath)
-			let user = users![indexPath.row]
-			cell?.textLabel?.text = user.name
+			let member = members![indexPath.row]
+			cell?.textLabel?.text = member.name
 			break
 		default:
 			return UITableViewCell()

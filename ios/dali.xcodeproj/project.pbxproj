@@ -49,7 +49,6 @@
 		525F46501EE79DE600C5492D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 525F464F1EE79DE600C5492D /* Assets.xcassets */; };
 		525F465B1EE79DE700C5492D /* DALI_Lab_tvOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F465A1EE79DE700C5492D /* DALI_Lab_tvOSTests.swift */; };
 		525F46661EE79DE700C5492D /* DALI_Lab_tvOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F46651EE79DE700C5492D /* DALI_Lab_tvOSUITests.swift */; };
-		525F46931EE7AF1600C5492D /* ServerCommunicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F46921EE7AF1600C5492D /* ServerCommunicator.swift */; };
 		525F46951EE7AF4600C5492D /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525F46941EE7AF4600C5492D /* EventCell.swift */; };
 		526618A01EE759EB00E0E3FF /* Stickers.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5266189F1EE759EB00E0E3FF /* Stickers.xcassets */; };
 		526618A41EE759EB00E0E3FF /* DALI Lab Stickers.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5266189D1EE759EB00E0E3FF /* DALI Lab Stickers.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -78,6 +77,7 @@
 		52EFF1211EE8408400D40811 /* dali_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EFF1201EE8408400D40811 /* dali_Tests.swift */; };
 		52FC72D81F0E82A900FBCEF1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FC72D71F0E82A900FBCEF1 /* SettingsViewController.swift */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
+		78AA3365BEEC9E9CBF50414A /* Pods_DALI_Lab_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F85BF47DE406A8FE22FF2F6C /* Pods_DALI_Lab_tvOS.framework */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		93B2D79E059E4356BD758EF8 /* libRNBackgroundTimer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F5E13E3B8D94D01B37DC88F /* libRNBackgroundTimer.a */; };
 		F909F7C311ED42EE8F9E6C44 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 280F8AE9ECE348798BBC7670 /* libBVLinearGradient.a */; };
@@ -385,6 +385,16 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		524A7F121F3AC695009B3D37 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		528649E61EE75533002D99F9 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -394,6 +404,16 @@
 				526618A41EE759EB00E0E3FF /* DALI Lab Stickers.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		528A5D831F3A96BE00935E2B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -419,11 +439,12 @@
 		18BA2826B7BD66E990C93AE4 /* Pods-DALISwiftTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DALISwiftTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DALISwiftTests/Pods-DALISwiftTests.debug.xcconfig"; sourceTree = "<group>"; };
 		20135D497CC642AA9E276B95 /* AddressBook.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		280F8AE9ECE348798BBC7670 /* libBVLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libBVLinearGradient.a; sourceTree = "<group>"; };
+		2C9FE614FA311886E6DD98F8 /* Pods-DALI Lab tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DALI Lab tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DALI Lab tvOS/Pods-DALI Lab tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		2F5E13E3B8D94D01B37DC88F /* libRNBackgroundTimer.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNBackgroundTimer.a; sourceTree = "<group>"; };
 		33EE3EAA2E9D98736A88F39D /* Pods_DALISwiftTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DALISwiftTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FDAA78DFD7B8C1F2BE65819 /* Pods_DALISwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DALISwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5227FD7A1EFDC0FA003D1A66 /* DALISwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DALISwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		5227FD7C1EFDC0FA003D1A66 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		5227FD7C1EFDC0FA003D1A66 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		5227FD7E1EFDC0FA003D1A66 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		5227FD811EFDC0FA003D1A66 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5227FD831EFDC0FA003D1A66 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -438,7 +459,7 @@
 		5227FDEB1EFDE933003D1A66 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		523585AD1E60C5C5008B9FD9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5236B7151EE9CD4700643865 /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
-		52540A851F1183F30088499D /* VotingEventMangerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingEventMangerViewController.swift; sourceTree = "<group>"; };
+		52540A851F1183F30088499D /* VotingEventMangerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = VotingEventMangerViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		5255919B1F0DD9240006F323 /* PrivateInformation.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivateInformation.plist; sourceTree = "<group>"; };
 		5259642C1E51173B009C970E /* dali.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = dali.entitlements; path = dali/dali.entitlements; sourceTree = "<group>"; };
 		525F46461EE79DE600C5492D /* DALI Lab tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DALI Lab tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -453,7 +474,6 @@
 		525F46611EE79DE700C5492D /* DALI Lab tvOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DALI Lab tvOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		525F46651EE79DE700C5492D /* DALI_Lab_tvOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DALI_Lab_tvOSUITests.swift; sourceTree = "<group>"; };
 		525F46671EE79DE700C5492D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		525F46921EE7AF1600C5492D /* ServerCommunicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCommunicator.swift; sourceTree = "<group>"; };
 		525F46941EE7AF4600C5492D /* EventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
 		5266189D1EE759EB00E0E3FF /* DALI Lab Stickers.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "DALI Lab Stickers.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5266189F1EE759EB00E0E3FF /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
@@ -461,14 +481,14 @@
 		526AF3B91E67E87B00BA1EFE /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		526AF3BA1E67E87B00BA1EFE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		5271C2DC1E4D15B7004AFE2F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		527A0E291F0D4F49009F024B /* EnumsAndStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumsAndStructs.swift; sourceTree = "<group>"; };
+		527A0E291F0D4F49009F024B /* EnumsAndStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = EnumsAndStructs.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		5285640C1E68B7ED00C22D43 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		528649D51EE75533002D99F9 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
 		528A01081F07E275009897DF /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		528A011B1F07E5B1009897DF /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		52A8F69A1F0053D500C033D9 /* DALISwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DALISwift-Bridging-Header.h"; sourceTree = "<group>"; };
-		52A8F6D21F0067DA00C033D9 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
-		52B0672C1F07DC2B0098FDAA /* BeaconController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconController.swift; sourceTree = "<group>"; };
+		52A8F6D21F0067DA00C033D9 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MainViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		52B0672C1F07DC2B0098FDAA /* BeaconController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = BeaconController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		52BC7CBB1F00ABAF003285C7 /* PeopleInLabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeopleInLabViewController.swift; sourceTree = "<group>"; };
 		52BF8A721E60C3C2000465F8 /* GoogleSdk */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GoogleSdk; sourceTree = "<group>"; };
 		52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppUtilities.framework; path = GoogleSdk/GoogleAppUtilities.framework; sourceTree = "<group>"; };
@@ -482,7 +502,7 @@
 		52C2CA1E1F16512F001D1B98 /* DALISwift.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DALISwift.entitlements; sourceTree = "<group>"; };
 		52C2CA1F1F165709001D1B98 /* CalendarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarController.swift; sourceTree = "<group>"; };
 		52D962561F0D47E90091D49D /* ProximityKit.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ProximityKit.plist; sourceTree = "<group>"; };
-		52DA17961F0DADED00E96EA0 /* ServerCommunicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCommunicator.swift; sourceTree = "<group>"; };
+		52DA17961F0DADED00E96EA0 /* ServerCommunicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ServerCommunicator.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		52EDBF4B1F2476A900253ECE /* Pods_DALISwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_DALISwift.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/dali-gcjeavctyguukoflpvpxgiiaukhx/Build/Products/Debug-iphonesimulator/Pods_DALISwift.framework"; sourceTree = "<group>"; };
 		52EE3C5C1E4BC7D50089140E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		52EFF1101EE8407700D40811 /* dali UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "dali UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -491,7 +511,7 @@
 		52EFF11E1EE8408400D40811 /* dali Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "dali Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EFF1201EE8408400D40811 /* dali_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dali_Tests.swift; sourceTree = "<group>"; };
 		52EFF1221EE8408400D40811 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		52FC72D71F0E82A900FBCEF1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		52FC72D71F0E82A900FBCEF1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SettingsViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		6D29B9663FF7489E9A947ABF /* libRNGoogleSignin.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGoogleSignin.a; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
@@ -506,8 +526,10 @@
 		A90EE4A3D1BC4D55A7749326 /* libRNiBeacon.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNiBeacon.a; sourceTree = "<group>"; };
 		B17E0FF91B5C41F1ACB388D6 /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 		C5BC5FF29F6DA8898C62949E /* Pods-DALISwiftUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DALISwiftUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DALISwiftUITests/Pods-DALISwiftUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		EB4646D0230D94AEEBA2394A /* Pods-DALI Lab tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DALI Lab tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-DALI Lab tvOS/Pods-DALI Lab tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		EC83A486F22B42DBDD1D7C2A /* Pods-DALISwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DALISwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-DALISwift/Pods-DALISwift.release.xcconfig"; sourceTree = "<group>"; };
 		F3369739A37647259D3672C3 /* RNBackgroundTimer.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNBackgroundTimer.xcodeproj; path = "../node_modules/react-native-background-timer/ios/RNBackgroundTimer.xcodeproj"; sourceTree = "<group>"; };
+		F85BF47DE406A8FE22FF2F6C /* Pods_DALI_Lab_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DALI_Lab_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -588,6 +610,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78AA3365BEEC9E9CBF50414A /* Pods_DALI_Lab_tvOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -673,6 +696,8 @@
 				82F9F630A64126B665440274 /* Pods-DALISwiftTests.release.xcconfig */,
 				C5BC5FF29F6DA8898C62949E /* Pods-DALISwiftUITests.debug.xcconfig */,
 				80691F810B04335D7C5A8386 /* Pods-DALISwiftUITests.release.xcconfig */,
+				2C9FE614FA311886E6DD98F8 /* Pods-DALI Lab tvOS.debug.xcconfig */,
+				EB4646D0230D94AEEBA2394A /* Pods-DALI Lab tvOS.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -775,7 +800,6 @@
 			children = (
 				525F46481EE79DE600C5492D /* AppDelegate.swift */,
 				525F464A1EE79DE600C5492D /* ViewController.swift */,
-				525F46921EE7AF1600C5492D /* ServerCommunicator.swift */,
 				525F46941EE7AF4600C5492D /* EventCell.swift */,
 				525F464C1EE79DE600C5492D /* Main.storyboard */,
 				525F464F1EE79DE600C5492D /* Assets.xcassets */,
@@ -875,7 +899,6 @@
 		52EE3C5B1E4BC7D50089140E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				52EDBF4B1F2476A900253ECE /* Pods_DALISwift.framework */,
 				528A011B1F07E5B1009897DF /* libsqlite3.tbd */,
 				528A01081F07E275009897DF /* CoreBluetooth.framework */,
 				52BF8A741E60C3C9000465F8 /* GoogleAppUtilities.framework */,
@@ -892,9 +915,11 @@
 				20135D497CC642AA9E276B95 /* AddressBook.framework */,
 				528649D51EE75533002D99F9 /* Messages.framework */,
 				5236B7151EE9CD4700643865 /* IntentsUI.framework */,
+				52EDBF4B1F2476A900253ECE /* Pods_DALISwift.framework */,
 				3FDAA78DFD7B8C1F2BE65819 /* Pods_DALISwift.framework */,
 				33EE3EAA2E9D98736A88F39D /* Pods_DALISwiftTests.framework */,
 				8FDFB698A929871F3C18FD02 /* Pods_DALISwiftUITests.framework */,
+				F85BF47DE406A8FE22FF2F6C /* Pods_DALI_Lab_tvOS.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1047,6 +1072,7 @@
 				25B7D62DBE52960218138128 /* [CP] Copy Pods Resources */,
 				5221949C1F1008C00082143D /* ShellScript */,
 				522194A11F1008FB0082143D /* Embed App Extensions */,
+				524A7F121F3AC695009B3D37 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1104,9 +1130,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 525F468F1EE79DE700C5492D /* Build configuration list for PBXNativeTarget "DALI Lab tvOS" */;
 			buildPhases = (
+				7623674F1ED6D5657B4D2949 /* [CP] Check Pods Manifest.lock */,
 				525F46421EE79DE600C5492D /* Sources */,
 				525F46431EE79DE600C5492D /* Frameworks */,
 				525F46441EE79DE600C5492D /* Resources */,
+				5147182614EB92BED4809C2C /* [CP] Embed Pods Frameworks */,
+				78DE3930277A5BADB0620523 /* [CP] Copy Pods Resources */,
+				528A5D831F3A96BE00935E2B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1735,9 +1765,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-DALISwift/Pods-DALISwift-resources.sh",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1757,6 +1790,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DALISwiftUITests/Pods-DALISwiftUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5147182614EB92BED4809C2C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-DALI Lab tvOS/Pods-DALI Lab tvOS-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/DALI-tvOS/DALI.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON-tvOS/SwiftyJSON.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DALI.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DALI Lab tvOS/Pods-DALI Lab tvOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5221949C1F1008C00082143D /* ShellScript */ = {
@@ -1791,9 +1844,22 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-DALISwift/Pods-DALISwift-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/DALI-iOS/DALI.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/SCLAlertView/SCLAlertView.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON-iOS/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DALI.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCLAlertView.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1821,13 +1887,49 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-DALISwiftUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7623674F1ED6D5657B4D2949 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-DALI Lab tvOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		78DE3930277A5BADB0620523 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DALI Lab tvOS/Pods-DALI Lab tvOS-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7AE3BB088B06BC2B3748962E /* [CP] Check Pods Manifest.lock */ = {
@@ -1836,13 +1938,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-DALISwift-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7B40106F3EA2024C7CFB4290 /* [CP] Embed Pods Frameworks */ = {
@@ -1866,13 +1971,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-DALISwiftTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1926,7 +2034,6 @@
 			files = (
 				525F46951EE7AF4600C5492D /* EventCell.swift in Sources */,
 				525F464B1EE79DE600C5492D /* ViewController.swift in Sources */,
-				525F46931EE7AF1600C5492D /* ServerCommunicator.swift in Sources */,
 				525F46491EE79DE600C5492D /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2125,7 +2232,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2162,7 +2269,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -2286,6 +2393,7 @@
 		};
 		525F46681EE79DE700C5492D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2C9FE614FA311886E6DD98F8 /* Pods-DALI Lab tvOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2303,6 +2411,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "DALI Lab tvOS/Info.plist";
@@ -2314,12 +2426,13 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
 			};
 			name = Debug;
 		};
 		525F46691EE79DE700C5492D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EB4646D0230D94AEEBA2394A /* Pods-DALI Lab tvOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2337,6 +2450,10 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = JQ28K6Y7JE;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "DALI Lab tvOS/Info.plist";
@@ -2347,7 +2464,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
 			};
 			name = Release;
 		};

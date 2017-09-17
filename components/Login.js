@@ -104,26 +104,41 @@ class Login extends Component {
         }
 
         function signIn(user) {
-          ServerCommunicator.current.signin(user).then(() => {
+          return ServerCommunicator.current.signin(user).then(() => {
             this.props.onLogin(user);
           }).catch((error) => {
             if (error.code === 400) {
-              ServerCommunicator.current.loadTokenAndUser(user).then(() => {
-                this.props.onLogin(user);
-              }).catch((error) => {
-                GoogleSignin.signOut();
-              });
+              return ServerCommunicator.current.loadTokenAndUser(user);
             }
           });
         }
 
         // For some reason on Android the user needs Google Play for me to access the callendars
         GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
-          signIn(user);
+          console.log('HERE');
+          signIn(user).then(() => {
+            console.log('EVERYWHERE');
+            this.props.onLogin(user);
+          }).catch((error) => {
+            console.log('THERE');
+            setTimeout(() => {
+              Alert.alert('Failed to sign in', 'Failed to sign you in with the server. Talk to John Kotz');
+            }, 600);
+            GoogleSignin.signOut();
+          });
         })
           .catch((err) => {
             if (Platform.OS === 'ios') {
-              signIn(user);
+              signIn(user).then(() => {
+                console.log('EVERYWHERE');
+                this.props.onLogin(user);
+              }).catch((error) => {
+                console.log('THERE');
+                setTimeout(() => {
+                  Alert.alert('Failed to sign in', 'Failed to sign you in with the server. Talk to John Kotz');
+                }, 600);
+                GoogleSignin.signOut();
+              });
               return;
             }
             // Google Play not enabled!

@@ -415,6 +415,7 @@ class BeaconController {
      return;
    }
    this.numRanged += 1;
+   console.log("Beacons!");
 
    /*
 		Since I cannot actually range multiple regions at the same time,

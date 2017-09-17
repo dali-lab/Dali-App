@@ -233,7 +233,7 @@ class ServerCommunicator {
    * Pulls the voting results for the current event from the server
    */
    getVotingResults() {
-     return this.loadTokenAndUser(this.user).then(token => fetch('https://dalilab-api.herokuapp.com/api/voting/events', {
+     return this.loadTokenAndUser(this.user).then(token => fetch(`${env.serverURL}/api/voting/events`, {
        method: 'GET',
        headers: {
          authorization: token,
@@ -248,7 +248,7 @@ class ServerCommunicator {
 
          const mostRecent = response[0];
 
-         return fetch(`https://dalilab-api.herokuapp.com/api/voting/events/${mostRecent.id}`, {
+         return fetch(`${env.serverURL}/api/voting/events/${mostRecent.id}`, {
            method: 'GET',
            headers: {
              authorization: this.serverToken,
@@ -381,7 +381,7 @@ class ServerCommunicator {
    }
 
    timsOfficeListener=(enter) => {
-     console.log(`${enter ? 'Entered' : 'Exited'} tim's office!`);
+     console.log((enter ? 'Entered' : 'Exited') + " tim's office!");
 
      // TODO: Force check for lab
 

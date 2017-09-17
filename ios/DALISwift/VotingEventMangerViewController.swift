@@ -8,19 +8,15 @@
 
 import Foundation
 import UIKit
+import DALI
 
 class VotingEventManagerViewController: UITableViewController {
 	
 	var createEventCell: UITableViewCell!
-	var events = [Event]()
+	var events = [DALIEvent]()
 	
 	override func viewDidLoad() {
-		let event = Event(name: "The Pitch", location: "", description: "The Pitch is a great event with lots of options. This is a fake version of it", googleID: "", recurrence: nil, id: "", startTime: Date(), endTime: Date(), voting: true, options: nil)
-		events = [
-			event,
-			event,
-			event
-		]
+		
 	}
 	
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -66,7 +62,7 @@ class VotingEventManagerViewController: UITableViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-		if indexPath.section === 1 {
+		if indexPath.section == 1 {
 			return 80
 		}
 		return 50
@@ -81,8 +77,8 @@ class VotingEventCell: UITableViewCell {
 	@IBOutlet weak var titleLabel: UILabel!
 	@IBOutlet weak var subTitleLabel: UILabel!
 	
-	private var eventObj: Event?
-	var event: Event? {
+	private var eventObj: DALIEvent?
+	var event: DALIEvent? {
 		get {
 			return eventObj
 		}

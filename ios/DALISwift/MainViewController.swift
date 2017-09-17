@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SCLAlertView
 import UserNotifications
+import DALI
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AlertShower {
 	@IBOutlet weak var daliImage: UIImageView!
@@ -21,7 +22,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 	var loginTransformAnimationDone: Bool!
 	var animationDone: (() -> Void)?
 	
-	var events = [[Event]]()
+	var events = [[DALIEvent]]()
 	var sections = [String]()
 	
 	override func viewDidLoad() {
@@ -39,18 +40,35 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 	
 	
 	func updateData() {
-		ServerCommunicator.current?.getEvents(thisWeek: true, callback: { eventsArr in
-			print("Got events: \(eventsArr.count)");
+		DALIEvent.getUpcoming { (events, error) in
+			if let error = error {
+				print("Failed to get events! Reason:")
+				switch error {
+				case DALIError.General.Unauthorized:
+					print("Unauthorize")
+					break
+					
+				default:
+					print("Unknown: \(error)")
+					break
+				}
+				
+				return
+			}
+			
+			guard let eventsArr = events else {
+				return
+			}
 			
 			var events = eventsArr.sorted(by: { (event1, event2) -> Bool in
-				return event1.startTime < event2.startTime
+				return event1.start < event2.end
 			})
 			
 			self.events = []
 			
-			var today = [Event]();
-			var week = [Event]();
-			var next = [Event]();
+			var today = [DALIEvent]();
+			var week = [DALIEvent]();
+			var next = [DALIEvent]();
 			let calendar = NSCalendar.current
 			
 			func getWeekEnd() -> Date {
@@ -68,9 +86,9 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 			
 			for event in events {
 				print(event)
-				if calendar.isDateInToday(event.startTime) {
+				if calendar.isDateInToday(event.start) {
 					today.append(event)
-				}else if event.startTime < getWeekEnd() {
+				}else if event.start < getWeekEnd() {
 					week.append(event)
 				}else{
 					next.append(event)
@@ -90,7 +108,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 			DispatchQueue.main.async {
 				self.tableView.reloadData()
 			}
-		})
+		}
 	}
 	
 	func setUpListeners() {
@@ -241,8 +259,8 @@ class EventCell: UITableViewCell {
 	@IBOutlet weak var locationLabel: UILabel!
 	
 	
-	private var eventVal: Event?
-	var event: Event? {
+	private var eventVal: DALIEvent?
+	var event: DALIEvent? {
 		get {
 			return self.eventVal
 		}
@@ -253,8 +271,8 @@ class EventCell: UITableViewCell {
 //				self.timeLabel.text = newValue.name
 				self.locationLabel.text = newValue.location
 				
-				let startComponents = Calendar.current.dateComponents([.weekday, .hour, .minute], from: newValue.startTime)
-				let endComponents = Calendar.current.dateComponents([.weekday, .hour, .minute], from: newValue.endTime)
+				let startComponents = Calendar.current.dateComponents([.weekday, .hour, .minute], from: newValue.start)
+				let endComponents = Calendar.current.dateComponents([.weekday, .hour, .minute], from: newValue.end)
 				
 				let weekdayStart = abvWeekDays[startComponents.weekday! - 1]
 				let weekdayEnd = startComponents.weekday! != endComponents.weekday! ? abvWeekDays[endComponents.weekday! - 1] : nil
@@ -273,7 +291,7 @@ class EventCell: UITableViewCell {
 				let startString = "\(startHour):\(startMinute  < 10 ? "0" : "")\(startMinute)\(daytimeDifferent ? " \(startDaytime ? "AM" : "PM")" : "")"
 				let endString = "\(endHour):\(endMinute < 10 ? "0" : "")\(endMinute) \(endDaytime ? "AM" : "PM")"
 				
-				self.timeLabel.text = "\(weekdayStart) \(startString) - \(weekdayEnd === nil ? "" : weekdayEnd! + " ")\(endString)"
+				self.timeLabel.text = "\(weekdayStart) \(startString) - \(weekdayEnd == nil ? "" : weekdayEnd! + " ")\(endString)"
 			}else{
 				self.titleLabel.text = ""
 			}

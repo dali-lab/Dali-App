@@ -46,7 +46,12 @@ class BeaconController: NSObject, RPKManagerDelegate {
 	
 	var inDALI: Bool {
 		return regions.filter({ (region) -> Bool in
-			return region.name === "DALI Lab Region"
+			return region.name == "DALI Lab Region"
+		}).count >= 1
+	}
+	var inOffice: Bool {
+		return regions.filter({ (region) -> Bool in
+			return region.name == "Tims Office Region"
 		}).count >= 1
 	}
 	
@@ -70,7 +75,7 @@ class BeaconController: NSObject, RPKManagerDelegate {
 			])
 		self.beaconManager.start()
 		// A good buffer to find all the beacons possible
-		numToRange = 50
+		numToRange = 20
 		self.beaconManager.startRangingBeacons()
 	}
 	
@@ -78,30 +83,25 @@ class BeaconController: NSObject, RPKManagerDelegate {
 		
 		switch (state) {
 		case .inside:
-			regions.insert(region!)
-			
-			let regionName = region.name.replacingOccurrences(of: "'", with: "")
-			if let name = BeaconController.notificationNames[regionName] {
-				NotificationCenter.default.post(name: name, object: nil, userInfo: ["entered" : true])
+			if regions.insert(region!).inserted {
+				let regionName = region.name.replacingOccurrences(of: "'", with: "")
+				if let name = BeaconController.notificationNames[regionName] {
+					NotificationCenter.default.post(name: name, object: nil, userInfo: ["entered" : true])
+				}
 			}
+			break
 			
-		case .outside:
-			regions.remove(region!)
-			
-			let regionName = region.name.replacingOccurrences(of: "'", with: "")
-			if let name = BeaconController.notificationNames[regionName] {
-				NotificationCenter.default.post(name: name, object: nil, userInfo: ["entered" : false])
+		case .outside,
+			.unknown:
+			if regions.remove(region!) != nil {
+				let regionName = region.name.replacingOccurrences(of: "'", with: "")
+				if let name = BeaconController.notificationNames[regionName] {
+					NotificationCenter.default.post(name: name, object: nil, userInfo: ["entered" : false])
+				}
 			}
-		case .unknown:
-			
-			let regionName = region.name.replacingOccurrences(of: "'", with: "")
-			if let name = BeaconController.notificationNames[regionName] {
-				NotificationCenter.default.post(name: name, object: nil, userInfo: ["entered" : false])
-			}
+			break
 		}
 		
-//		print("State Changed: \(stateDescription) Region \(region.name ?? "untitled") (\(region.identifier ?? ""))")
-//		print("Now in: \(self.currentLocation ?? "unknown")")
 		NotificationCenter.default.post(name: NSNotification.Name.Custom.LocationUpdated, object: nil)
 	}
 	
@@ -133,12 +133,12 @@ class BeaconController: NSObject, RPKManagerDelegate {
 		}
 		
 		numToRange -= 1
-		if beacons.count === 0 && regions.contains(region) {
+		if beacons.count == 0 && regions.contains(region) {
 			// I am not going to deal with exits here. That will be the job of the exit region code
 			return
 		}
 		
-		self.proximityKit(manager, didDetermineState: beacons.count > 1 ? .inside : .outside, for: region)
+		self.proximityKit(manager, didDetermineState: beacons.count > 0 ? .inside : .outside, for: region)
 	}
 	
 	enum BeaconError: Error {

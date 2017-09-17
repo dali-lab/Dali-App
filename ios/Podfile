@@ -9,6 +9,7 @@ target 'DALISwift' do
   pod 'Google/SignIn'
   pod 'ProximityKit', '~> 1.2'
   pod 'SCLAlertView'
+  pod 'DALI'
 
   target 'DALISwiftTests' do
     inherit! :search_paths
@@ -20,4 +21,10 @@ target 'DALISwift' do
     # Pods for testing
   end
 
+end
+
+target 'DALI Lab tvOS' do
+  use_frameworks!
+
+  pod 'DALI'
 end
