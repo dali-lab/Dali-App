@@ -239,7 +239,7 @@ class Main extends Component {
        });
      }
    }).catch((error) => {
-     if (error.code === 404) {
+     if (error && error.code === 404) {
        this.setState({
          votingDone: false,
          inVotingEvent: false
@@ -485,7 +485,9 @@ class Main extends Component {
              underlayColor="rgba(0,0,0,0)"
              onPress={this.peopleInLabPressed.bind(this)}
            >
-             <Image source={require('./Assets/people.png')} style={styles.settingsButtonImage} />
+             <View>
+               <Image source={require('./Assets/people.png')} style={styles.settingsButtonImage} />
+             </View>
            </TouchableHighlight>
 
            {/* Empty and clear view to make the buttons equidistant */}

@@ -158,7 +158,7 @@ class ServerCommunicator {
            reject(error);
          });
      }).catch((error) => {
-       if (error.code === 400) {
+       if (error && error.code === 400) {
          return this.loadTokenAndUser();
        }
      });
@@ -295,24 +295,37 @@ class ServerCommunicator {
 
    // / Gets the events in the next week
    getUpcomingEvents() {
-     return this.loadTokenAndUser().then(token => fetch(`${env.serverURL}/api/events/week`, {
-       method: 'GET',
-       headers: {
-         authorization: token,
-       },
-     })).then(responseJson => responseJson.json()).then(response => new Promise(((resolve, reject) => {
-       response.forEach((event) => {
-         event.startDate = new Date(event.startTime);
-         event.endDate = new Date(event.endTime);
+     return new Promise((resolve, reject) => {
+       this.loadTokenAndUser().then(token => fetch(`${env.serverURL}/api/events/week`, {
+         method: 'GET',
+         headers: {
+           authorization: token,
+         },
+       })).then(responseJson => responseJson.json()).then((response) => {
+         response.forEach((event) => {
+           event.startDate = new Date(event.startTime);
+           event.endDate = new Date(event.endTime);
 
-         event.summary = event.name;
-       });
+           event.summary = event.name;
+         });
 
-       resolve(response);
-     })))
-       .catch((error) => {
-         console.error(error);
-       });
+         resolve(response);
+       })
+         .catch(() => {
+           fetch(`${env.serverURL}/api/events/public/week`)
+             .then((responseJson => responseJson.json()))
+             .then((response) => {
+               response.forEach((event) => {
+                 event.startDate = new Date(event.startTime);
+                 event.endDate = new Date(event.endTime);
+
+                 event.summary = event.name;
+               });
+
+               resolve(response);
+             });
+         });
+     });
    }
 
    // / Query the server for Tim's location

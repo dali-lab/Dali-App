@@ -58,7 +58,7 @@ class VoteMain extends Component {
          });
        });
      }).catch((error) => {
-       if (error.code === 404) {
+       if (error && error.code === 404) {
          setTimeout(() => {
            Alert.alert('No Current Event', 'There is no event going on currently', [
              { text: 'OK', onPress: this.props.dismiss }
@@ -85,7 +85,7 @@ class VoteMain extends Component {
          results
        });
      }).catch((error) => {
-       if (error.code !== 400) {
+       if (error && error.code !== 400) {
          console.log(error);
        }
      });
@@ -113,7 +113,7 @@ class VoteMain extends Component {
          });
          StorageController.setVoteDone(this.state.event).then(() => {});
        }).catch((error) => {
-         if (error.code === 405) {
+         if (error && error.code === 405) {
            StorageController.setVoteDone(this.state.event).then(() => {});
          }
          console.log(error.message);

@@ -22,8 +22,6 @@ import {
 const StorageController = require('../StorageController').default;
 const GlobalFunctions = require('../GlobalFunctions').default;
 const ServerCommunicator = require('../ServerCommunicator').default;
-const VotingEventSettings = require('./VotingEventSettings');
-const CreateVotingEventSettings = require('./CreateVotingEventSettings');
 
 
 /**
@@ -264,60 +262,16 @@ class Settings extends Component {
   // / Not the best implementation, but there is little time for fancy but simple options
  renderScene(route, navigator) {
    this.navigator = navigator;
-
-   if (route.name === 'Settings') {
-     // Settings is a simple Listview that I have been setting up so far
-     return (
-       <ListView
-         style={styles.listView}
-         dataSource={this.state.dataSource}
-         renderSectionHeader={this.renderSectionHeader.bind(this)}
-         renderFooter={this.renderFooter.bind(this)}
-         renderRow={this.renderRow.bind(this)}
-       />
-     );
-   } else if (route.name === 'Voting Event') {
-     // Return the subview with the correct properties
-     return (
-       <VotingEventSettings
-         rightButtonDisable={bool => this.setState({ rightButtonDisabled: bool })}
-         ref={(votingEventSettings) => {
-           if (votingEventSettings === null) { return; }
-
-           // If the reference has changed then I will reload the whole navigator
-           if (this.votingEventSettings !== votingEventSettings) {
-             this.forceUpdate();
-             console.log('Force updating voting...');
-             this.votingEventSettings = votingEventSettings;
-           }
-         }}
-         navigator={navigator}
-       />
-     );
-   } else if (route.name === 'Create Voting Event') {
-     // Return the subview with the correct properties
-     // I give this view a callback to call when it is done so I can force update the voting event settings view
-     return (
-       <CreateVotingEventSettings
-         rightButtonDisable={bool => this.setState({ rightButtonDisabled: bool })}
-         ref={(createEventView) => {
-           if (createEventView === null) { return; }
-
-           // If the reference has changed then I will reload the whole navigator
-           if (this.createEventView !== createEventView) {
-             this.forceUpdate();
-             console.log('Force updating creating...');
-             this.createEventView = createEventView;
-           }
-         }}
-         complete={() => this.votingEventSettings.forceUpdate()}
-         navigator={navigator}
-       />
-     );
-   } else {
-     console.error('Unknown route name: ', route.name);
-     return <View />;
-   }
+   // Settings is a simple Listview that I have been setting up so far
+   return (
+     <ListView
+       style={styles.listView}
+       dataSource={this.state.dataSource}
+       renderSectionHeader={this.renderSectionHeader.bind(this)}
+       renderFooter={this.renderFooter.bind(this)}
+       renderRow={this.renderRow.bind(this)}
+     />
+   );
  }
 
   /**

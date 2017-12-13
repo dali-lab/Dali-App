@@ -107,7 +107,7 @@ class Login extends Component {
           return ServerCommunicator.current.signin(user).then(() => {
             this.props.onLogin(user);
           }).catch((error) => {
-            if (error.code === 400) {
+            if (error && error.code === 400) {
               return ServerCommunicator.current.loadTokenAndUser(user);
             }
           });
@@ -115,12 +115,9 @@ class Login extends Component {
 
         // For some reason on Android the user needs Google Play for me to access the callendars
         GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
-          console.log('HERE');
           signIn(user).then(() => {
-            console.log('EVERYWHERE');
             this.props.onLogin(user);
           }).catch((error) => {
-            console.log('THERE');
             setTimeout(() => {
               Alert.alert('Failed to sign in', 'Failed to sign you in with the server. Talk to John Kotz');
             }, 600);
@@ -130,10 +127,8 @@ class Login extends Component {
           .catch((err) => {
             if (Platform.OS === 'ios') {
               signIn(user).then(() => {
-                console.log('EVERYWHERE');
                 this.props.onLogin(user);
               }).catch((error) => {
-                console.log('THERE');
                 setTimeout(() => {
                   Alert.alert('Failed to sign in', 'Failed to sign you in with the server. Talk to John Kotz');
                 }, 600);
@@ -150,8 +145,10 @@ class Login extends Component {
           });
       })
       .catch((err) => {
-        if (err.code === -5) {
+        if (err && err.code === -5) {
           return; // Very specific error for when the user cancels login
+        } else if (err && err.code === 12501) {
+          return; // Same thing...
         }
 
         console.log(err);
@@ -210,7 +207,9 @@ class Login extends Component {
                         this.props.onSkipLogin();
                       }}
                     >
-                      <Text style={{ color: 'white' }}>Skip Sign In</Text>
+                      <View>
+                        <Text style={{ color: 'white' }}>Skip Sign In</Text>
+                      </View>
                     </TouchableHighlight>
                   </Animated.View> : <View style={{ height: 80 }} />}
                 {/* If we don't want to show it yet, I placehold so the DALI logo isn't incorrectly placed */}
