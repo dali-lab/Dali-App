@@ -48,58 +48,20 @@ class BeaconController {
       throw new Error('Cannot create more than one BeaconController!');
     }
 
-    if (Platform.OS === 'ios') {
-      // iOS has its own way of doing things...
-      // For one, Android doesn't ask for permission from the user
-      Beacons.requestAlwaysAuthorization();
-      Beacons.requestWhenInUseAuthorization();
+    Beacons.detectIBeacons();    // Android needs explicit declaration of type of beacon detected
 
-      this.authorization = null;
-      Beacons.getAuthorizationStatus(function (authorization) {
-        // authorization is a string which is either "authorizedAlways",
-        // "authorizedWhenInUse", "denied", "notDetermined" or "restricted"
-        this.authorization = authorization;
-        console.log(`Got authorization: ${authorization}`);
-      });
-
-      console.log('Starting monitoring...');
-      // For the other iOS only requires the object { identifier: "Some ID", uuid: "long-string-ofcharacters" }
-      Beacons.startMonitoringForRegion(env.labRegion);
-      Beacons.startMonitoringForRegion(env.checkInRegion);
-      // Beacons.startMonitoringForRegion(env.votingRegion);
-      Beacons.startUpdatingLocation();
-    } else {
-      // Android needs explicit declaration of type of beacon detected
-      Beacons.detectIBeacons();
-      Beacons.detectEstimotes();
-
-      // Android needs major and minor values
-      env.labRegion.major = 1;
-      env.labRegion.minor = 1;
-
-      env.checkInRegion.major = 1;
-      env.checkInRegion.minor = 1;
-
-      env.votingRegion.major = 1;
-      env.votingRegion.minor = 1;
-
-      // Android may fail!
-      Beacons.startMonitoringForRegion(env.labRegion).then(() => {
-        console.log('Started monitoring', env.labRegion);
-      }).catch((error) => {
-        console.log('Failed to start monitoring!', error);
-      });
-      Beacons.startMonitoringForRegion(env.checkInRegion).then(() => {
-        console.log('Started monitoring', env.checkInRegion);
-      }).catch((error) => {
-        console.log('Failed to start monitoring!', error);
-      });
-      // Beacons.startMonitoringForRegion(env.votingRegion).then(() => {
-      // 	console.log("Started monitoring", env.votingRegion);
-      // }).catch((error) => {
-      // 	console.log("Failed to start monitoring!", error);
-      // });
-    }
+    // Android may fail!
+    Beacons.startMonitoringForRegion(env.labRegion).then(() => {
+      console.log('Started monitoring', env.labRegion);
+    }).catch((error) => {
+      console.log('Failed to start monitoring!', error);
+    });
+    Beacons.startMonitoringForRegion(env.checkInRegion).then(() => {
+      console.log('Started monitoring', env.checkInRegion);
+    }).catch((error) => {
+      console.log('Failed to start monitoring!', error);
+    });
+    this.startRanging();
 
     // Store the current thought of where the device is in relation to DALI
     this.inDALI = false;
@@ -179,26 +141,18 @@ class BeaconController {
     // Helped a bit towards infinite ranging problem
     this.numRanged = 0;
 
-    // Again Android does things differently
-    if (Platform.OS === 'ios') {
-      Beacons.startUpdatingLocation();
-      Beacons.startRangingBeaconsInRegion(env.labRegion);
-      console.log('Starting to range DALI');
-    } else {
-      Beacons.detectIBeacons();
-      Beacons.startRangingBeaconsInRegion(env.labRegion.identifier, env.labRegion.uuid).then(() => {
-        console.log('Started ranging');
+    Beacons.startRangingBeaconsInRegion(env.labRegion.identifier, env.labRegion.uuid).then(() => {
+      console.log('Started ranging');
 
-        DeviceEventEmitter.addListener('beaconsDidRange', (data) => {
-          console.log(data);
-        });
-      }).catch((error) => {
-        console.log('Failed to range');
-        console.log(error);
-        // Failed to range, report not in the lab
-        BeaconController.performCallbacks(this.enterExitListeners, false);
+      DeviceEventEmitter.addListener('beaconsDidRange', (data) => {
+        console.log(data);
       });
-    }
+    }).catch((error) => {
+      console.log('Failed to range');
+      console.log(error);
+      // Failed to range, report not in the lab
+      BeaconController.performCallbacks(this.enterExitListeners, false);
+    });
 
     if (this.rangingListener === null) {
       this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange.bind(this));

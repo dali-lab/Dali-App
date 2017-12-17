@@ -219,7 +219,7 @@ class Main extends Component {
    }).catch((error) => {
      console.log(error);
    });
-   BeaconController.current.startRanging();
+   // BeaconController.current.startRanging();
 
    if (this.reloadInterval === null) {
      this.reloadInterval = setInterval(() => {

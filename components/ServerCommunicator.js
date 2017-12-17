@@ -54,7 +54,7 @@ class ServerCommunicator {
      }
 
      // To get current locations
-     this.beaconController.startRanging();
+     // this.beaconController.startRanging();
 
      this.userObject = null;
      this.serverToken = null;
