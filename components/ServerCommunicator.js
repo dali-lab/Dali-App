@@ -205,12 +205,9 @@ class ServerCommunicator {
    */
    getEventNow() {
      // Get
-     return this.loadTokenAndUser().then(token => fetch(`${env.serverURL}/api/voting/events/current`, {
-       method: 'GET',
-       headers: {
-         authorization: this.serverToken
-       }
-     }))
+     return fetch(`${env.serverURL}/api/voting/public/current`, {
+       method: 'GET'
+     })
        .then(ApiUtils.checkStatus) // This will search the response for error indicators and throw if there are problems
        .then(response => response.json())
        .then((responseJson) => {
@@ -223,40 +220,37 @@ class ServerCommunicator {
            }
            resolve(responseJson);
          });
-       })
-       .catch(error => new Promise((resolve, reject) => {
-         reject(error);
+       });
+   }
+
+   getPastEvents() {
+     return fetch(`${env.serverURL}/api/voting/public`, {
+       method: 'GET'
+     })
+       .then(ApiUtils.checkStatus) // This will search the response for error indicators and throw if there are problems
+       .then(response => response.json())
+       .then(responseJson => new Promise((resolve, reject) => {
+         if (responseJson == null || responseJson.length === 0) {
+           reject({ code: 404 });
+           return;
+         }
+         resolve(responseJson);
        }));
    }
 
-   /**
-   * Pulls the voting results for the current event from the server
-   */
-   getVotingResults() {
-     return this.loadTokenAndUser(this.user).then(token => fetch(`${env.serverURL}/api/voting/events`, {
-       method: 'GET',
-       headers: {
-         authorization: token,
-       },
-     }))
+   getOptionsForVotingEvent(event) {
+     return this.get(`${env.serverURL}/api/voting/public/${event.id}`, {
+       method: 'GET'
+     })
        .then(ApiUtils.checkStatus)
-       .then(responseJson => responseJson.json())
-       .then((response) => {
+       .then(response => response.json())
+       .then(response => new Promise(((resolve, reject) => {
          if (response == null || response.length === 0) {
-           throw new Error('No voting events have results released');
+           reject({ code: 404 });
+           return;
          }
-
-         const mostRecent = response[0];
-
-         return fetch(`${env.serverURL}/api/voting/events/${mostRecent.id}`, {
-           method: 'GET',
-           headers: {
-             authorization: this.serverToken,
-           },
-         });
-       })
-       .then(ApiUtils.checkStatus)
-       .then(responseJson => responseJson.json());
+         resolve(response);
+       })));
    }
 
    /**
@@ -268,7 +262,7 @@ class ServerCommunicator {
    */
    submitVotes(first, second, third, event) {
      return this.loadTokenAndUser(this.user)
-       .then(() => this.post(`${env.serverURL}/api/voting/events/${event.id}`, {
+       .then(() => this.post(`${env.serverURL}/api/voting/public/${event.id}`, {
          options: [
            first,
            second,

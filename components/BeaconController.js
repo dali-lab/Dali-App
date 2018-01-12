@@ -41,6 +41,18 @@ class BeaconController {
   static inDALI() {
     return BeaconController.current.inDALI;
   }
+  currentLocation(ignoreVoting = false) {
+    if (this.regions.voting && !ignoreVoting) {
+      return 'voting';
+    } else if (this.regions.tim) {
+      return 'tim';
+    } else if (this.regions.dali) {
+      return 'dali';
+    }
+    return null;
+  }
+
+  regions = {};
 
   constructor() {
     // Making sure I have no doplegangers
@@ -144,19 +156,18 @@ class BeaconController {
     Beacons.startRangingBeaconsInRegion(env.labRegion.identifier, env.labRegion.uuid).then(() => {
       console.log('Started ranging');
 
-      DeviceEventEmitter.addListener('beaconsDidRange', (data) => {
-        console.log(data);
-      });
+      if (this.rangingListener == null) {
+        this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', (data) => {
+          console.log(data);
+          this.beaconsDidRange(data);
+        });
+      }
     }).catch((error) => {
       console.log('Failed to range');
       console.log(error);
       // Failed to range, report not in the lab
       BeaconController.performCallbacks(this.enterExitListeners, false);
     });
-
-    if (this.rangingListener === null) {
-      this.rangingListener = DeviceEventEmitter.addListener('beaconsDidRange', this.beaconsDidRange.bind(this));
-    }
   }
 
   /**
@@ -191,6 +202,7 @@ class BeaconController {
     // Check for Tim's office
     if (exitRegion.region === env.timsOfficeRegion.identifier || exitRegion.identifier === env.timsOfficeRegion.identifier) {
       BeaconController.performCallbacks(this.timsOfficeListeners, false);
+      this.regions.tim = false;
       if (this.locationTextCurrentPriority === timsOfficePriority) {
         BeaconController.performCallbacks(this.locationInformationListeners, 'Loading location...');
         this.locationTextCurrentPriority = 0;
@@ -203,6 +215,7 @@ class BeaconController {
     console.log(exitRegion);
     if (exitRegion.region === env.votingRegion.identifier || exitRegion.identifier === env.votingRegion.identifier) {
       this.inVotingEvent = false;
+      this.regions.voting = false;
       this.votingEventMajor = null;
       BeaconController.performCallbacks(this.votingRegionListeners, false);
       if (this.locationTextCurrentPriority === votingEventPriority) {
@@ -234,6 +247,7 @@ class BeaconController {
     // Save and notify
     this.rangedDALI = true;
     this.inDALI = false;
+    this.regions.dali = false;
 
     if (this.locationTextCurrentPriority <= inLabPriority) {
       BeaconController.performCallbacks(this.locationInformationListeners, 'Not in DALI Lab');
@@ -279,6 +293,7 @@ class BeaconController {
     // Check for Tim's office
     if (enterRegion.region === env.timsOfficeRegion.identifier || enterRegion.identifier === env.timsOfficeRegion.identifier) {
       BeaconController.performCallbacks(this.timsOfficeListeners, true);
+      this.regions.tim = true;
       if (this.locationTextCurrentPriority < timsOfficePriority) {
         BeaconController.performCallbacks(this.locationInformationListeners, "In Tim's Office");
         this.locationTextCurrentPriority = timsOfficePriority;
@@ -290,6 +305,7 @@ class BeaconController {
     console.log(enterRegion);
     if (enterRegion.region === env.votingRegion.identifier || enterRegion.identifier === env.votingRegion.identifier) {
       this.inVotingEvent = true;
+      this.regions.voting = true;
       this.startRanging();
       BeaconController.performCallbacks(this.votingRegionListeners, true);
 
@@ -334,6 +350,7 @@ class BeaconController {
 
     this.rangedDALI = true;
     this.inDALI = true;
+    this.regions.dali = true;
 
     if (this.locationTextCurrentPriority < inLabPriority) {
       BeaconController.performCallbacks(this.locationInformationListeners, 'In DALI Lab');
@@ -394,6 +411,7 @@ class BeaconController {
     // Check to see if this region is Tim's Office
     if (Platform.OS !== 'ios' ? (data.identifier === env.timsOfficeRegion.identifier) : (data.region.identifier === env.timsOfficeRegion.identifier)) {
       console.log("Tim's");
+      this.regions.tim = data.beacons.length > 0 || this.regions.tim;
       // Get tim
       if (GlobalFunctions.userIsTim()) {
         BeaconController.performCallbacks(this.timsOfficeListeners, data.beacons.length > 0);
@@ -414,8 +432,8 @@ class BeaconController {
       // Check to see if this region is a voting region
     } else if (Platform.OS !== 'ios' ? (data.identifier === env.votingRegion.identifier) : (data.region.identifier === env.votingRegion.identifier)) {
       console.log('Voting');
+      this.regions.voting = data.beacons.length > 0 || this.regions.voting;
       this.votingBeaconsDidRange(data);
-
 
       // Starts the next (Tim's Office) only if user is Tim
       if (GlobalFunctions.userIsTim()) {
@@ -450,6 +468,7 @@ class BeaconController {
       // Last possible case: it is DALI
     } else {
       console.log('DALI');
+      this.regions.dali = data.beacons.length > 0 || this.regions.dali;
       // Keeping track of wheter I'm in DALI or not
       this.inDALI = data.beacons.length > 0;
       this.rangedDALI = true;

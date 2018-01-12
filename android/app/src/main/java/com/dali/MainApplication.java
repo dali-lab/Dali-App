@@ -36,7 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
             new LinearGradientPackage(),
             new BackgroundTimerPackage(),
               new BeaconsAndroidPackage(),
-              new RNGoogleSigninPackage() // <-- add this
+              new RNGoogleSigninPackage()
       );
     }
   };

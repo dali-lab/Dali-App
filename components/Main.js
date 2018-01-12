@@ -32,7 +32,7 @@ const ServerCommunicator = require('./ServerCommunicator').default;
 const BeaconController = require('./BeaconController').default;
 const Settings = require('./Settings/Settings');
 const PeopleInLab = require('./PeopleInLab');
-const EventVote = require('./EventVote/VoteMain');
+const EventVote = require('./EventVote/VoteTopLevel');
 const StorageController = require('./StorageController').default;
 
 
@@ -97,8 +97,7 @@ class Main extends Component {
      votingDone: false,
      // Holds the data I will get about the office hours
      officeHours: null,
-     locationText: 'Loading location...',
-     inVotingEvent:  __DEV__,
+     locationText: this.handleLocationUpdate(true),
      votingVisibile: false,
      // The current state of the application (background or foreground)
      // Will come in handy when reloading data on re-entry to the app
@@ -106,15 +105,7 @@ class Main extends Component {
    };
 
    BeaconController.current.addLocationInformationListener((locationText) => {
-     this.setState({
-       locationText
-     });
-   });
-
-   BeaconController.current.addVotingRegionListener((enter) => {
-     this.setState({
-       inVotingEvent: enter
-     });
+     this.handleLocationUpdate();
    });
  }
 
@@ -138,6 +129,39 @@ class Main extends Component {
    this.setState({
      settingsVisible: true
    });
+ }
+
+ handleLocationUpdate(returns = false) {
+   let locationText = 'Loading location...';
+   if (BeaconController.current.currentLocation() === 'tim') {
+     locationText = "In Tim's Office";
+   } else if (BeaconController.current.currentLocation() === 'dali') {
+     locationText = 'In DALI Lab';
+   } else if (BeaconController.current.currentLocation() === 'voting') {
+     locationText = 'In Voting Event: loading...';
+     ServerCommunicator.current.getEventNow().then((event) => {
+       if (event) {
+
+       } else {
+         const loc = BeaconController.current.currentLocation(true);
+         if (loc === 'dali') {
+           this.setState({ locationText: 'In DALI Lab' });
+         } else if (loc === 'tim') {
+           this.setState({ locationText: "In Tim's Office" });
+         } else {
+           locationText = 'Not in DALI Lab';
+         }
+       }
+     });
+   } else {
+     locationText = 'Not in DALI Lab';
+   }
+
+   if (!returns) {
+     this.setState({ locationText });
+   } else {
+     return locationText;
+   }
  }
 
   /**
@@ -241,8 +265,7 @@ class Main extends Component {
    }).catch((error) => {
      if (error && error.code === 404) {
        this.setState({
-         votingDone: false,
-         inVotingEvent: false
+         votingDone: false
        });
      }
    });
@@ -256,16 +279,6 @@ class Main extends Component {
  }
 
  votingButtonPressed() {
-   if (!BeaconController.current.inVotingEvent && !__DEV__) {
-     Alert.alert('You are not at any event',
-       'No voting event beacon was found nearby. The beacons use Bluetooth, so this may be because bluetooth is off. You might also not allow the app to access location, which is needed',
-       [
-         { text: 'Okay', onPress: () => {} },
-         { text: 'Settings', onPress: () => Linking.openURL('app-settings:') }
-       ]);
-     return;
-   }
-
    console.log('Voting now visible');
    this.setState({
      votingVisibile: true
@@ -389,9 +402,9 @@ class Main extends Component {
          <TouchableHighlight
            underlayColor="rgba(0,0,0,0)"
            style={{ marginLeft: 20, alignSelf: 'flex-start' }}
-           onPress={this.state.inVotingEvent ? this.votingButtonPressed.bind(this) : null}
+           onPress={this.votingButtonPressed.bind(this)}
          >
-           {this.state.inVotingEvent ? <Image source={this.state.votingDone ? require('./Assets/voteDone.png') : require('./Assets/vote.png')} style={styles.settingsButtonImage} /> : <View style={{ width: 30 }} />}
+           <Image source={this.state.votingDone ? require('./Assets/voteDone.png') : require('./Assets/vote.png')} style={styles.settingsButtonImage} />
          </TouchableHighlight>
 
          {/* DALI image */}
@@ -463,20 +476,6 @@ class Main extends Component {
        }
        {this.props.user != null ?
          <LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
-
-           {false ? <View>
-             <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)' }} />
-             {/* Empty and clear view to make the buttons equidistant */}
-
-             {/* Food button */}
-             <TouchableHighlight
-               underlayColor="rgba(0,0,0,0)"
-               onPress={() => {}}
-             >
-               <Image source={require('./Assets/food.png')} style={styles.settingsButtonImage} />
-             </TouchableHighlight>
-           </View> : null}
-
            {/* Empty and clear view to make the buttons equidistant */}
            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)' }} />
 

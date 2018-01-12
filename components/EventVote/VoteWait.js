@@ -9,7 +9,8 @@ import LinearGradient from 'react-native-linear-gradient';
 
 class VoteWait extends Component {
    propTypes: {
-      loading: React.PropTypes.Type.Boolean
+      loading: React.PropTypes.Type.Boolean,
+      voted: React
    }
 
    render() {
