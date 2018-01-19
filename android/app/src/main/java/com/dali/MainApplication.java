@@ -1,43 +1,43 @@
 package com.dali;
 
 import android.app.Application;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.facebook.react.ReactApplication;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
+import com.mackentoch.beaconsandroid.BeaconsAndroidPackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.mackentoch.beaconsandroid.BeaconsAndroidPackage;
 
-import io.fabric.sdk.android.Fabric;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
-
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
     public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
     }
-
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new ReactNativePushNotificationPackage(),
             new LinearGradientPackage(),
-            new BackgroundTimerPackage(),
-              new BeaconsAndroidPackage(),
-              new RNGoogleSigninPackage()
+            new RNGoogleSigninPackage(),
+            new BeaconsAndroidPackage(),
+            new BackgroundTimerPackage()
       );
+    }
+
+    @Override
+    protected String getJSMainModuleName() {
+      return "index";
     }
   };
 
@@ -49,7 +49,6 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    Fabric.with(this, new Crashlytics());
     SoLoader.init(this, /* native exopackage */ false);
   }
 }

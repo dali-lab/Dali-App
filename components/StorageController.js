@@ -127,8 +127,8 @@ class StorageController {
     });
   }
 
-  static setVoteDone(event) {
-    return AsyncStorage.setItem(`${prefix}:eventVoted:${event.id}`, 'true');
+  static setVoteDone(event, voted) {
+    return AsyncStorage.setItem(`${prefix}:eventVoted:${event.id}`, voted == null ? 'true' : `${voted}`);
   }
 }
 

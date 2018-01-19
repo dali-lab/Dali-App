@@ -17,6 +17,7 @@ import {
   TouchableHighlight,
   Animated,
   Easing,
+  ImageBackground,
   Alert,
   StatusBar
 } from 'react-native';
@@ -176,7 +177,7 @@ class Login extends Component {
             barStyle="light-content"
           />}
         {/* Background image is a low poly */}
-        <Image source={require('./Assets/lowPolyBackground.png')} style={styles.container}>
+        <ImageBackground source={require('./Assets/lowPolyBackground.png')} style={styles.container}>
           {/* ... which has a gradient overlay (end slightly transparent so low poly is visible) */}
           <LinearGradient colors={['#2f97aa', 'rgba(250,250,250,0.4)']} style={styles.container}>
             <View>
@@ -207,7 +208,7 @@ class Login extends Component {
                         this.props.onSkipLogin();
                       }}
                     >
-                      <View>
+                      <View style={{padding: 10}}>
                         <Text style={{ color: 'white' }}>Skip Sign In</Text>
                       </View>
                     </TouchableHighlight>
@@ -218,7 +219,7 @@ class Login extends Component {
               </View>
             </View>
           </LinearGradient>
-        </Image>
+        </ImageBackground>
       </View>
     );
   }

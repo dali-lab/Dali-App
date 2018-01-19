@@ -4,236 +4,164 @@ import {
   Text,
   View,
   TouchableHighlight,
-  Alert,
-  Navigator
+  ListView,
 } from 'react-native';
 
+import dateFormat from 'dateformat';
+
 const ServerCommunicator = require('../ServerCommunicator').default;
-const VoteSelection = require('./VoteSelection');
-const VoteOrder = require('./VoteOrder');
-const VoteWait = require('./VoteWait');
-const VoteResults = require('./VoteResults');
+const BeaconController = require('../BeaconController').default;
 const StorageController = require('../StorageController').default;
 
 class VoteMain extends Component {
-   propTypes: {
-      dismiss: ReactNative.PropTypes.func.isRequired,
-      hasVoted: ReactNative.PropTypes.Boolean.isRequired,
-   }
+  constructor(props) {
+    super(props);
 
-   constructor(props) {
-     super(props);
+    const dataSource = new ListView.DataSource({
+      rowHasChanged: (prev, next) => {
+        const dirty = prev.dirty === null ? true : prev.dirty;
+        prev.dirty = false;
+        return prev !== next || dirty;
+      },
+      sectionHeaderHasChanged: (prevSectionData, nextSectionData) => true
+    });
 
-     this.state = {
-       hasVoted: props.hasVoted,
-       results: null,
-       event: null,
-     };
+    this.past = [];
+    this.nowVoting = [];
 
-     ServerCommunicator.current.getEventNow().then((event) => {
-       if (event === null) {
-         return;
-       }
+    this.state = {
+      dataSource: dataSource.cloneWithRowsAndSections({
+        past: this.past,
+        nowVoting: this.nowVoting
+      })
+    };
+    BeaconController.current.confirmVoting();
 
-       event.options = event.options.sort((option1, option2) => {
-         if (option1.name === option2.name) {
-           return 0;
-         }
+    BeaconController.current.addVotingRegionListener(() => {
+      this.updateCurrentEvent();
+    });
 
-         return option1.name > option2.name ? 1 : -1;
-       });
+    this.updateCurrentEvent();
+    this.updatePastEvents();
+  }
 
-       this.setState({
-         event
-       });
+  updatePastEvents() {
+    ServerCommunicator.current.getPastEvents().then((events) => {
+      console.log(events);
+      this.pastEvents = events || [];
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRowsAndSections({ nowVoting: this.nowVoting,  past: this.pastEvents })
+      });
+    }).catch((error) => {
+    });
+  }
 
-       return StorageController.getVoteDone(event).then((value) => {
-         this.setState({
-           hasVoted: value
-         });
-       });
-     }).catch((error) => {
+  updateCurrentEvent() {
+    ServerCommunicator.current.getEventNow().then((event) => {
+      console.log('currentEvent', event);
+      this.setState({ currentEvent: event });
+      this.nowVoting = BeaconController.current.inVotingEvent ? [event] : [];
 
-     });
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRowsAndSections({ nowVoting: this.nowVoting, past: this.pastEvents })
+      });
+    }).catch((error) => {
+      console.log('currentEvent', 'Failed to get!');
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRowsAndSections({ nowVoting: this.nowVoting, past: this.pastEvents })
+      });
+    });
+  }
 
-     this.reloadInterval = setInterval(this.updateResults.bind(this), 1000 * 5);
+  pastEventRowSelected(rowData, sectionID, rowID) {
+    this.props.navigation.navigate('Results', { event: rowData });
+  }
 
-     this.updateResults();
-   }
+  currentEventRowSelected(rowData, sectionID, rowID) {
+    StorageController.getVoteDone(rowData).then((result) => {
+      if (!result) {
+        this.props.navigation.navigate('VoteSelection', { event: rowData });
+      } else {
+        this.props.navigation.navigate('VoteWait', { event: rowData });
+      }
+    });
+  }
 
-   componentWillUnmount() {
-     console.log('Clearing');
-     clearInterval(this.reloadInterval);
-     this.reloadInterval = null;
-   }
+  renderRow(rowData, sectionID, rowID, highlightRow) {
+    console.log('rowData', rowData);
+    const months = [
+      'January', 'February', 'March',
+      'April', 'May', 'June', 'July',
+      'August', 'September', 'October',
+      'November', 'December'
+    ];
 
-   updateResults() {
-     console.log('Wating...');
-     ServerCommunicator.current.getVotingResults().then((results) => {
-       this.setState({
-         results
-       });
-     }).catch((error) => {
-       if (error && error.code !== 400) {
-         console.log(error);
-       }
-     });
-   }
+    const date = new Date(rowData.startTime);
+    const endDate = new Date(rowData.endTime);
+    const day = date.getDate();
+    const monthIndex = date.getMonth();
+    const year = date.getFullYear();
+    return (
+      <TouchableHighlight
+        style={sectionID === 'nowVoting' ? styles.currentEventRow : styles.pastEventRow}
+        onPress={() => {
+          if (sectionID === 'nowVoting') {
+            this.currentEventRowSelected(rowData, sectionID, rowID);
+          } else {
+            this.pastEventRowSelected(rowData, sectionID, rowID);
+          }
+        }}
+        underlayColor="rgba(240, 240, 240, 0.9)"
+      >
+        <View>
+          <Text style={styles.rowTitle}>{rowData.name}</Text>
+          <Text style={styles.rowDescription}>{rowData.description}</Text>
+          <Text style={styles.rowTime}>{months[monthIndex]} {day}, {year}{sectionID === 'nowVoting' ? ` ${dateFormat(date, 'h:MM TT')} - ${dateFormat(endDate, 'h:MM TT')}` : ''}</Text>
+        </View>
+      </TouchableHighlight>
+    );
+  }
 
-   submitVotes() {
-     const order = this.voteOrder.state.order;
-     const choices = this.voteOrder.state.selectedOptions;
+  renderSectionHeader(sectionData, sectionID) {
+    if (sectionID === 'nowVoting') {
+      return (
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionHeaderText}>NOW VOTING</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionHeaderText}>PAST EVENTS</Text>
+        </View>
+      );
+    }
+  }
 
-     const orderedChoices = [];
-     for (let i = 0; i < order.length; i++) {
-       const index = parseInt(order[i], 10);
-       orderedChoices.push(choices[index]);
-     }
-     console.log(orderedChoices);
-     ServerCommunicator.current.submitVotes(
-       orderedChoices[0].id,
-       orderedChoices[1].id,
-       orderedChoices[2].id,
-       this.state.event
-     )
-       .then(() => {
-         this.setState({
-           hasVoted: true,
-         });
-         StorageController.setVoteDone(this.state.event).then(() => {});
-       }).catch((error) => {
-         if (error && error.code === 405) {
-           StorageController.setVoteDone(this.state.event).then(() => {});
-         }
-         console.log(error.message);
-         Alert.alert('Encountered an error', error.message);
-       });
-   }
-
-   renderInternal(route, navigator) {
-     let internalView = <VoteWait loading={true} />;
-
-     if (this.state.event != null) {
-       internalView = <VoteSelection ref={(voteSelection) => { this.voteSelection = voteSelection; }} />;
-
-       if (route.name === 'VoteOrder') {
-         internalView = (<VoteOrder
-           voteComplete={() => {
-             this.updateResults();
-             this.setState({
-               hasVoted: true
-             });
-             StorageController.setVoteDone(this.event).then(() => {});
-             this.updateResults();
-           }}
-           selectedOptions={route.selectedOptions}
-           ref={(voteOrder) => { this.voteOrder = voteOrder; }}
-         />);
-       }
-
-       console.log(this.state);
-       if (this.state.hasVoted) {
-         if (this.voteSelection != null) {
-           this.voteSelection.visible = false;
-         }
-         internalView = <VoteWait event={this.state.event} />;
-       }
-       if (this.state.results != null) {
-         if (this.voteSelection != null) {
-           this.voteSelection.visible = false;
-         }
-         internalView = <VoteResults results={this.state.results} />;
-       }
-     }
-
-     return internalView;
-   }
-
-   render() {
-     return (
-       <Navigator
-         initialRoute={{ name: 'VoteSelection' }}
-         navigationBar={
-           <Navigator.NavigationBar
-             routeMapper={{
-               LeftButton: (route, navigator, index, navState) => {
-                 if (this.state.hasVoted || this.state.results != null) {
-                   return null;
-                 } else if (route.name === 'VoteOrder') {
-                   return (
-                     <TouchableHighlight
-                       underlayColor="rgba(0,0,0,0)"
-                       style={styles.navBarCancelButton}
-                       onPress={navigator.pop}
-                     >
-                       <Text style={styles.navBarCancelText}>{'Back'}</Text>
-                     </TouchableHighlight>
-                   );
-                 } else {
-                   return (
-                     <TouchableHighlight
-                       underlayColor="rgba(0,0,0,0)"
-                       style={styles.navBarCancelButton}
-                       onPress={this.props.dismiss}
-                     >
-                       <Text style={styles.navBarCancelText}>Cancel</Text>
-                     </TouchableHighlight>
-                   );
-                 }
-               },
-               RightButton: (route, navigator, index, navState) => {
-                 // Done Button
-
-                 let text = '';
-                 let func = () => {};
-
-                 if (!this.state.hasVoted && this.state.results === null) {
-                   // We are on Voting selection
-                   if (route.name === 'VoteSelection') {
-                     func = () => this.voteSelection.nextPressed(navigator);
-                     text = 'Next';
-                   } else {
-                     func = this.submitVotes.bind(this);
-                     text = 'Done';
-                   }
-                 } else {
-                   text = 'Done';
-                   func = this.props.dismiss;
-                 }
-
-                 return (
-                   <TouchableHighlight
-                     underlayColor="rgba(0,0,0,0)"
-                     style={styles.navBarDoneButton}
-                     onPress={func}
-                   >
-                     <Text style={styles.navBarDoneText}>{text}</Text>
-                   </TouchableHighlight>
-                 );
-               },
-               Title: (route, navigator, index, navState) => (<Text style={styles.navBarTitleText}>{this.state.results != null ? 'Results' : 'Voting'} for {this.state.event === null ? 'Event...' : this.state.event.name}</Text>)
-             }}
-             style={{ backgroundColor: 'rgb(33, 122, 136)' }}
-           />
-         }
-         renderScene={(route, navigator) =>
-           (<View style={{ flex: 1 }}>
-             {this.renderInternal(route, navigator)}
-           </View>)
-         }
-         style={{ paddingTop: 64 }}
-       />
-     );
-   }
+  render() {
+    return (
+      <ListView
+        style={styles.tableView}
+        dataSource={this.state.dataSource}
+        enableEmptySections={true}
+        renderRow={this.renderRow.bind(this)}
+        renderSectionHeader={this.renderSectionHeader.bind(this)}
+      />
+    );
+  }
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   navBarTitleText: {
     color: 'white',
-    fontFamily: 'Avenir Next',
     fontSize: 18,
+    flex: 1,
+    textAlign: 'center',
     fontWeight: '500',
-    marginTop: 10
+    marginTop: 15
   },
   navBarDoneText: {
     color: 'rgb(89, 229, 205)',
@@ -248,13 +176,47 @@ const styles = StyleSheet.create({
     fontWeight: '300',
   },
   navBarDoneButton: {
-    marginTop: 10,
+    marginTop: 15,
     marginRight: 10,
   },
   navBarCancelButton: {
-    marginTop: 10,
+    marginTop: 15,
     marginLeft: 10,
-  }
+  },
+  navBar: {
+    justifyContent: 'center',
+    paddingTop: 64,
+    backgroundColor: 'rgb(232, 230, 230)'
+  },
+  tableView: {
+    backgroundColor: 'rgb(232, 230, 230)',
+  },
+  sectionHeader: {
+
+  },
+  sectionHeaderText: {
+    padding: 10,
+    color: '#7f7f7f'
+  },
+  currentEventRow: {
+    padding: 10,
+    backgroundColor: 'white'
+  },
+  pastEventRow: {
+    backgroundColor: 'white',
+    padding: 10
+  },
+  rowTitle: {
+    paddingLeft: 5,
+    fontSize: 20,
+  },
+  rowDescription: {
+
+  },
+  rowTime: {
+    color: 'gray',
+    paddingLeft: 5,
+  },
 });
 
 module.exports = VoteMain;

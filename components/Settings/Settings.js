@@ -253,7 +253,7 @@ class Settings extends Component {
  renderFooter() {
    return (
      <View style={styles.sectionFooter}>
-       <Text style={styles.sectionFooterText}>Developed by John Kotz; Designs by Kate Stinson and Jenny Seong</Text>
+       <Text style={styles.sectionFooterText}>Developed by John Kotz; Designs by Kate Stinson, Jenny Seong, and Anne Muller</Text>
      </View>
    );
  }

@@ -1,41 +1,52 @@
 {
   "name": "dali",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest",
-    "cp-deploy": "code-push release-react daliLabApp ios"
+    "test": "jest"
   },
   "dependencies": {
-    "babel-eslint": "^7.2.3",
-    "eslint-config-airbnb": "^15.1.0",
-    "eslint-plugin-flowtype": "^2.40.1",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-prettier": "^2.3.1",
-    "eslint-plugin-react": "^7.5.1",
-    "react": "15.4.2",
-    "react-native": "^0.41.2",
-    "react-native-background-timer": "^1.3.0",
+    "EventEmitter": "^1.0.0",
+    "dateformat": "^3.0.2",
+    "react": "16.2.0",
+    "react-native": "0.52.0",
+    "react-native-background-timer": "^2.0.0",
     "react-native-beacons-manager": "^1.0.7",
-    "react-native-google-signin": "^0.8.1",
-    "react-native-keyboard-spacer": "^0.3.1",
-    "react-native-linear-gradient": "^2.3.0",
-    "react-native-permissions": "^1.0.6",
-    "react-native-push-notification": "^2.2.1",
-    "react-native-sortable-listview": "^0.2.6",
-    "socket.io": "^2.0.4",
+    "react-native-google-signin": "^0.12.0",
+    "react-native-linear-gradient": "^2.4.0",
+    "react-native-push-notification": "^3.0.2",
+    "react-native-sortable-listview": "^0.2.7",
+    "react-navigation": "^1.0.0-beta.25",
     "socket.io-client": "^2.0.4"
   },
   "devDependencies": {
-    "babel-jest": "18.0.0",
-    "babel-preset-react-native": "1.9.1",
-    "eslint": "^4.13.0",
-    "jest": "18.1.0",
-    "react-test-renderer": "15.4.2"
+    "babel-eslint": "^8.2.1",
+    "babel-jest": "^22.0.6",
+    "babel-preset-react-native": "^4.0.0",
+    "eslint": "^4.15.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-flowtype": "^2.41.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-prettier": "^2.4.0",
+    "eslint-plugin-react": "^7.5.1",
+    "jest": "^22.0.6",
+    "react-test-renderer": "^16.2.0"
   },
   "jest": {
     "preset": "react-native"
-  }
+  },
+  "description": "The DALI Lab app for android",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dali-lab/Dali-App.git"
+  },
+  "author": "John Kotz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dali-lab/Dali-App/issues"
+  },
+  "homepage": "https://github.com/dali-lab/Dali-App#readme"
 }

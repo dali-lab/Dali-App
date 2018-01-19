@@ -4,99 +4,150 @@ import {
   Text,
   View,
   ListView,
+  Image,
   Dimensions
 } from 'react-native';
 
+const env = require('../Environment');
+const ApiUtils = require('../ApiUtils').default;
+const ribbonImage = require('../Assets/ribbon.png');
+
 class VoteResults extends Component {
-   propTypes: {
-      navigator: React.PropTypes.Object.isRequired,
-      results: React.PropTypes.Object.isRequired,
-   }
+  static navigationOptions = ({ navigation }) => ({
+    title: `Voting Results: ${navigation.state.params.event.name}`,
+  });
 
-   constructor(props) {
-     super(props);
+  constructor(props) {
+    super(props);
 
-     const dataSource = new ListView.DataSource({
-       rowHasChanged: (prev, next) => {
-         const dirty = prev.dirty === null ? true : prev.dirty;
-         prev.dirty = false;
-         return prev !== next || dirty;
-       },
-     });
+    const dataSource = new ListView.DataSource({
+      rowHasChanged: (prev, next) => {
+        const dirty = prev.dirty === null ? true : prev.dirty;
+        prev.dirty = false;
+        return prev !== next || dirty;
+      },
+      sectionHeaderHasChanged: (prev, next) => prev !== next
+    });
+    const { event } = props.navigation.state.params;
 
-     const results = this.processResults(props.results);
-     this.state = {
-       dataSource : dataSource.cloneWithRows(results)
-     };
-   }
+    this.state = {
+      event,
+      dataSource,
+    };
 
-   componentWillReceiveProps(nextProps) {
-     const results = this.processResults(nextProps.results);
+    this.loadResults(event);
+  }
 
-     this.setState({
-       dataSource : this.state.dataSource.cloneWithRows(results)
-     });
-   }
+  loadResults(event) {
+    fetch(`${env.serverURL}/api/voting/public/${event.id}/results`)
+      .then(ApiUtils.checkStatus)
+      .then(responseJson => responseJson.json())
+      .then((response) => {
+        const awards = [];
+        response.forEach((option) => {
+          option.awards.forEach((award) => {
+            awards.push({ award, option });
+          });
+        });
+        awards.sort((result1, result2) => {
+          if (result1.award > result2.award) {
+            return 1;
+          } else if (result1.award < result2.award) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+        const awardsObject = {};
+        awards.forEach(({ award, option }, i) => {
+          awardsObject[i] = { thing: { award, option } };
+        });
 
-   processResults(results) {
-     results.forEach((result) => {
-       result.dirty = true;
-     });
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRowsAndSections(awardsObject),
+          results: awards
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-     results.sort((result1, result2) => result1.name < result2.name);
-     return results;
-   }
+  processResults(results) {
+    results.forEach((result) => {
+      result.dirty = true;
+    });
 
-   renderRow(option) {
-     return (
-       <View>
-         <View style={styles.row}>
-           <Text style={styles.rowText}>{option.name}</Text>
-           <View style={styles.awardContainer}>{
-             option.awards.map(award => <Text key={award} style={styles.awardText}>{award}</Text>)
-           }</View>
-         </View>
-         <View style={styles.separator} />
-       </View>
-     );
-   }
+    results.sort((result1, result2) => result1.award < result2.award);
+    return results;
+  }
 
-   render() {
-     return (
-       <View style={styles.container}>
-         <ListView style={styles.listView} renderRow={this.renderRow.bind(this)} dataSource={this.state.dataSource} />
-       </View>
-     );
-   }
+  renderRow(award) {
+    console.log('badmitten', award);
+    return (
+      <View>
+        <View style={styles.row}>
+          <View style={styles.awardRow}>
+            <Image style={styles.ribbonImage} source={ribbonImage} />
+            <Text style={styles.rowText}>{award.award}</Text>
+          </View>
+          <View style={styles.separator} />
+          <Text style={styles.awardText}>{award.option.name}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  renderSectionHeader() {
+    return <View style={{ height: 20, backgroundColor: 'rgba(255, 255, 255, 0)' }} />;
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <ListView
+          style={styles.listView}
+          renderSectionHeader={this.renderSectionHeader.bind(this)}
+          renderRow={this.renderRow.bind(this)}
+          dataSource={this.state.dataSource}
+        />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   row: {
     backgroundColor : 'white',
     justifyContent : 'center',
-    flexDirection : 'row',
-    padding: 15
+    paddingLeft: 15
   },
   separator: {
     height: 1,
     marginLeft: 15,
-    backgroundColor: 'rgb(177,177,177)'
+    backgroundColor: 'rgb(207, 207, 207)'
   },
   rowText: {
-    flex: 1,
-    fontFamily: 'Avenir Next',
-    fontSize: 18,
-    textAlign: 'left'
+    fontWeight: '400',
+    fontSize: 30,
+    color: '#58AADA',
+    paddingLeft: 10,
   },
   awardText: {
-    color: 'gray',
-    marginLeft: 20,
-    textAlign: 'right',
+    fontSize: 22,
+    color: '#F27D00',
     paddingBottom: 3,
+    paddingTop: 5,
   },
-  awardContainer: {
-    marginTop: 3
-
+  awardRow: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  ribbonImage: {
+    height: 50,
+    width: 40,
+    resizeMode: 'contain'
   },
   container: {
     flex:1,

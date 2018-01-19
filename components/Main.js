@@ -32,7 +32,7 @@ const ServerCommunicator = require('./ServerCommunicator').default;
 const BeaconController = require('./BeaconController').default;
 const Settings = require('./Settings/Settings');
 const PeopleInLab = require('./PeopleInLab');
-const EventVote = require('./EventVote/VoteTopLevel');
+const EventVote = require('./EventVote/VoteTopLevel').default;
 const StorageController = require('./StorageController').default;
 
 

@@ -73,7 +73,7 @@ class ServerCommunicator {
        // Again, experimental system
        this.awaitingUser = false;
      } else {
-       const user = this.user;
+       const { user } = this;
        if (user != null) {
          // Post checkin
          this.postCheckin(user).then((response) => {
@@ -108,7 +108,7 @@ class ServerCommunicator {
        return this.post(`${env.serverURL}/api/events/checkin`, { username: user.email });
      }
      return new Promise(((resolve, reject) => {
-       reject('User is not a DALI member');
+       reject(new Error('User is not a DALI member'));
      }));
    }
 
@@ -215,12 +215,21 @@ class ServerCommunicator {
          this.event = responseJson;
          return new Promise((resolve, reject) => {
            if (responseJson == null || responseJson.length === 0) {
-             reject({ code: 404 });
+             reject(new Error({ code: 404 }));
              return;
            }
            resolve(responseJson);
          });
        });
+   }
+
+   getHaveVotedForEvent(event) {
+     return fetch(`${env.serverURL}/api/voting/public/${event.id}/hasVoted`)
+       .then(ApiUtils.checkStatus)
+       .then(response => response.json())
+       .then(responseJson => new Promise(((resolve, reject) => {
+         resolve(responseJson.voted || false);
+       })));
    }
 
    getPastEvents() {
@@ -231,7 +240,7 @@ class ServerCommunicator {
        .then(response => response.json())
        .then(responseJson => new Promise((resolve, reject) => {
          if (responseJson == null || responseJson.length === 0) {
-           reject({ code: 404 });
+           reject(new Error({ code: 404 }));
            return;
          }
          resolve(responseJson);
@@ -239,14 +248,14 @@ class ServerCommunicator {
    }
 
    getOptionsForVotingEvent(event) {
-     return this.get(`${env.serverURL}/api/voting/public/${event.id}`, {
+     return fetch(`${env.serverURL}/api/voting/public/${event.id}`, {
        method: 'GET'
      })
        .then(ApiUtils.checkStatus)
        .then(response => response.json())
        .then(response => new Promise(((resolve, reject) => {
          if (response == null || response.length === 0) {
-           reject({ code: 404 });
+           reject(new Error({ code: 404 }));
            return;
          }
          resolve(response);
@@ -255,27 +264,24 @@ class ServerCommunicator {
 
    /**
    * Submits the given ids as votes
-   * PARAMETERS:
-   *  - first: First choice (id)
-   *  - second: Second choice (id)
-   *  - third: Third choice (id)
    */
-   submitVotes(first, second, third, event) {
-     return this.loadTokenAndUser(this.user)
-       .then(() => this.post(`${env.serverURL}/api/voting/public/${event.id}`, {
-         options: [
-           first,
-           second,
-           third
-         ],
-         user: this.userObject.id,
-       }, 'POST', true));
+   submitVotes(options, event) {
+     return this.post(`${env.serverURL}/api/voting/public/${event.id}`, options, 'POST')
+       .then(ApiUtils.checkStatus);
    }
 
    // / Simple convenience post method
    post(path, params, method, token) {
      // I allow the caller to pass a flag that bypasses the user check for the given post
-     console.log(`Posting to: ${path}`);
+     console.log(`Posting to: ${path}`, {
+       method: method || 'POST',
+       headers: {
+         Accept: 'application/json',
+         'Content-Type': 'application/json',
+         authorization: token || this.serverToken
+       },
+       body: JSON.stringify(params),
+     });
      return fetch(path, {
        method: method || 'POST',
        headers: {

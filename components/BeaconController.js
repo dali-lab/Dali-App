@@ -361,8 +361,12 @@ class BeaconController {
     BeaconController.performCallbacks(this.enterExitListeners, this.inDALI);
   }
 
+  confirmVoting() {
+    Beacons.startRangingBeaconsInRegion(env.votingRegion);
+  }
+
   votingBeaconsDidRange(data) {
-    this.inVotingEvent = data.beacons.length > 0;
+    this.inVotingEvent = data.beacons.length > 0 || this.inVotingEvent;
     this.votingEventMajor = data.beacons.length > 0 ? data.beacons[0].major : null;
     BeaconController.performCallbacks(this.votingRegionListeners, data.beacons.length > 0);
     this.stopRanging();

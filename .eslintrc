@@ -159,6 +159,7 @@
     "no-label-var": 1,               // disallow labels that share a name with a variable
     "no-undef": 2,                   // disallow use of undeclared variables unless mentioned in a /*global */ block
     "no-undefined": 0,               // disallow use of undefined variable (off by default)
+    "react/no-unused-state": 0,
     "no-undef-init": 1,              // disallow use of undefined when initializing variables
     "no-unused-vars": [1, {"vars": "all", "args": "none"}], // disallow declaration of variables that are not used in the code
     "no-use-before-define": 0,       // disallow use of variables before they are defined

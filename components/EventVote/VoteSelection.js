@@ -4,14 +4,27 @@ import {
   Text,
   View,
   TouchableHighlight,
+  Button,
   ListView,
   Image,
-  Alert,
+  Alert
 } from 'react-native';
+import EventEmitter from 'EventEmitter';
 
 const ServerCommunicator = require('../ServerCommunicator').default;
+const StorageController = require('../StorageController').default;
+
+const eventEmitter = new EventEmitter();
 
 class VoteSelection extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    title: `${navigation.state.params.event.name}: Vote`,
+    headerRight: <Button
+      title="Done"
+      onPress={() => eventEmitter.emit('voteSelectionNextButtonPressed')}
+    />
+  });
+
   constructor(props) {
     super(props);
     // The list view dataSource
@@ -22,33 +35,42 @@ class VoteSelection extends Component {
         return prev !== next || dirty;
       },
     });
+    eventEmitter.addListener('voteSelectionNextButtonPressed', this.nextPressed.bind(this));
+    const { event } = props.navigation.state.params;
+    this.selected = [];
 
     this.state = {
-      eventData: null,
+      event,
       options: [],
       dataSource,
       numSelected: 0
     };
     this.visible = true;
+    this.loadOptions(event);
+  }
 
-    ServerCommunicator.current.getEventNow().then((event) => {
-      if (event === null) { return; }
-
-      event.options.forEach((option) => {
+  loadOptions(event) {
+    ServerCommunicator.current.getOptionsForVotingEvent(event).then((options) => {
+      options.forEach((option) => {
         option.selected = false;
         option.dirty = false;
         option.action = () => {
           option.dirty = true;
           option.selected = !option.selected;
+          if (option.selected) {
+            this.selected.push(option);
+          } else {
+            this.selected = this.selected.filter(op => op.id !== option.id);
+          }
 
-          if (this.state.numSelected >= 3) {
+          if (this.state.numSelected >= this.state.event.votingConfig.numSelected) {
             this.state.options.forEach((option) => {
               option.dirty = true;
             });
           }
 
           const numSelected = this.state.numSelected + (option.selected ? 1 : -1);
-          if (numSelected >= 3) {
+          if (numSelected >= this.state.event.votingConfig.numSelected) {
             this.state.options.forEach((option) => {
               option.dirty = true;
             });
@@ -63,7 +85,7 @@ class VoteSelection extends Component {
         };
       });
 
-      event.options = event.options.sort((option1, option2) => {
+      options = options.sort((option1, option2) => {
         if (option1.name === option2.name) {
           return 0;
         }
@@ -73,63 +95,79 @@ class VoteSelection extends Component {
 
       if (this.visible) {
         this.setState({
-          eventData: event,
-          options: event.options,
-          dataSource: this.state.dataSource.cloneWithRows(event.options)
+          options,
+          dataSource: this.state.dataSource.cloneWithRows(options)
         });
       }
-    }).catch((error) => {
-
     });
   }
 
-   nextPressed=(navigator) => {
-     // Deal with stuff
-     if (this.state.numSelected !== 3) {
-       Alert.alert('Select the top 3 to continue');
-       return;
-     }
+  nextPressed() {
+    // Deal with stuff
+    console.log('nextPressed');
+    if (this.state.numSelected !== this.state.event.votingConfig.numSelected) {
+      Alert.alert(`Select the ${this.state.event.votingConfig.numSelected} options you wish to vote for to continue`);
+      return;
+    }
 
-     const selected = this.state.options.filter(option => option.selected);
+    ServerCommunicator.current.submitVotes(this.selected, this.state.event)
+      .then(() => StorageController.setVoteDone(this.state.event))
+      .then(() => {
+        this.props.navigation.goBack();
+        this.props.navigation.navigate('VoteWait', { event: this.state.event });
+      }).catch((error) => {
+        Alert.alert('Encountered an error!');
+        console.error(error);
+      });
+  }
 
-     navigator.push({ name: 'VoteOrder', selectedOptions: selected });
-   }
+  renderRow(option) {
+    let index = -1;
+    this.selected.forEach((opt, i) => {
+      if (opt.id === option.id) {
+        index = i;
+      }
+    });
+    const postfixes = ['st', 'nd', 'rd'];
 
-   renderRow(option) {
-     return (
-       <TouchableHighlight
-         underlayColor="rgb(112, 187, 173)"
-         onPress={this.state.numSelected < 3 || option.selected ? () => {
-           option.action();
-         } : null}
-       >
-         <View style={styles.row}>
-           <View style={styles.rowInnerContainer}>
-             <Text style={styles.rowText}>{option.name}</Text>
-             {option.selected ? <Image source={require('../Assets/checkmark.png')} style={styles.rowSelectionImage} /> : null}
-           </View>
-           <View style={styles.seperator} />
-         </View>
-       </TouchableHighlight>
-     );
-   }
+    return (
+      <TouchableHighlight
+        underlayColor="rgb(112, 187, 173)"
+        onPress={this.state.numSelected < this.state.event.votingConfig.numSelected || option.selected ? () => {
+        option.action();
+      } : null}
+      >
+        <View style={styles.row}>
+          <View style={styles.rowInnerContainer}>
+            <Text style={styles.rowText}>{option.name}</Text>
+            {option.selected && !this.state.event.votingConfig.ordered ? <Image source={require('../Assets/checkmark.png')} style={styles.rowSelectionImage} /> : null}
+          </View>
+          {
+            this.state.event.votingConfig.ordered && option.selected ?
+              <Text style={styles.orderText}>{index < 3 ? `${index + 1}${postfixes[index]} choice` : `${index + 1}th choice`}</Text>
+              : null
+          }
+        </View>
+      </TouchableHighlight>
+    );
+  }
 
-   render() {
-     return (
-       <View style={styles.container}>
-         <View style={styles.headerView}>
-           <Text style={styles.headerText}>{this.state.eventData === null ? 'Loading...' : this.state.eventData.description}</Text>
-         </View>
-         <Text style={styles.headerText}>Choose 3 of the following...</Text>
-         <View style={styles.headerSeperator} />
-         <ListView
-           style={styles.listView}
-           dataSource={this.state.dataSource}
-           renderRow={this.renderRow.bind(this)}
-         />
-       </View>
-     );
-   }
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.headerView}>
+          <Text style={styles.headerText}>{this.state.event === null ? 'Loading...' : this.state.event.description}</Text>
+        </View>
+        <Text style={styles.headerText}>Choose {this.state.event.votingConfig.numSelected} of the following...</Text>
+        <View style={styles.headerSeperator} />
+        <ListView
+          style={styles.listView}
+          dataSource={this.state.dataSource}
+          renderRow={this.renderRow.bind(this)}
+        />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -145,7 +183,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir Next',
   },
   row: {
-    marginLeft: 10,
+    backgroundColor: 'white',
+    padding: 10
   },
   rowInnerContainer: {
     flexDirection: 'row',
@@ -154,8 +193,11 @@ const styles = StyleSheet.create({
   rowText: {
     fontSize: 20,
     padding: 10,
-    fontFamily: 'Avenir Next',
     flex: 1
+  },
+  orderText: {
+    marginLeft: 10,
+    color: 'rgb(153, 153, 153)'
   },
   rowSelectionImage: {
     height: 20,
