@@ -21,8 +21,7 @@ import {
   Dimensions,
   AppState,
   Linking,
-  Platform,
-  Alert
+  Platform
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { GoogleSignin } from 'react-native-google-signin';
@@ -72,430 +71,431 @@ PROPS:
 - user: Object defining the user
 */
 class Main extends Component {
- propTypes: {
-  onLogout: ReactNative.PropTypes.func,
-  user: ReactNative.PropTypes.object.isRequired,
- }
+  propTypes: {
+    onLogout: ReactNative.PropTypes.func,
+    user: ReactNative.PropTypes.object.isRequired,
+  }
 
- constructor() {
-   super();
+  constructor() {
+    super();
 
-   // All very important and not at all understandable:
-   this.state = {
-     // The data source for the office hours list view
-     officeHoursDataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
-     // The data source for the events list view
-     eventsDataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
-     // Indicates whether the Settings component is currently presented over the Main
-     settingsVisible: false,
-     // Indicates whether the PeopleInLab component is currently presented over the Main
-     peopleInLabVisible: false,
-     // Indicates whether the office hours list view is currently expanded (Read more: toggleSectionGrow)
-     officeHoursSelected: false,
-     // Indicates whether the events list view is currently expanded (Read more: toggleSectionGrow)
-     eventsSelected: false,
-     votingDone: false,
-     // Holds the data I will get about the office hours
-     officeHours: null,
-     locationText: this.handleLocationUpdate(true),
-     votingVisibile: false,
-     // The current state of the application (background or foreground)
-     // Will come in handy when reloading data on re-entry to the app
-     appState: AppState.currentState,
-   };
+    // All very important and not at all understandable:
+    this.state = {
+      // The data source for the office hours list view
+      officeHoursDataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
+      // The data source for the events list view
+      eventsDataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
+      // Indicates whether the Settings component is currently presented over the Main
+      settingsVisible: false,
+      // Indicates whether the PeopleInLab component is currently presented over the Main
+      peopleInLabVisible: false,
+      // Indicates whether the office hours list view is currently expanded (Read more: toggleSectionGrow)
+      officeHoursSelected: false,
+      // Indicates whether the events list view is currently expanded (Read more: toggleSectionGrow)
+      eventsSelected: false,
+      votingDone: false,
+      // Holds the data I will get about the office hours
+      officeHours: null,
+      locationText: this.handleLocationUpdate(true),
+      votingVisibile: false,
+      // The current state of the application (background or foreground)
+      // Will come in handy when reloading data on re-entry to the app
+      appState: AppState.currentState,
+    };
 
-   BeaconController.current.addLocationInformationListener((locationText) => {
-     this.handleLocationUpdate();
-   });
- }
+    BeaconController.current.addLocationInformationListener((locationText) => {
+      this.handleLocationUpdate();
+    });
+  }
 
- componentDidMount() {
-   // Sets up a listener that will be triggered when the the app switches between background and foreground (or vise versa)
-   AppState.addEventListener('change', this._handleAppStateChange);
+  componentDidMount() {
+    // Sets up a listener that will be triggered when the the app switches between background and foreground (or vise versa)
+    AppState.addEventListener('change', this._handleAppStateChange);
 
-   // Get the data to be shown
-   this.refreshData();
- }
+    // Get the data to be shown
+    this.refreshData();
+  }
 
- componentWillUnmount() {
-   AppState.removeEventListener('change', this._handleAppStateChange);
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
 
-   clearInterval(this.reloadInterval);
-   this.reloadInterval = null;
- }
+    clearInterval(this.reloadInterval);
+    this.reloadInterval = null;
+  }
 
   // / Shows the Settings modal
- settingsButtonPressed() {
-   this.setState({
-     settingsVisible: true
-   });
- }
+  settingsButtonPressed() {
+    this.setState({
+      settingsVisible: true
+    });
+  }
 
- handleLocationUpdate(returns = false) {
-   let locationText = 'Loading location...';
-   if (BeaconController.current.currentLocation() === 'tim') {
-     locationText = "In Tim's Office";
-   } else if (BeaconController.current.currentLocation() === 'dali') {
-     locationText = 'In DALI Lab';
-   } else if (BeaconController.current.currentLocation() === 'voting') {
-     locationText = 'In Voting Event: loading...';
-     ServerCommunicator.current.getEventNow().then((event) => {
-       if (event) {
+  handleLocationUpdate(returns = false) {
+    let locationText = 'Loading location...';
+    if (BeaconController.current.currentLocation() === 'tim') {
+      locationText = "In Tim's Office";
+    } else if (BeaconController.current.currentLocation() === 'dali') {
+      locationText = 'In DALI Lab';
+    } else if (BeaconController.current.currentLocation() === 'voting') {
+      locationText = 'In Voting Event: loading...';
+      ServerCommunicator.current.getEventNow().then((event) => {
+        if (event) {
 
-       } else {
-         const loc = BeaconController.current.currentLocation(true);
-         if (loc === 'dali') {
-           this.setState({ locationText: 'In DALI Lab' });
-         } else if (loc === 'tim') {
-           this.setState({ locationText: "In Tim's Office" });
-         } else {
-           locationText = 'Not in DALI Lab';
-         }
-       }
-     });
-   } else {
-     locationText = 'Not in DALI Lab';
-   }
+        } else {
+          const loc = BeaconController.current.currentLocation(true);
+          if (loc === 'dali') {
+            this.setState({ locationText: 'In DALI Lab' });
+          } else if (loc === 'tim') {
+            this.setState({ locationText: "In Tim's Office" });
+          } else {
+            locationText = 'Not in DALI Lab';
+          }
+        }
+      });
+    } else {
+      locationText = 'Not in DALI Lab';
+    }
 
-   if (!returns) {
-     this.setState({ locationText });
-   } else {
-     return locationText;
-   }
- }
-
-  /**
-	Logout and notify the index.__.js to switch to Login
-	*/
- logout() {
-   if (this.props.user === null) {
-     this.props.onLogout();
-   }
-
-   GoogleSignin.signOut()
-     .then(() => {
-       this.props.onLogout();
-     })
-     .catch((err) => {
-       console.log(err);
-     });
-   clearInterval(this.reloadInterval);
-   this.reloadInterval = undefined;
- }
+    if (!returns) {
+      this.setState({ locationText });
+    } else {
+      return locationText;
+    }
+  }
 
   /**
-	Refreshes the data that is to be presented.
-	This includes:
-	- Office hours
-	- Upcoming events
-	- Current location (ie. in lab or not)
-	*/
- refreshData() {
-   if (this.reloadInterval === null) {
-     console.log('Making interval');
-     this.reloadInterval = setInterval(() => {
-       this.refreshData();
-     }, 1000 * 60);
-   }
+  Logout and notify the index.__.js to switch to Login
+  */
+  logout() {
+    if (this.props.user === null) {
+      this.props.onLogout();
+    }
 
-   this.refreshVotingData();
+    GoogleSignin.signOut()
+      .then(() => {
+        this.props.onLogout();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    clearInterval(this.reloadInterval);
+    this.reloadInterval = undefined;
+  }
 
-   console.log('Refreshing...');
-   // Retrieve office hours
-   ServerCommunicator.current.getUpcomingEvents().then((events) => {
-     console.log('Got events...');
-     console.log(events);
-     let i = 0;
-     while (i < events.length) {
-       const event = events[i];
-       if (event.today && i === 0) {
-         events.splice(i, 0, 'TODAY SEPERATOR');
-         i++;
-       } else if (!event.nextWeek && !event.today && (i > 0 ? events[i - 1].today : true)) {
-         events.splice(i, 0, 'THIS WEEK SEPERATOR');
-         i++;
-       } else if (event.nextWeek) {
-         events.splice(i, 0, 'NEXT WEEK SEPERATOR');
-         break;
-       }
-       i++;
-     }
+  /**
+  Refreshes the data that is to be presented.
+  This includes:
+  - Office hours
+  - Upcoming events
+  - Current location (ie. in lab or not)
+  */
+  refreshData() {
+    if (this.reloadInterval === null) {
+      console.log('Making interval');
+      this.reloadInterval = setInterval(() => {
+        this.refreshData();
+      }, 1000 * 60);
+    }
 
-     this.setState({
-       // Same as above, but with the events
-       eventsDataSource: this.state.eventsDataSource.cloneWithRows(events)
-     });
+    this.refreshVotingData();
 
-     if (events.length > 0) {
-       // Again, same as before:
-       // Auto refresh when an event ends
-       let i = 0;
-       let first = events[0];
-       while (i < events.length && first.endDate === undefined) {
-         first = events[++i];
-       }
-       if (first.today) {
-         setTimeout(() => {
-           this.refreshData();
-         }, Math.abs((new Date()) - first.endDate));
-       }
-     }
-   }).catch((error) => {
-     console.log(error);
-   });
-   // BeaconController.current.startRanging();
+    console.log('Refreshing...');
+    // Retrieve office hours
+    ServerCommunicator.current.getUpcomingEvents().then((events) => {
+      console.log('Got events...');
+      console.log(events);
+      let i = 0;
+      while (i < events.length) {
+        const event = events[i];
+        if (event.today && i === 0) {
+          events.splice(i, 0, 'TODAY SEPERATOR');
+          i++;
+        } else if (!event.nextWeek && !event.today && (i > 0 ? events[i - 1].today : true)) {
+          events.splice(i, 0, 'THIS WEEK SEPERATOR');
+          i++;
+        } else if (event.nextWeek) {
+          events.splice(i, 0, 'NEXT WEEK SEPERATOR');
+          break;
+        }
+        i++;
+      }
 
-   if (this.reloadInterval === null) {
-     this.reloadInterval = setInterval(() => {
-       this.refreshData();
-     }, 1000 * 60 * 5);
-   }
- }
+      this.setState({
+        // Same as above, but with the events
+        eventsDataSource: this.state.eventsDataSource.cloneWithRows(events)
+      });
+
+      if (events.length > 0) {
+        // Again, same as before:
+        // Auto refresh when an event ends
+        let i = 0;
+        let first = events[0];
+        while (i < events.length && first.endDate === undefined) {
+          first = events[++i];
+        }
+        if (first.today) {
+          setTimeout(() => {
+            this.refreshData();
+          }, Math.abs((new Date()) - first.endDate));
+        }
+      }
+    }).catch((error) => {
+      console.log(error);
+    });
+    // BeaconController.current.startRanging();
+
+    if (this.reloadInterval === null) {
+      this.reloadInterval = setInterval(() => {
+        this.refreshData();
+      }, 1000 * 60 * 5);
+    }
+  }
 
 
- refreshVotingData() {
-   ServerCommunicator.current.getEventNow().then((event) => {
-     if (event) {
-       StorageController.getVoteDone(event).then((value) => {
-         this.setState({
-           votingDone: value
-         });
-       });
-     }
-   }).catch((error) => {
-     if (error && error.code === 404) {
-       this.setState({
-         votingDone: false
-       });
-     }
-   });
- }
+  refreshVotingData() {
+    ServerCommunicator.current.getEventNow().then((event) => {
+      if (event) {
+        StorageController.getVoteDone(event).then((value) => {
+          this.setState({
+            votingDone: value
+          });
+        });
+      }
+    }).catch((error) => {
+      if (error && error.code === 404) {
+        this.setState({
+          votingDone: false
+        });
+      }
+    });
+  }
 
   // / Shows the PeopleInLab modal
- peopleInLabPressed() {
-   this.setState({
-     peopleInLabVisible: true
-   });
- }
+  peopleInLabPressed() {
+    this.setState({
+      peopleInLabVisible: true
+    });
+  }
 
- votingButtonPressed() {
-   console.log('Voting now visible');
-   this.setState({
-     votingVisibile: true
-   });
- }
+  votingButtonPressed() {
+    console.log('Voting now visible');
+    this.setState({
+      votingVisibile: true
+    });
+  }
 
   // / Dismisses all modals shown
- hideModals() {
-   this.setState({
-     settingsVisible: false,
-     peopleInLabVisible: false,
-     votingVisibile: false
-   });
- }
+  hideModals() {
+    this.setState({
+      settingsVisible: false,
+      peopleInLabVisible: false,
+      votingVisibile: false
+    });
+  }
 
- _handleAppStateChange = (nextAppState) => {
-   // Refresh data if the app is coming into the foreground
-   if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-     console.log('App has come to the foreground!');
-     this.refreshData();
-   } else {
-     clearInterval(this.reloadInterval);
-     this.reloadInterval = null;
-   }
-   this.setState({ appState: nextAppState });
- }
+  _handleAppStateChange = (nextAppState) => {
+    // Refresh data if the app is coming into the foreground
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      console.log('App has come to the foreground!');
+      this.refreshData();
+    } else {
+      clearInterval(this.reloadInterval);
+      this.reloadInterval = null;
+    }
+    this.setState({ appState: nextAppState });
+  }
 
 
   // / Renders a row for an event and returns it
- renderEventRow(event) {
-   if (event === 'TODAY SEPERATOR') {
-     return (
-       <View style={styles.weekSeperator}>
-         <View style={styles.weekSeperatorLine} />
-         <Text style={styles.weekSeperatorText}>Today</Text>
-         <View style={styles.weekSeperatorLine} />
-       </View>
-     );
-   } else if (event === 'THIS WEEK SEPERATOR') {
-     return (
-       <View style={styles.weekSeperator}>
-         <View style={styles.weekSeperatorLine} />
-         <Text style={styles.weekSeperatorText}>This Week</Text>
-         <View style={styles.weekSeperatorLine} />
-       </View>
-     );
-   } else if (event === 'NEXT WEEK SEPERATOR') {
-     return (
-       <View style={styles.weekSeperator}>
-         <View style={styles.weekSeperatorLine} />
-         <Text style={styles.weekSeperatorText}>Next Week</Text>
-         <View style={styles.weekSeperatorLine} />
-       </View>
-     );
-   }
+  renderEventRow(event) {
+    if (event === 'TODAY SEPERATOR') {
+      return (
+        <View style={styles.weekSeperator}>
+          <View style={styles.weekSeperatorLine} />
+          <Text style={styles.weekSeperatorText}>Today</Text>
+          <View style={styles.weekSeperatorLine} />
+        </View>
+      );
+    } else if (event === 'THIS WEEK SEPERATOR') {
+      return (
+        <View style={styles.weekSeperator}>
+          <View style={styles.weekSeperatorLine} />
+          <Text style={styles.weekSeperatorText}>This Week</Text>
+          <View style={styles.weekSeperatorLine} />
+        </View>
+      );
+    } else if (event === 'NEXT WEEK SEPERATOR') {
+      return (
+        <View style={styles.weekSeperator}>
+          <View style={styles.weekSeperatorLine} />
+          <Text style={styles.weekSeperatorText}>Next Week</Text>
+          <View style={styles.weekSeperatorLine} />
+        </View>
+      );
+    }
 
-   // It is touchable so the user can click it an open the event in a web-browser
-   // underlayColor="rgba(0,0,0,0.1)" makes there be a slightly opaque overlay to be placed on the row when pressed
-   return (
-     <View style={styles.row}>
-       <Text style={styles.leftRowText}>{event.summary}</Text>
-       <View style={styles.rightRowView}>
-         <Text style={styles.rowTitle}>{formatEvent(event.startDate, event.endDate)}</Text>
-         <Text style={styles.detailText}>{event.location === '' ? event.description : event.location}</Text>
-       </View>
-     </View>
-   );
- }
+    // It is touchable so the user can click it an open the event in a web-browser
+    // underlayColor="rgba(0,0,0,0.1)" makes there be a slightly opaque overlay to be placed on the row when pressed
+    return (
+      <View style={styles.row}>
+        <Text style={styles.leftRowText}>{event.summary}</Text>
+        <View style={styles.rightRowView}>
+          <Text style={styles.rowTitle}>{formatEvent(event.startDate, event.endDate)}</Text>
+          <Text style={styles.detailText}>{event.location === '' ? event.description : event.location}</Text>
+        </View>
+      </View>
+    );
+  }
   // / Renders a row for a office hour and returns it
- renderOfficeHoursRow(hour) {
-   return (
-     <View style={styles.row}>
-       <Text style={[styles.leftRowText, { width: 60 }]}>{hour.startDate.getHours() - 12} - {hour.endDate.getHours() - 12} pm</Text>
-       <View style={styles.rightRowView}>
-         <Text style={styles.rowTitle}>{hour.name}</Text>
-         <Text style={styles.detailText}>{hour.skills}</Text>
-       </View>
-     </View>
-   );
- }
+  renderOfficeHoursRow(hour) {
+    return (
+      <View style={styles.row}>
+        <Text style={[styles.leftRowText, { width: 60 }]}>{hour.startDate.getHours() - 12} - {hour.endDate.getHours() - 12} pm</Text>
+        <View style={styles.rightRowView}>
+          <Text style={styles.rowTitle}>{hour.name}</Text>
+          <Text style={styles.detailText}>{hour.skills}</Text>
+        </View>
+      </View>
+    );
+  }
 
   /**
-	Renders the Main view
-	VERY complicated
-	*/
- render() {
-   return (
-     <LinearGradient colors={['#2696a9', 'rgb(146, 201, 210)']} style={styles.container}>
-       {/* Creates a gradient view that acts as the background */}
-       {/* Controlls the modal presented views that branch off. Transitions using a slide up */}
-       <Modal
-         animationType={'slide'}
-         transparent={false}
-         visible={this.state.settingsVisible || this.state.peopleInLabVisible || this.state.votingVisibile}
-         onRequestClose={this.hideModals.bind(this)}
-       >
-         {this.state.settingsVisible ? <Settings
-           user={this.props.user}
-           onLogout={this.logout.bind(this)}
-           dismiss={this.hideModals.bind(this)}
-         /> : null
-         }
-         {this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)} /> : null}
-         {this.state.votingVisibile ? <EventVote
-           dismiss={() => {
-             this.refreshVotingData();
-             this.hideModals();
-           }}
-           hasVoted={this.state.votingDone}
-         /> : null}
-       </Modal>
+  Renders the Main view
+  VERY complicated
+  */
+  render() {
+    return (
+      <LinearGradient colors={['#2696a9', 'rgb(146, 201, 210)']} style={styles.container}>
+        {/* Creates a gradient view that acts as the background */}
+        {/* Controlls the modal presented views that branch off. Transitions using a slide up */}
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.settingsVisible || this.state.peopleInLabVisible || this.state.votingVisibile}
+          onRequestClose={this.hideModals.bind(this)}
+        >
+          {this.state.settingsVisible ? <Settings
+            user={this.props.user}
+            onLogout={this.logout.bind(this)}
+            dismiss={this.hideModals.bind(this)}
+          /> : null
+      }
+          {this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)} /> : null}
+          {this.state.votingVisibile ? <EventVote
+            dismiss={() => {
+          this.refreshVotingData();
+          this.hideModals();
+        }}
+            hasVoted={this.state.votingDone}
+          /> : null}
+        </Modal>
 
-       <View style={{
-         width: window.width,
-         alignItems: 'center',
-         flexDirection: 'row',
-         marginTop: 20 + (Platform.OS === 'ios' ? 10 : 0)
-       }}
-       >
-         {/* Voting button */}
-         <TouchableHighlight
-           underlayColor="rgba(0,0,0,0)"
-           style={{ marginLeft: 20, alignSelf: 'flex-start' }}
-           onPress={this.votingButtonPressed.bind(this)}
-         >
-           <Image source={this.state.votingDone ? require('./Assets/voteDone.png') : require('./Assets/vote.png')} style={styles.settingsButtonImage} />
-         </TouchableHighlight>
+        <View style={{
+          width: window.width,
+          alignItems: 'center',
+          flexDirection: 'row',
+          marginTop: 20 + (Platform.OS === 'ios' ? 10 : 0)
+        }}
+        >
+          {/* Voting button */}
+          <TouchableHighlight
+            underlayColor="rgba(0,0,0,0)"
+            style={{ marginLeft: 20, alignSelf: 'flex-start' }}
+            onPress={this.votingButtonPressed.bind(this)}
+          >
+            <Image source={this.state.votingDone ? require('./Assets/voteDone.png') : require('./Assets/vote.png')} style={styles.settingsButtonImage} />
+          </TouchableHighlight>
 
-         {/* DALI image */}
-         <Image source={require('./Assets/DALI_whiteLogo.png')} style={[styles.daliImage, { width: window.width - 100 }]} />
+          {/* DALI image */}
+          <Image source={require('./Assets/DALI_whiteLogo.png')} style={[styles.daliImage, { width: window.width - 100 }]} />
 
-         {/* Settings button */}
-         <TouchableHighlight
-           underlayColor="rgba(0,0,0,0)"
-           style={{ marginRight: 20, alignSelf: 'flex-start' }}
-           onPress={this.settingsButtonPressed.bind(this)}
-         >
-           <Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage} />
-         </TouchableHighlight>
-       </View>
+          {/* Settings button */}
+          <TouchableHighlight
+            underlayColor="rgba(0,0,0,0)"
+            style={{ marginRight: 20, alignSelf: 'flex-start' }}
+            onPress={this.settingsButtonPressed.bind(this)}
+          >
+            <Image source={require('./Assets/whiteGear.png')} style={styles.settingsButtonImage} />
+          </TouchableHighlight>
+        </View>
 
-       {/* Location label. More complicated terniary */}
-       {this.props.user != null ?
-         <Text style={styles.locationText}>{this.state.locationText}</Text>
-         : <View style={{ alignItems: 'center' }}>
-           <TouchableHighlight
-             onPress={() => {
-               Linking.openURL('http://maps.apple.com/?address=5,Maynard+St,Hanover,New+Hampshire');
-             }}
-             underlayColor="rgba(0,0,0,0)"
-           >
-             <Text style={[styles.locationText, { textDecorationLine: 'underline', marginBottom: 0 }]}>Open in Maps</Text>
-           </TouchableHighlight>
-           <TouchableHighlight
-             onPress={() => {
-               Linking.openURL('https://dali.dartmouth.edu');
-             }}
-             underlayColor="rgba(0,0,0,0)"
-           >
-             <Text style={[styles.locationText, { textDecorationLine: 'underline' }]}>Website</Text>
-           </TouchableHighlight>
-         </View>
-       }
+        {/* Location label. More complicated terniary */}
+        {this.props.user != null ?
+          <Text style={styles.locationText}>{this.state.locationText}</Text>
+          :
+          <View style={{ alignItems: 'center' }}>
+            <TouchableHighlight
+              onPress={() => {
+            Linking.openURL('http://maps.apple.com/?address=5,Maynard+St,Hanover,New+Hampshire');
+          }}
+              underlayColor="rgba(0,0,0,0)"
+            >
+              <Text style={[styles.locationText, { textDecorationLine: 'underline', marginBottom: 0 }]}>Open in Maps</Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              onPress={() => {
+            Linking.openURL('https://dali.dartmouth.edu');
+          }}
+              underlayColor="rgba(0,0,0,0)"
+            >
+              <Text style={[styles.locationText, { textDecorationLine: 'underline' }]}>Website</Text>
+            </TouchableHighlight>
+          </View>
+        }
 
-       {/* A view to rull all views (actually not all, as the Modal and LinearGradient aren't controlled by this) */}
-       <View style={styles.internalView}>
-         {/* Moving on to the events section */}
-         {/* This one actually doesnt need to animate.
-					It seems to grow and shrink, as it is pushed and pulled down and up behind the toolbar below,
-					but nothing more than a cleverly hidden opaque toolbar view is needed for this effect.
-					I just use a terniary operator to switch between large and normal height */
-         }
-         <View style={[styles.bottomView]}>
+        {/* A view to rull all views (actually not all, as the Modal and LinearGradient aren't controlled by this) */}
+        <View style={styles.internalView}>
+          {/* Moving on to the events section */}
+          {/* This one actually doesnt need to animate.
+          It seems to grow and shrink, as it is pushed and pulled down and up behind the toolbar below,
+          but nothing more than a cleverly hidden opaque toolbar view is needed for this effect.
+          I just use a terniary operator to switch between large and normal height */
+        }
+          <View style={[styles.bottomView]}>
 
-           {/* I swear, this is the last seperator */}
-           <View style={styles.separatorThick} />
-           <Text style={styles.titleText}>Upcoming Events</Text>
-           {/* Sike! One more seperator */}
-           <View style={styles.separatorThin} />
+            {/* I swear, this is the last seperator */}
+            <View style={styles.separatorThick} />
+            <Text style={styles.titleText}>Upcoming Events</Text>
+            {/* Sike! One more seperator */}
+            <View style={styles.separatorThin} />
 
-           {/* The other list view */}
-           <ListView
-             enableEmptySections={true}
-             style={styles.listView}
-             dataSource={this.state.eventsDataSource}
-             renderRow={this.renderEventRow.bind(this)}
-           />
-         </View>
-       </View>
+            {/* The other list view */}
+            <ListView
+              enableEmptySections={true}
+              style={styles.listView}
+              dataSource={this.state.eventsDataSource}
+              renderRow={this.renderEventRow.bind(this)}
+            />
+          </View>
+        </View>
 
-       {/* Aforementioned cleverly hidden opaque toolbar view.
-					Instead of trying to perfect the timing on another animation for the events list view or making a hideus solid toolbar,
-					I just created another gradient that ends on the color where the view ends and starts at the color where the view starts.
-					In effect creating an opaque but seemingly nonexistant background! */
-       }
-       {this.props.user != null ?
-         <LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
-           {/* Empty and clear view to make the buttons equidistant */}
-           <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)' }} />
+        {/* Aforementioned cleverly hidden opaque toolbar view.
+          Instead of trying to perfect the timing on another animation for the events list view or making a hideus solid toolbar,
+          I just created another gradient that ends on the color where the view ends and starts at the color where the view starts.
+          In effect creating an opaque but seemingly nonexistant background! */
+        }
+        {this.props.user != null ?
+          <LinearGradient colors={['rgb(138, 196, 205)', 'rgb(146, 201, 210)']} style={styles.toolbarView}>
+            {/* Empty and clear view to make the buttons equidistant */}
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)' }} />
 
-           {/* People button */}
-           <TouchableHighlight
-             underlayColor="rgba(0,0,0,0)"
-             onPress={this.peopleInLabPressed.bind(this)}
-           >
-             <View>
-               <Image source={require('./Assets/people.png')} style={styles.settingsButtonImage} />
-             </View>
-           </TouchableHighlight>
+            {/* People button */}
+            <TouchableHighlight
+              underlayColor="rgba(0,0,0,0)"
+              onPress={this.peopleInLabPressed.bind(this)}
+            >
+              <View>
+                <Image source={require('./Assets/people.png')} style={styles.settingsButtonImage} />
+              </View>
+            </TouchableHighlight>
 
-           {/* Empty and clear view to make the buttons equidistant */}
-           <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)' }} />
-         </LinearGradient> : null
-       }
-     </LinearGradient>
-   );
- }
+            {/* Empty and clear view to make the buttons equidistant */}
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)' }} />
+          </LinearGradient> : null
+        }
+      </LinearGradient>
+    );
+  }
 }
 
 // This a huge list of styles! Not gonna comment it

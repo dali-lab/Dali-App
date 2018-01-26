@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "312520990171",
+    "project_id": "dali-api"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312520990171:android:6656b1797f553e7f",
+        "android_client_info": {
+          "package_name": "com.JohnKotz.DALI.DaliLabApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "312520990171-vbdm2ig8bm2p1fcdl98mc099io0m7sos.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.JohnKotz.DALI.DaliLabApp",
+            "certificate_hash": "59a7ffe366cb7315b4c4ea7a1f01c3d71235efea"
+          }
+        },
+        {
+          "client_id": "312520990171-qjg064epa182c2tlln9dimtig4k38ruv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.JohnKotz.DALI.DaliLabApp",
+            "certificate_hash": "459c654bdc1e8ceba9bda6c56a3c31b1838cebe3"
+          }
+        },
+        {
+          "client_id": "312520990171-ro1k22qvc8qv7jgcb3frkk4smke4drau.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBI6wyXW7UEOlUyRJ3-n6a0mNN-2kDiv3I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -208,7 +208,7 @@ class Login extends Component {
                         this.props.onSkipLogin();
                       }}
                     >
-                      <View style={{padding: 10}}>
+                      <View style={{ padding: 10 }}>
                         <Text style={{ color: 'white' }}>Skip Sign In</Text>
                       </View>
                     </TouchableHighlight>
