@@ -5,15 +5,22 @@ import {
   View,
   TouchableHighlight,
   ListView,
+  Button
 } from 'react-native';
-
 import dateFormat from 'dateformat';
+import EventEmitter from 'EventEmitter';
 
 const ServerCommunicator = require('../ServerCommunicator').default;
 const BeaconController = require('../BeaconController').default;
 const StorageController = require('../StorageController').default;
 
+const eventEmitter = new EventEmitter();
+
 class VoteMain extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    headerRight: <Button title="Done" onPress={() => eventEmitter.emit('doneButtonPressed')} />
+  });
+
   constructor(props) {
     super(props);
 
@@ -25,6 +32,8 @@ class VoteMain extends Component {
       },
       sectionHeaderHasChanged: (prevSectionData, nextSectionData) => true
     });
+
+    eventEmitter.addListener('doneButtonPressed', this.doneButtonPressed.bind(this));
 
     this.past = [];
     this.nowVoting = [];
@@ -43,6 +52,10 @@ class VoteMain extends Component {
 
     this.updateCurrentEvent();
     this.updatePastEvents();
+  }
+
+  doneButtonPressed() {
+    this.props.screenProps.dismiss();
   }
 
   updatePastEvents() {

@@ -137,35 +137,41 @@ class ServerCommunicator {
          }))
          .then(responseJson => responseJson.json())
          .then((response) => {
+           console.log('Made it past response processing...');
            this.serverToken = response.token;
            this.userObject = response.user;
 
            this.beaconController.setUpNotifications();
 
-           StorageController.saveToken(response.token).then(() => {
-             if (this.awaitingUser) {
-               this.checkIn(true);
-             }
+           console.log('Saving token...');
+           StorageController.saveToken(response.token);
+           // .then(() => {
+           console.log('Token saved!');
+           console.log('Doing following opperations...');
+           if (this.awaitingUser) {
+             this.checkIn(true);
+           }
 
-             if (this.beaconController.inDALI) {
-               this.enterExitDALI();
-             }
-
-             resolve();
-           });
+           if (this.beaconController.inDALI) {
+             this.enterExitDALI();
+           }
+           console.log('Resolving');
+           resolve();
+           // }).catch((error) => {
+           //   console.log('Failed token or following opperations!');
+           //   reject(error);
+           // });
          })
          .catch((error) => {
+           console.log('Load failed!');
            reject(error);
          });
-     }).catch((error) => {
-       if (error && error.code === 400) {
-         return this.loadTokenAndUser();
-       }
      });
    }
 
    loadTokenAndUser(gUser, logout) {
      const googleUser = gUser || GoogleSignin.currentUser();
+     console.log('Loading token and user');
 
      return new Promise((resolve, reject) => {
        if (this.serverToken && this.userObject) {
@@ -174,6 +180,7 @@ class ServerCommunicator {
 
        StorageController.getToken().then((token) => {
          if (token) {
+           console.log('GOT TOKEN', token);
            this.serverToken = token;
            fetch(`https://dalilab-api.herokuapp.com/api/users/${googleUser.id}?isGoogle=true`, {
              method: 'GET',

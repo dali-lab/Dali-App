@@ -45,8 +45,16 @@ class StorageController {
     return AsyncStorage.getItem(`${prefix}:serverToken`);
   }
 
-  static saveToken(value) {
-    return AsyncStorage.setItem(`${prefix}:serverToken`, value);
+  static async saveToken(value) {
+    try {
+      await AsyncStorage.setItem(`${prefix}:serverToken`, value);
+      console.log('done!');
+    } catch (error) {
+    }
+
+    return new Promise(((resolve, reject) => {
+      resolve();
+    }));
   }
 
   static saveLabAccessPreference(value) {

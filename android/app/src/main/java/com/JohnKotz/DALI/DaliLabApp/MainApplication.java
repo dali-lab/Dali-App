@@ -1,12 +1,14 @@
-package com.dali;
+package com.JohnKotz.DALI.DaliLabApp;
 
 import android.app.Application;
 
+import com.JohnKotz.DALI.DaliLabApp.BuildConfig;
 import com.facebook.react.ReactApplication;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
-import co.apptailor.googlesignin.RNGoogleSigninPackage;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import com.mackentoch.beaconsandroid.BeaconsAndroidPackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 import com.facebook.react.ReactNativeHost;
@@ -31,7 +33,6 @@ public class MainApplication extends Application implements ReactApplication {
             new RNGoogleSigninPackage(),
             new ReactNativePushNotificationPackage(),
             new LinearGradientPackage(),
-            new RNGoogleSigninPackage(),
             new BeaconsAndroidPackage(),
             new BackgroundTimerPackage()
       );
@@ -51,6 +52,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    Fabric.with(this, new Crashlytics());
     SoLoader.init(this, /* native exopackage */ false);
   }
 }

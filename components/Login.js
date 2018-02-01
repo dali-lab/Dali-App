@@ -61,6 +61,18 @@ class Login extends Component {
       easing: Easing.inOut(Easing.ease),
     };
 
+    GoogleSignin.currentUserAsync().then((user) => {
+      console.log('Loaded!');
+      console.log(user);
+      if (user) {
+        ServerCommunicator.current.loadTokenAndUser(user, () => {
+          if (user) {
+            this.props.onLogin(user);
+          }
+        });
+      }
+    });
+
     const value = this.state.slidingAnimationValue;
     // Set up the animation
     Animated.timing(value, {
@@ -93,6 +105,7 @@ class Login extends Component {
     });
     GoogleSignin.signIn()
       .then((user) => {
+        console.log(user);
         if (user === null || !user.email.includes('@dali.dartmouth.edu')) {
           GoogleSignin.signOut();
           this.setState({
@@ -103,11 +116,15 @@ class Login extends Component {
           }, 600);
           return;
         }
+        console.log('Passed first check...');
 
         function signIn(user) {
+          console.log(' Signin in with server...');
           return ServerCommunicator.current.signin(user).then(() => {
+            console.log('DONE!');
             this.props.onLogin(user);
           }).catch((error) => {
+            console.log(' Failed signin with server!');
             if (error && error.code === 400) {
               return ServerCommunicator.current.loadTokenAndUser(user);
             }
@@ -116,6 +133,7 @@ class Login extends Component {
 
         // For some reason on Android the user needs Google Play for me to access the callendars
         GoogleSignin.hasPlayServices({ autoResolve: true }).then(() => {
+          console.log('Passed play services check...');
           signIn(user).then(() => {
             this.props.onLogin(user);
           }).catch((error) => {
@@ -126,6 +144,7 @@ class Login extends Component {
           });
         })
           .catch((err) => {
+            console.log('Failed play services check!');
             if (Platform.OS === 'ios') {
               signIn(user).then(() => {
                 this.props.onLogin(user);
@@ -204,7 +223,6 @@ class Login extends Component {
                       style={{ alignSelf: 'center', marginTop: 15 }}
                       underlayColor="rgba(0,0,0,0.1)"
                       onPress={() => {
-                        GoogleSignin.signOut();
                         this.props.onSkipLogin();
                       }}
                     >

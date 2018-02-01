@@ -24,7 +24,6 @@ import {
   Platform
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { GoogleSignin } from 'react-native-google-signin';
 
 // My Components and classes
 const ServerCommunicator = require('./ServerCommunicator').default;
@@ -167,17 +166,7 @@ class Main extends Component {
   Logout and notify the index.__.js to switch to Login
   */
   logout() {
-    if (this.props.user === null) {
-      this.props.onLogout();
-    }
-
-    GoogleSignin.signOut()
-      .then(() => {
-        this.props.onLogout();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    this.props.onLogout();
     clearInterval(this.reloadInterval);
     this.reloadInterval = undefined;
   }
@@ -374,20 +363,15 @@ class Main extends Component {
           visible={this.state.settingsVisible || this.state.peopleInLabVisible || this.state.votingVisibile}
           onRequestClose={this.hideModals.bind(this)}
         >
-          {this.state.settingsVisible ? <Settings
-            user={this.props.user}
-            onLogout={this.logout.bind(this)}
-            dismiss={this.hideModals.bind(this)}
+          {this.state.settingsVisible ? <Settings screenProps={{
+            user: this.props.user,
+            onLogout: this.logout.bind(this),
+            dismiss: this.hideModals.bind(this)
+            }}
           /> : null
       }
-          {this.state.peopleInLabVisible ? <PeopleInLab dismiss={this.hideModals.bind(this)} /> : null}
-          {this.state.votingVisibile ? <EventVote
-            dismiss={() => {
-          this.refreshVotingData();
-          this.hideModals();
-        }}
-            hasVoted={this.state.votingDone}
-          /> : null}
+          {this.state.peopleInLabVisible ? <PeopleInLab screenProps={{ dismiss: this.hideModals.bind(this) }} /> : null}
+          {this.state.votingVisibile ? <EventVote screenProps={{ dismiss: this.hideModals.bind(this) }} /> : null}
         </Modal>
 
         <View style={{

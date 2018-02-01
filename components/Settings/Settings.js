@@ -14,9 +14,13 @@ import {
   TouchableHighlight,
   ListView,
   Image,
-  Navigator,
-  Switch
+  Switch,
+  Button
 } from 'react-native';
+import { StackNavigator } from 'react-navigation';
+import EventEmitter from 'EventEmitter';
+
+const eventEmitter = new EventEmitter();
 
 // My modules
 const StorageController = require('../StorageController').default;
@@ -33,370 +37,245 @@ PROPS:
 - user: Object with information about the user
 */
 class Settings extends Component {
- propTypes: {
-  onLogout: ReactNative.PropTypes.func,
-  dismiss: ReactNative.PropTypes.func.isRequired,
-  user: ReactNative.PropTypes.object,
- }
+  static navigationOptions = ({ navigation }) => ({
+    title: 'People in the Lab',
+    headerRight: ( <Button title="Done" onPress={() => eventEmitter.emit('doneButtonPressed')} /> )
+  });
+  propTypes: {
+    onLogout: ReactNative.PropTypes.func,
+    dismiss: ReactNative.PropTypes.func.isRequired,
+    user: ReactNative.PropTypes.object,
+  }
 
- constructor(props) {
-   super(props);
+  constructor(props) {
+    super(props);
 
-   // The list view dataSource
-   const dataSource = new ListView.DataSource({
-     rowHasChanged: (r1, r2) => r1 !== r2,
-     sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-   });
+    // The list view dataSource
+    const dataSource = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2,
+      sectionHeaderHasChanged: (s1, s2) => s1 !== s2
+    });
 
-   this.state = {
-     dataSource: dataSource.cloneWithRowsAndSections(this.getData(props)),
-     // The default values of the settings
-     checkInNotif: true,
-     labAccessNotif: false,
-     inLabLocShare: false,
-     rightButtonDisabled: false
-   };
+    this.state = {
+      dataSource: dataSource.cloneWithRowsAndSections(this.getData(props)),
+      // The default values of the settings
+      checkInNotif: true,
+      labAccessNotif: false,
+      inLabLocShare: false,
+      rightButtonDisabled: false
+    };
 
-   // Gets the lab access preference from the storage
-   StorageController.getLabAccessPreference().then((value) => {
-     if (value === null) {
-       // Save the default value if there isn't one
-       StorageController.saveLabAccessPreference(this.state.labAccessNotif);
-       return;
-     }
+    eventEmitter.addListener('doneButtonPressed', this.doneButtonPressed.bind(this));
 
-     this.setState({
-       labAccessNotif: value
-     });
-   });
+    // Gets the lab access preference from the storage
+    StorageController.getLabAccessPreference().then((value) => {
+      if (value === null) {
+        // Save the default value if there isn't one
+        StorageController.saveLabAccessPreference(this.state.labAccessNotif);
+        return;
+      }
 
-   // Get the preference for notifying the user on check-in
-   StorageController.getCheckinNotifPreference().then((value) => {
-     if (value === null) {
-       // Save default...
-       StorageController.saveCheckInNotifPreference(this.state.checkInNotif);
-       return;
-     }
+      this.setState({
+        labAccessNotif: value
+      });
+    });
 
-     this.setState({
-       checkInNotif: value
-     });
-   });
+    // Get the preference for notifying the user on check-in
+    StorageController.getCheckinNotifPreference().then((value) => {
+      if (value === null) {
+        // Save default...
+        StorageController.saveCheckInNotifPreference(this.state.checkInNotif);
+        return;
+      }
 
-   // Get the preference of lab presence sharing
-   StorageController.getLabPresencePreference().then((value) => {
-     if (value === null) {
-       // Save default...
-       StorageController.saveCheckInNotifPreference(this.state.inLabLocShare);
-       return;
-     }
+      this.setState({
+        checkInNotif: value
+      });
+    });
 
-     this.setState({
-       inLabLocShare: value
-     });
-   });
- }
+    // Get the preference of lab presence sharing
+    StorageController.getLabPresencePreference().then((value) => {
+      if (value === null) {
+        // Save default...
+        StorageController.saveCheckInNotifPreference(this.state.inLabLocShare);
+        return;
+      }
 
-  /**
-	Retrieves the data regarding the sections and rows of the list
-	*/
- getData() {
-   const notificationsRows = [
-     {
-       title: 'Event Check-in',
-       detail: 'Allow notifications when you are checked in to a DALI event.',
-       switchChanged: (value) => {
-         this.setState({
-           checkInNotif: value,
-           dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
-         });
-         StorageController.saveCheckInNotifPreference(value);
-       },
-       stateName: 'checkInNotif'
-     },{
-       title: 'Lab Access',
-       detail: 'Notify me when I enter or exit the lab',
-       switchChanged: (value) => {
-         this.setState({
-           labAccessNotif: value,
-           dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
-         });
-
-         StorageController.saveLabAccessPreference(value);
-       },
-       stateName: 'labAccessNotif'
-     }
-   ];
-
-   const signInOutRow = {
-     title: this.props.user != null ? 'Sign Out' : 'Sign In',
-     action: this.props.onLogout,
-     image: this.props.user != null ? this.props.user.photo : null
-   };
-
-   const locationRows = [
-     {
-       title: 'Lab Presence Sharing',
-       detail: 'Share your presence in the lab with other members looking for your assistance',
-       switchChanged: (value) => {
-         this.setState({
-           inLabLocShare: value,
-           dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
-         });
-
-         StorageController.saveLabPresencePreference(value);
-         ServerCommunicator.current.updateSharePreference(value);
-       },
-       stateName: 'inLabLocShare'
-     }
-   ];
-
-   if (GlobalFunctions.userIsTim()) {
-     // Tim gets automatic access to the voting rows, but because he is already tracked he can't share his information
-     return {
-       user: [signInOutRow],
-       notifications: notificationsRows
-     };
-   } else if (this.props.user != null) {
-     // This is a regular non-tim user
-     if (GlobalFunctions.userIsAdmin()) {
-       // This is theo, so he gets the voting options
-       return {
-         user: [signInOutRow],
-         notifications: notificationsRows,
-         location: locationRows
-       };
-     } else {
-       // A non-tim non-theo user
-       return {
-         user: [signInOutRow],
-         notifications: notificationsRows,
-         location: locationRows
-       };
-     }
-   } else {
-     // A non-user. All they get to do is sign in
-     return {
-       user: [signInOutRow]
-     };
-   }
- }
-
-  // / Called by the navigator to determine what the left button should be
- getLeftButton() {
-   return null;
- }
-
-  // / Called by the navigator to get the title of the navigator
- getNavigationTitle() {
-   return 'Settings';
- }
-
+      this.setState({
+        inLabLocShare: value
+      });
+    });
+  }
 
   /**
- 	Renders the rows
- 	*/
- renderRow(data, section, row) {
-   if (section === 'user' || section === 'voting') {
-     // The user cells are different
-     return (
-       <TouchableHighlight onPress={data.action}>
-         <View>
-           <View style={styles.userRow}>
-             {data.image != null ? <Image source={{ uri: data.image }} style={styles.userProfileImage} /> : null}
-             <Text style={styles.userRowTitle}>{data.title}</Text>
-             <Image source={require('../Assets/disclosureIndicator.png')} style={styles.disclosureIndicator} />
-           </View>
-           <View style={styles.seperator} />
-         </View>
-       </TouchableHighlight>
-     );
-   }
+  Retrieves the data regarding the sections and rows of the list
+  */
+  getData() {
+    const notificationsRows = [
+      {
+        title: 'Event Check-in',
+        detail: 'Allow notifications when you are checked in to a DALI event.',
+        switchChanged: (value) => {
+          this.setState({
+            checkInNotif: value,
+            dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props.screenProps)),
+          });
+          StorageController.saveCheckInNotifPreference(value);
+        },
+        stateName: 'checkInNotif'
+      },{
+        title: 'Lab Access',
+        detail: 'Notify me when I enter or exit the lab',
+        switchChanged: (value) => {
+          this.setState({
+            labAccessNotif: value,
+            dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props.screenProps)),
+          });
 
-   // The other rows are all pretty simple
-   return (
-     <View>
-       <View style={styles.notificationRow}>
-         <View style={styles.notificationRowTextContainer}>
-           <Text style={styles.notificationRowTitle}>{data.title}</Text>
-           <Text style={styles.notificationRowDetail}>{data.detail}</Text>
-         </View>
-         <Switch
-           value={this.state[data.stateName]}
-           onValueChange={data.switchChanged}
-           style={styles.notificationRowSwitch}
-         />
-       </View>
-       <View style={row === 0 ? styles.seperatorSmall : styles.seperator} />
-     </View>
-   );
- }
+          StorageController.saveLabAccessPreference(value);
+        },
+        stateName: 'labAccessNotif'
+      }
+    ];
+
+    const signInOutRow = {
+      title: this.props.screenProps.user != null ? 'Sign Out' : 'Sign In',
+      action: this.props.screenProps.onLogout,
+      image: this.props.screenProps.user != null ? this.props.screenProps.user.photo : null
+    };
+
+    const locationRows = [
+      {
+        title: 'Lab Presence Sharing',
+        detail: 'Share your presence in the lab with other members looking for your assistance',
+        switchChanged: (value) => {
+          this.setState({
+            inLabLocShare: value,
+            dataSource: this.state.dataSource.cloneWithRowsAndSections(this.getData(this.props)),
+          });
+
+          StorageController.saveLabPresencePreference(value);
+          ServerCommunicator.current.updateSharePreference(value);
+        },
+        stateName: 'inLabLocShare'
+      }
+    ];
+
+    if (GlobalFunctions.userIsTim()) {
+      // Tim gets automatic access to the voting rows, but because he is already tracked he can't share his information
+      return {
+        user: [signInOutRow],
+        notifications: notificationsRows
+      };
+    } else if (this.props.screenProps.user != null) {
+      // This is a regular non-tim user
+      if (GlobalFunctions.userIsAdmin()) {
+        // This is theo, so he gets the voting options
+        return {
+          user: [signInOutRow],
+          notifications: notificationsRows,
+          location: locationRows
+        };
+      } else {
+        // A non-tim non-theo user
+        return {
+          user: [signInOutRow],
+          notifications: notificationsRows,
+          location: locationRows
+        };
+      }
+    } else {
+      // A non-user. All they get to do is sign in
+      return {
+        user: [signInOutRow]
+      };
+    }
+  }
+
+  doneButtonPressed() {
+    this.props.screenProps.dismiss();
+  }
 
   /**
- 	Gets a view of a section header
- 	*/
- renderSectionHeader(data, sectionName) {
-   if (sectionName === 'user') {
-     return <View />;
-   }
+  Renders the rows
+  */
+  renderRow(data, section, row) {
+    if (section === 'user' || section === 'voting') {
+      // The user cells are different
+      return (
+        <TouchableHighlight onPress={data.action}>
+          <View>
+            <View style={styles.userRow}>
+              {data.image != null ? <Image source={{ uri: data.image }} style={styles.userProfileImage} /> : null}
+              <Text style={styles.userRowTitle}>{data.title}</Text>
+              <Image source={require('../Assets/disclosureIndicator.png')} style={styles.disclosureIndicator} />
+            </View>
+            <View style={styles.seperator} />
+          </View>
+        </TouchableHighlight>
+      );
+    }
 
-   return (
-     <View style={styles.sectionHeader}>
-       <Text style={styles.sectionHeaderText}>{sectionName.toUpperCase()}</Text>
-     </View>
-   );
- }
-
-  /**
- 	Get footer
- 	*/
- renderFooter() {
-   return (
-     <View style={styles.sectionFooter}>
-       <Text style={styles.sectionFooterText}>Developed by John Kotz; Designs by Kate Stinson, Jenny Seong, and Anne Muller</Text>
-     </View>
-   );
- }
-
-  // / Renders the scene in the navigator. This is necessary, as Settings controlls all the subsequent Views.
-  // / Not the best implementation, but there is little time for fancy but simple options
- renderScene(route, navigator) {
-   this.navigator = navigator;
-   // Settings is a simple Listview that I have been setting up so far
-   return (
-     <ListView
-       style={styles.listView}
-       dataSource={this.state.dataSource}
-       renderSectionHeader={this.renderSectionHeader.bind(this)}
-       renderFooter={this.renderFooter.bind(this)}
-       renderRow={this.renderRow.bind(this)}
-     />
-   );
- }
+    // The other rows are all pretty simple
+    return (
+      <View>
+        <View style={styles.notificationRow}>
+          <View style={styles.notificationRowTextContainer}>
+            <Text style={styles.notificationRowTitle}>{data.title}</Text>
+            <Text style={styles.notificationRowDetail}>{data.detail}</Text>
+          </View>
+          <Switch
+            value={this.state[data.stateName]}
+            onValueChange={data.switchChanged}
+            style={styles.notificationRowSwitch}
+          />
+        </View>
+        <View style={row === 0 ? styles.seperatorSmall : styles.seperator} />
+      </View>
+    );
+  }
 
   /**
-	Render the view
-	*/
- render() {
-   // The navagator class is powerfull, and allows navigation bars
-   return (
-     <Navigator
-       initialRoute={{ name: 'Settings' }}
-       navigationBar={
-         <Navigator.NavigationBar
-           routeMapper={{
-             LeftButton: (route, navigator, index, navState) => {
-               // This is pretty cool. First I determine a reference to the view that is currently being displayed
-               let currentView = null;
-               if (route.name === 'Create Voting Event') {
-                 currentView = this.createEventView;
-               } else if (route.name === 'Voting Event') {
-                 currentView = this.votingEventSettings;
-               } else {
-                 currentView = this;
-               }
+  Gets a view of a section header
+  */
+  renderSectionHeader(data, sectionName) {
+    if (sectionName === 'user') {
+      return <View />;
+    }
 
+    return (
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionHeaderText}>{sectionName.toUpperCase()}</Text>
+      </View>
+    );
+  }
 
-               if (currentView != null && currentView.getLeftButton !== undefined) {
-                 // If the current view has a preference on their left button...
-                 const leftButton = currentView.getLeftButton();
-                 // Get it and check it
-                 if (leftButton === null) {
-                   return null;
-                 }
+  /**
+  Get footer
+  */
+  renderFooter() {
+    return (
+      <View style={styles.sectionFooter}>
+        <Text style={styles.sectionFooterText}>Developed by John Kotz; Designs by Kate Stinson, Jenny Seong, and Anne Muller</Text>
+      </View>
+    );
+  }
 
-                 // And if they actually want something we'll give it to them
-                 return (
-                   <TouchableHighlight
-                     underlayColor="rgba(0,0,0,0)"
-                     style={styles.navBarBackButton}
-                     onPress={leftButton.action}
-                   >
-                     <Text
-                       style={[styles.navBarBackText, leftButton.style]}
-                     >
-                       {leftButton.text}
-                     </Text>
-                   </TouchableHighlight>
-                 );
-               } else {
-                 // If we cannot get any information on what view we are on
-                 // or what that view wants for a left button, we will assume a back button
-                 return (
-                   <TouchableHighlight
-                     underlayColor="rgba(0,0,0,0)"
-                     style={styles.navBarBackButton}
-                     onPress={navigator.pop}
-                   >
-                     <Text style={styles.navBarBackText}>{'< Back'}</Text>
-                   </TouchableHighlight>
-                 );
-               }
-             },
-             RightButton: (route, navigator, index, navState) => {
-               // Very similar to the left button stuff
-               // We get the current view
-               let currentView = null;
-               if (route.name === 'Create Voting Event') {
-                 currentView = this.createEventView;
-               } else if (route.name === 'Voting Event') {
-                 currentView = this.votingEventSettings;
-               } else {
-                 currentView = this;
-               }
-
-               if (currentView != null && currentView.getRightButton !== undefined) {
-                 // If the view has a preference
-                 const rightButton = currentView.getRightButton();
-                 if (rightButton === null) {
-                   return null;
-                 }
-
-                 // Use it...
-                 return (
-                   <TouchableHighlight
-                     underlayColor="rgba(0,0,0,0)"
-                     style={styles.navBarDoneButton}
-                     onPress={!this.state.rightButtonDisabled ? rightButton.action : null}
-                   >
-                     <Text
-                       style={[styles.navBarDoneText, rightButton.stlye, this.state.rightButtonDisabled ? styles.navBarDisabled : null]}
-                     >
-                       {rightButton.text}
-                     </Text>
-                   </TouchableHighlight>
-                 );
-               } else {
-                 // Otherwise assume Done button
-                 return (
-                   <TouchableHighlight
-                     underlayColor="rgba(0,0,0,0)"
-                     style={styles.navBarDoneButton}
-                     onPress={this.props.dismiss}
-                   >
-                     <Text style={styles.navBarDoneText}>Done</Text>
-                   </TouchableHighlight>
-                 );
-               }
-             },
-             Title: (route, navigator, index, navState) => {
-               // Default text will be based one the route name
-               let text = route.name;
-               if (this.state.currentView != null && this.state.currentView.getNavigationTitle) {
-                 // There is a preference
-                 text = this.state.currentView.getNavigationTitle();
-               }
-               return (<Text style={styles.navBarTitleText}>{text}</Text>);
-             }
-           }}
-           style={{ backgroundColor: 'rgb(33, 122, 136)' }}
-         />
-       }
-       renderScene={this.renderScene.bind(this)}
-       style={{ paddingTop: 65 }}
-     />
-   );
- }
+  /**
+  Render the view
+  */
+  render() {
+    // The navagator class is powerfull, and allows navigation bars
+    return (
+      <ListView
+        style={styles.listView}
+        dataSource={this.state.dataSource}
+        renderSectionHeader={this.renderSectionHeader.bind(this)}
+        renderFooter={this.renderFooter.bind(this)}
+        renderRow={this.renderRow.bind(this)}
+      />
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -533,4 +412,17 @@ const styles = StyleSheet.create({
   }
 });
 
-module.exports = Settings;
+module.exports = StackNavigator({
+  Settings: {
+    screen: Settings
+  }
+}, {
+  navigationOptions: {
+    headerStyle: {
+      backgroundColor: 'rgb(33, 122, 136)'
+    },
+    title: 'Settings',
+    headerTintColor: 'white'
+  },
+  mode: 'modal'
+});

@@ -10,12 +10,14 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableHighlight,
   ListView,
-  Navigator,
-  Alert
+  Button,
+  Alert,
 } from 'react-native';
+import { StackNavigator } from 'react-navigation';
+import EventEmitter from 'EventEmitter';
 
+const eventEmitter = new EventEmitter();
 const ServerCommunicator = require('./ServerCommunicator').default;
 
 /**
@@ -25,6 +27,11 @@ PROPS:
 - dismiss: Function to call to dismiss the modal
 */
 class PeopleInLab extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    title: 'People in the Lab',
+    headerRight: ( <Button title="Done" onPress={() => eventEmitter.emit('doneButtonPressed')} /> )
+  });
+
   propTypes: {
     dismiss: ReactNative.PropTypes.func.isRequired,
   }
@@ -41,6 +48,7 @@ class PeopleInLab extends Component {
     // I need to alert the user if I can't connect, but I only want to do it once
     this.alerted = false;
     this.dismissed = false;
+    eventEmitter.addListener('doneButtonPressed', this.doneButtonPressed.bind(this));
 
     this.state = {
       timInDALI: null,
@@ -119,17 +127,23 @@ class PeopleInLab extends Component {
     }
   }
 
+  doneButtonPressed() {
+    this.props.screenProps.dismiss();
+  }
+
   // / Render the rows
   renderRow(data, section, row) {
     if (section === 'tim') {
       const locKnown = this.state.timInOffice || this.state.timInDALI;
       const locationString = `In ${this.state.timInOffice ? 'his office' : (this.state.timInDALI ? 'DALI Lab' : '')}`;
 
-      return (<View style={styles.timRow}>
-        <Text style={styles.timNameText}>Tim Tregubov</Text>
-        <View style={{ flex:1 }} />
-        <Text style={styles.timLocationText}>{locKnown ? locationString : 'Location Unknown'}</Text>
-      </View>);
+      return (
+        <View style={styles.timRow}>
+          <Text style={styles.timNameText}>Tim Tregubov</Text>
+          <View style={{ flex:1 }} />
+          <Text style={styles.timLocationText}>{locKnown ? locationString : 'Location Unknown'}</Text>
+        </View>
+      );
     } else {
       console.log(data);
       return (
@@ -158,41 +172,12 @@ class PeopleInLab extends Component {
   // / Render the view
   render() {
     return (
-      <Navigator
-        navigationBar={
-          <Navigator.NavigationBar
-            routeMapper={{
-              LeftButton: (route, navigator, index, navState) =>
-                (null),
-              RightButton: (route, navigator, index, navState) =>
-                (
-                  <TouchableHighlight
-                    underlayColor="rgba(0,0,0,0)"
-                    style={styles.navBarDoneButton}
-                    onPress={() => {
-                      this.dismissed = true;
-                      this.props.dismiss();
-                    }}
-                  >
-                    <Text style={styles.navBarDoneText}>Done</Text>
-                  </TouchableHighlight>
-                ),
-              Title: (route, navigator, index, navState) =>
-                (<Text style={styles.navBarTitleText}>People In The Lab</Text>),
-            }}
-            style={{ backgroundColor: 'rgb(33, 122, 136)' }}
-          />
-        }
-        renderScene={(route, navigator) =>
-          (<ListView
-            style={styles.listView}
-            dataSource={this.state.dataSource}
-            enableEmptySections={true}
-            renderSectionHeader={this.renderSectionHeader.bind(this)}
-            renderRow={this.renderRow.bind(this)}
-          />)
-        }
-        style={{ paddingTop: 65 }}
+      <ListView
+        style={styles.listView}
+        dataSource={this.state.dataSource}
+        enableEmptySections={true}
+        renderSectionHeader={this.renderSectionHeader.bind(this)}
+        renderRow={this.renderRow.bind(this)}
       />
     );
   }
@@ -220,7 +205,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(238, 238, 238)',
   },
   sectionHeader: {
-    backgroundColor: 'rgb(238, 238, 238)',
     paddingTop: 20
   },
   sectionHeaderText: {
@@ -251,4 +235,16 @@ const styles = StyleSheet.create({
   }
 });
 
-module.exports = PeopleInLab;
+module.exports = StackNavigator({
+  PeopleInLab: {
+    screen: PeopleInLab
+  }
+}, {
+  navigationOptions: {
+    headerStyle: {
+      backgroundColor: 'rgb(33, 122, 136)'
+    },
+    headerTintColor: 'white'
+  },
+  mode: 'modal'
+});
