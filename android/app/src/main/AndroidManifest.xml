@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.JohnKotz.DALI.DaliLabApp">
+    package="com.DALI.DaliLabApp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
@@ -12,13 +12,13 @@
         android:targetSdkVersion="22" />
 
     <application
-      android:name="com.JohnKotz.DALI.DaliLabApp.MainApplication"
+      android:name="com.DALI.DaliLabApp.MainApplication"
       android:allowBackup="true"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
       android:theme="@style/AppTheme">
       <activity
-        android:name="com.JohnKotz.DALI.DaliLabApp.MainActivity"
+        android:name="com.DALI.DaliLabApp.MainActivity"
         android:label="@string/app_name"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
         android:windowSoftInputMode="adjustResize">

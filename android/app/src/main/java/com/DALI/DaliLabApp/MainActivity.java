@@ -1,4 +1,4 @@
-package com.JohnKotz.DALI.DaliLabApp;
+package com.DALI.DaliLabApp;
 
 import com.facebook.react.ReactActivity;
 

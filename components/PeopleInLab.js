@@ -67,6 +67,9 @@ class PeopleInLab extends Component {
 
   // / Retrieves the data from the server
   getData() {
+    if (this.dismissed) {
+      return;
+    }
     ServerCommunicator.current.getSharedMembersInLab().then((people) => {
       if (people === null) {
         // Failed to connect
@@ -82,10 +85,11 @@ class PeopleInLab extends Component {
       }
 
       if (!this.dismissed) {
+        console.log(people);
         this.setState({
           peopleInLab: people,
           dataSource: this.state.dataSource.cloneWithRowsAndSections({
-            tim: [{ inDALI: null, inOffice: null }], others: people
+            tim: [{ inDALI: this.state.timInDALI, inOffice: this.state.timInOffice }], others: people
           })
         });
       }
@@ -121,7 +125,7 @@ class PeopleInLab extends Component {
 
     // Refresh data every 10 seconds
     if (!this.stopTimer) {
-      setTimeout(() => {
+      this.timeout = setTimeout(() => {
         this.getData();
       }, 10000);
     }
@@ -129,6 +133,7 @@ class PeopleInLab extends Component {
 
   doneButtonPressed() {
     this.props.screenProps.dismiss();
+    clearInterval(this.timeout);
   }
 
   // / Render the rows

@@ -1,8 +1,8 @@
-package com.JohnKotz.DALI.DaliLabApp;
+package com.DALI.DaliLabApp;
 
 import android.app.Application;
 
-import com.JohnKotz.DALI.DaliLabApp.BuildConfig;
+import com.DALI.DaliLabApp.BuildConfig;
 import com.facebook.react.ReactApplication;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;

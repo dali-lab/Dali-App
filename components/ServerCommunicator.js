@@ -99,7 +99,9 @@ class ServerCommunicator {
 
    // Called when the user changes their sharing preferences. I will notify the server using the enter exit post system
    updateSharePreference(share) {
-     this.enterExitDALI(this.beaconController.inDALI);
+     StorageController.getToken().then((token) => {
+       this.post(`${env.serverURL}/api/location/shared/updatePreference`, { sharing: share }, 'POST', token);
+     });
    }
 
    // Posts to the relevant data to the relevant server
@@ -129,7 +131,7 @@ class ServerCommunicator {
 
    signin(gUser) {
      return new Promise((resolve, reject) => {
-       fetch(`https://dalilab-api.herokuapp.com/api/auth/google/callback?code=${gUser.serverAuthCode}`, { method: 'GET' })
+       fetch(`${env.serverURL}/api/auth/google/callback?code=${gUser.serverAuthCode}`, { method: 'GET' })
          .then(ApiUtils.checkStatus)
          .then(responseJson => new Promise((resolve, reject) => {
            console.log(responseJson);
@@ -378,8 +380,8 @@ class ServerCommunicator {
          // Post...
          return this.post(`${env.serverURL}/api/location/shared`, {
            user: serverUser.id,
-           inDALI,
-           share,
+           inDALI: inDALI || this.beaconController.inDALI,
+           sharing: share,
            entering: inDALI,
            exiting: !inDALI
          })
