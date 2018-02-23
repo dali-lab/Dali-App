@@ -92,7 +92,6 @@ class Main extends Component {
       officeHoursSelected: false,
       // Indicates whether the events list view is currently expanded (Read more: toggleSectionGrow)
       eventsSelected: false,
-      votingDone: false,
       // Holds the data I will get about the office hours
       officeHours: null,
       locationText: this.handleLocationUpdate(true),
@@ -137,8 +136,8 @@ class Main extends Component {
       locationText = 'In DALI Lab';
     } else if (BeaconController.current.currentLocation() === 'voting') {
       locationText = 'In Voting Event: loading...';
-      ServerCommunicator.current.getEventNow().then((event) => {
-        if (event) {
+      ServerCommunicator.current.getEventsNow().then((events) => {
+        if (events) {
 
         } else {
           const loc = BeaconController.current.currentLocation(true);
@@ -242,20 +241,17 @@ class Main extends Component {
 
 
   refreshVotingData() {
-    ServerCommunicator.current.getEventNow().then((event) => {
-      if (event) {
-        StorageController.getVoteDone(event).then((value) => {
-          this.setState({
-            votingDone: value
+    ServerCommunicator.current.getEventsNow().then((events) => {
+      if (events && events.length > 0) {
+        events.forEach((event) => {
+          StorageController.getVoteDone(event).then((value) => {
+            const obj = {};
+            obj[`votingDone${event.id}`] = value;
+            this.setState(obj);
           });
         });
       }
     }).catch((error) => {
-      if (error && error.code === 404) {
-        this.setState({
-          votingDone: false
-        });
-      }
     });
   }
 
@@ -387,7 +383,7 @@ class Main extends Component {
             style={{ marginLeft: 20, alignSelf: 'flex-start' }}
             onPress={this.votingButtonPressed.bind(this)}
           >
-            <Image source={this.state.votingDone ? require('./Assets/voteDone.png') : require('./Assets/vote.png')} style={styles.settingsButtonImage} />
+            <Image source={require('./Assets/voteDone.png')} style={styles.settingsButtonImage} />
           </TouchableHighlight>
 
           {/* DALI image */}

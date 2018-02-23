@@ -310,17 +310,17 @@ class BeaconController {
       BeaconController.performCallbacks(this.votingRegionListeners, true);
 
       if (this.locationTextCurrentPriority < votingEventPriority) {
-        ServerCommunicator.current.getEventNow().then((event) => {
-          if (event === null) {
+        ServerCommunicator.current.getEventsNow().then((events) => {
+          if (!events || events.length === 0) {
             return;
           }
 
-          BeaconController.performCallbacks(this.locationInformationListeners, `At ${event.name}`);
+          BeaconController.performCallbacks(this.locationInformationListeners, `At ${events[0].name}`);
           this.locationTextCurrentPriority = votingEventPriority;
 
           PushNotification.localNotification({
-            title: event.name,
-            message: `Welcome to ${event.name}!`
+            title: events[0].name,
+            message: `Welcome to ${events[0].name}!`
           });
         }).catch((error) => {
           if (error && error.code === 404) {
@@ -371,12 +371,12 @@ class BeaconController {
     BeaconController.performCallbacks(this.votingRegionListeners, data.beacons.length > 0);
     this.stopRanging();
     if (data.beacons.length > 0 && this.locationTextCurrentPriority < votingEventPriority) {
-      ServerCommunicator.current.getEventNow().then((event) => {
-        if (event === null) {
+      ServerCommunicator.current.getEventsNow().then((events) => {
+        if (!events || events.length === 0) {
           return;
         }
 
-        BeaconController.performCallbacks(this.locationInformationListeners, `At ${event.name}`);
+        BeaconController.performCallbacks(this.locationInformationListeners, `At ${events[0].name}`);
         this.locationTextCurrentPriority = votingEventPriority;
       }).catch((error) => {
         if (error && error.code === 404) {

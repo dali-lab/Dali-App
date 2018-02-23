@@ -212,7 +212,7 @@ class ServerCommunicator {
    * Queries the server for the event happening at the mmoment
    * Rejects with an error object if the server returns an error
    */
-   getEventNow() {
+   getEventsNow() {
      // Get
      return fetch(`${env.serverURL}/api/voting/public/current`, {
        method: 'GET'

@@ -62,6 +62,8 @@ class VoteMain extends Component {
     ServerCommunicator.current.getPastEvents().then((events) => {
       console.log(events);
       this.pastEvents = events || [];
+      console.log(this.pastEvents);
+      this.pastEvents.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
       this.setState({
         dataSource: this.state.dataSource.cloneWithRowsAndSections({ nowVoting: this.nowVoting,  past: this.pastEvents })
       });
@@ -70,16 +72,15 @@ class VoteMain extends Component {
   }
 
   updateCurrentEvent() {
-    ServerCommunicator.current.getEventNow().then((event) => {
-      console.log('currentEvent', event);
-      this.setState({ currentEvent: event });
-      this.nowVoting = BeaconController.current.inVotingEvent ? [event] : [];
+    ServerCommunicator.current.getEventsNow().then((events) => {
+      console.log('currentEvents', events);
+      this.nowVoting = BeaconController.current.inVotingEvent ? events : [];
 
       this.setState({
         dataSource: this.state.dataSource.cloneWithRowsAndSections({ nowVoting: this.nowVoting, past: this.pastEvents })
       });
     }).catch((error) => {
-      console.log('currentEvent', 'Failed to get!');
+      console.log('currentEvents', 'Failed to get!');
       this.setState({
         dataSource: this.state.dataSource.cloneWithRowsAndSections({ nowVoting: this.nowVoting, past: this.pastEvents })
       });
@@ -136,6 +137,10 @@ class VoteMain extends Component {
   }
 
   renderSectionHeader(sectionData, sectionID) {
+    if (sectionData.length === 0) {
+      return null;
+    }
+
     if (sectionID === 'nowVoting') {
       return (
         <View style={styles.sectionHeader}>
