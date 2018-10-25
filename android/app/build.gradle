@@ -124,7 +124,7 @@ android {
         targetSdkVersion 22
         versionCode 232
         versionName "2.3.2"
-        multiDexEnabled true
+        multiDexEnabled false
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -175,6 +175,11 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-push-notification')
+    compile project(':react-native-linear-gradient')
+    compile project(':react-native-google-signin')
+    compile project(':react-native-beacons-manager')
+    compile project(':react-native-background-timer')
     implementation project(':react-native-google-signin')
     compile(project(":react-native-google-signin")){
         exclude group: "com.google.android.gms" // very important

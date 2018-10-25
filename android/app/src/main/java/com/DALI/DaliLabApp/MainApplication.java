@@ -4,6 +4,11 @@ import android.app.Application;
 
 import com.DALI.DaliLabApp.BuildConfig;
 import com.facebook.react.ReactApplication;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
+import co.apptailor.googlesignin.RNGoogleSigninPackage;
+import com.mackentoch.beaconsandroid.BeaconsAndroidPackage;
+import com.ocetnik.timer.BackgroundTimerPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
@@ -30,6 +35,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativePushNotificationPackage(),
+            new LinearGradientPackage(),
+            new RNGoogleSigninPackage(),
+            new BeaconsAndroidPackage(),
+            new BackgroundTimerPackage(),
             new RNGoogleSigninPackage(),
             new ReactNativePushNotificationPackage(),
             new LinearGradientPackage(),
